@@ -1,0 +1,513 @@
+// src/screens/ServiceIssuesScreen.tsx
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+  Platform,
+  TextInput,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const SERVICE_DATA = {
+  Electrical: {
+    title: 'Electrical',
+    description: 'Lighting, sockets, switches, ceiling fans, or water heaters.',
+    warning: 'Report hazardous electrical conditions immediately via the Emergency tab.',
+    issues: [
+      'Bulb / Fluorescent tube not lighting up',
+      'Ceiling fan rotating dangerously slow or humming',
+      'Wall socket sparking or dead (no power)',
+      'Water heater not working',
+      'Exposed wiring or loose connection',
+    ],
+  },
+  Plumbing: {
+    title: 'Plumbing',
+    description: 'Leaking taps, blocked drains, or toilet cistern malfunctions.',
+    warning: 'Report water damage or flooding immediately via the Emergency tab.',
+    issues: [
+      'Tap dripping constantly or broken',
+      'Toilet bowl overflowing or won\'t flush',
+      'Washbasin / Floor drain choked',
+      'Water leaking down from ceiling or walls',
+      'Broken pipe or water burst',
+    ],
+  },
+  Carpentry: {
+    title: 'Carpentry',
+    description: 'Doors, window louvres, locks, study desks, or beds.',
+    warning: 'Report broken or damaged furniture immediately for safety.',
+    issues: [
+      'Room door lock jammed or key won\'t turn',
+      'Loose or broken door hinges',
+      'Missing or broken window louvre blades',
+      'Broken bed frame or study desk',
+      'Damaged wardrobe or cabinet',
+    ],
+  },
+  Masonry: {
+    title: 'Masonry',
+    description: 'Cracked concrete, peeling wall plaster, or broken tiling.',
+    warning: 'Report structural issues immediately via the Emergency tab.',
+    issues: [
+      'Deep cracks spreading across concrete walls',
+      'Broken or missing floor tiles',
+      'Peeling wall plaster or paint',
+      'Damaged ceiling or roof',
+      'Cracked window or door frames',
+    ],
+  },
+};
+
+export default function ServiceIssuesScreen({ navigation, route }) {
+  const { serviceType = 'Electrical' } = route.params || {};
+  const serviceData = SERVICE_DATA[serviceType] || SERVICE_DATA.Electrical;
+
+  const allIssues = [...serviceData.issues, 'Other issue...'];
+
+  const initialIssues = allIssues.map((issue, index) => ({
+    id: String(index + 1),
+    title: issue,
+    selected: false,
+    isOther: index === allIssues.length - 1,
+  }));
+
+  const [issueList, setIssueList] = useState(initialIssues);
+  const [manualDescription, setManualDescription] = useState('');
+  const [showManualInput, setShowManualInput] = useState(false);
+
+  const toggleIssue = (id) => {
+    const updatedList = issueList.map(item => {
+      if (item.id === id) {
+        if (item.isOther && !item.selected) {
+          setShowManualInput(true);
+        }
+        if (item.isOther && item.selected) {
+          setShowManualInput(false);
+          setManualDescription('');
+        }
+        return { ...item, selected: !item.selected };
+      }
+      return item;
+    });
+    setIssueList(updatedList);
+  };
+
+  const selectedCount = issueList.filter(item => item.selected).length;
+
+  const getSelectedIssues = () => {
+    const selected = issueList.filter(item => item.selected);
+    const selectedTitles = selected.map(item => item.title);
+    
+    const otherSelected = selected.find(item => item.isOther);
+    if (otherSelected && manualDescription.trim()) {
+      return [...selectedTitles.filter(t => t !== 'Other issue...'), `Other: ${manualDescription}`];
+    }
+    return selectedTitles;
+  };
+
+  const handleContinue = () => {
+    if (selectedCount === 0) {
+      alert('Please select at least one issue');
+      return;
+    }
+
+    const selectedIssues = getSelectedIssues();
+    
+    const otherSelected = issueList.find(item => item.isOther && item.selected);
+    if (otherSelected && !manualDescription.trim()) {
+      alert('Please describe the other issue');
+      return;
+    }
+
+    navigation.navigate('PhotosUpload', {
+      serviceType: serviceType,
+      selectedIssue: selectedIssues.join(', '),
+    });
+  };
+
+  const CheckMark = ({ selected }) => (
+    <View style={[styles.checkmarkCircle, selected && styles.checkmarkCircleSelected]}>
+      <Text style={[styles.checkmarkText, selected && styles.checkmarkTextSelected]}>
+        {selected ? '✓' : ''}
+      </Text>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{serviceType} Issues</Text>
+        <View style={{ width: 40 }} />
+      </View>
+
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        
+        <View style={styles.serviceTypeContainer}>
+          <Text style={styles.serviceTypeTitle}>{serviceData.title}</Text>
+          <Text style={styles.serviceTypeDescription}>
+            {serviceData.description}
+          </Text>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>SPECIFIC PROBLEM</Text>
+          <Text style={styles.selectionHint}>(Select all that apply)</Text>
+        </View>
+
+        <View style={styles.issuesList}>
+          {issueList.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[
+                styles.issueItem,
+                item.selected && styles.issueItemSelected,
+                item.isOther && styles.issueItemOther,
+              ]}
+              onPress={() => toggleIssue(item.id)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.issueLeft}>
+                <CheckMark selected={item.selected} />
+                <Text 
+                  style={[
+                    styles.issueText,
+                    item.selected && styles.issueTextSelected,
+                    item.isOther && styles.issueTextOther,
+                  ]}
+                >
+                  {item.title}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {showManualInput && (
+          <View style={styles.manualInputContainer}>
+            <Text style={styles.manualInputLabel}>Please describe the issue:</Text>
+            <TextInput
+              style={styles.manualInput}
+              placeholder="Enter your issue description..."
+              placeholderTextColor="#999"
+              value={manualDescription}
+              onChangeText={setManualDescription}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
+          </View>
+        )}
+
+        <View style={styles.warningContainer}>
+          <Text style={styles.warningText}>
+            {serviceData.warning}
+          </Text>
+        </View>
+
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+
+      <View style={styles.bottomBar}>
+        <View style={styles.bottomBarLeft}>
+          <Text style={styles.stepText}>Step 2 of 4</Text>
+          <View style={styles.statusContainer}>
+            <Text style={styles.statusText}>
+              {selectedCount > 0 ? `${selectedCount} issue${selectedCount > 1 ? 's' : ''} selected` : 'No selection'}
+            </Text>
+            <View style={[styles.statusDot, selectedCount > 0 && styles.statusDotActive]} />
+          </View>
+        </View>
+        <TouchableOpacity 
+          style={[styles.continueButton, selectedCount === 0 && styles.continueButtonDisabled]}
+          onPress={handleContinue}
+          disabled={selectedCount === 0}
+        >
+          <LinearGradient
+            colors={selectedCount > 0 ? ['#AF101A', '#D32F2F'] : ['#CCCCCC', '#CCCCCC']}
+            style={styles.continueGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            <Text style={styles.continueText}>Continue to Photos →</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9F9F9',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    height: 56,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E4BEBA',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    fontSize: 24,
+    color: '#AF101A',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1C1C',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  serviceTypeContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
+  serviceTypeTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#AF101A',
+    marginBottom: 4,
+  },
+  serviceTypeDescription: {
+    fontSize: 14,
+    color: '#5B403D',
+    lineHeight: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#E4BEBA',
+    marginHorizontal: 16,
+    marginVertical: 8,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#8F6F6C',
+    letterSpacing: 1,
+  },
+  selectionHint: {
+    fontSize: 11,
+    color: '#8F6F6C',
+    fontStyle: 'italic',
+  },
+  issuesList: {
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+  issueItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E4BEBA',
+  },
+  issueItemSelected: {
+    borderColor: '#AF101A',
+    borderWidth: 2,
+    backgroundColor: '#FFF5F5',
+  },
+  issueItemOther: {
+    borderColor: '#D4A5A5',
+    borderStyle: 'dashed',
+  },
+  issueLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  issueText: {
+    fontSize: 14,
+    color: '#1A1C1C',
+    flex: 1,
+  },
+  issueTextSelected: {
+    color: '#AF101A',
+    fontWeight: '600',
+  },
+  issueTextOther: {
+    color: '#8F6F6C',
+    fontStyle: 'italic',
+  },
+  checkmarkCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#CCCCCC',
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkmarkCircleSelected: {
+    borderColor: '#AF101A',
+    backgroundColor: '#AF101A',
+  },
+  checkmarkText: {
+    fontSize: 14,
+    color: 'transparent',
+    fontWeight: 'bold',
+  },
+  checkmarkTextSelected: {
+    color: '#FFFFFF',
+  },
+  manualInputContainer: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    padding: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#AF101A',
+    borderStyle: 'dashed',
+  },
+  manualInputLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A1C1C',
+    marginBottom: 8,
+  },
+  manualInput: {
+    fontSize: 14,
+    color: '#1A1C1C',
+    minHeight: 80,
+    padding: 10,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E4BEBA',
+    textAlignVertical: 'top',
+  },
+  warningContainer: {
+    backgroundColor: '#FFF5F5',
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#AF101A',
+  },
+  warningText: {
+    fontSize: 12,
+    color: '#5B403D',
+    lineHeight: 16,
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E4BEBA',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  bottomBarLeft: {
+    flex: 1,
+  },
+  stepText: {
+    fontSize: 12,
+    color: '#8F6F6C',
+    fontWeight: '600',
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1A1C1C',
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#CCCCCC',
+  },
+  statusDotActive: {
+    backgroundColor: '#28A745',
+  },
+  continueButton: {
+    borderRadius: 8,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#AF101A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  continueButtonDisabled: {
+    opacity: 0.7,
+  },
+  continueGradient: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  continueText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  bottomSpacer: {
+    height: 20,
+  },
+});
