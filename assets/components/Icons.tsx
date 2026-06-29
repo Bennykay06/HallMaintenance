@@ -162,3 +162,35 @@ export const ArrowLeftIcon = ({ color = '#000', size = 24 }: IconProps) =>
 // → arrow forward
 export const ArrowRightIcon = ({ color = '#000', size = 24 }: IconProps) =>
   base(color, size, 'M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z');
+
+// 🎓 school
+export const SchoolIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z');
+
+// 🔍 search
+export const SearchIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z');
+
+// 👥 groups
+export const GroupsIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z');
+
+// 👷 engineering
+export const EngineeringIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z'); // Re-using wrench path for engineering
+
+// 🛡️ security
+export const SecurityIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z');
+
+// 🧼 sanitizer
+export const SanitizerIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M15.5 6.5C15.5 5.67 14.83 5 14 5h-2V3h1V1h-2v2H9v2h2v1.5H9c-1.1 0-2 .9-2 2v2.53C5.83 12.58 5 13.92 5 15.5 5 17.98 7.02 20 9.5 20s4.5-2.02 4.5-4.5c0-1.58-.83-2.92-2-3.47V8.5h2c1.1 0 2-.9 2-2V5h-.5v1.5z');
+
+// ✉️ mail
+export const MailIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z');
+
+// 📍 location
+export const LocationIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z');

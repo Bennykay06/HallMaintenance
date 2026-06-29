@@ -1,4 +1,6 @@
 // src/screens/SuccessScreen.tsx
+import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
+
 import React, { useEffect, useRef } from 'react';
 import {
   StyleSheet,
@@ -53,13 +55,13 @@ export default function SuccessScreen({ navigation, route }) {
   }, []);
 
   const handleViewRequests = () => {
-    navigation.navigate('Requests');
+    navigation.navigate('MainTabs', { screen: 'Requests' });
   };
 
   const handleBackToHome = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Home' }],
+      routes: [{ name: 'MainTabs' }],
     });
   };
 
@@ -70,11 +72,11 @@ export default function SuccessScreen({ navigation, route }) {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBackToHome} style={styles.backButton}>
-          <Text style={styles.backButtonText}>←</Text>
+          <ArrowLeftIcon color="#AF101A" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Success</Text>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>👤</Text>
+          <PersonIcon color="#AF101A" size={24} />
         </View>
       </View>
 
@@ -235,22 +237,22 @@ export default function SuccessScreen({ navigation, route }) {
       {/* ===== BOTTOM NAV - PUSHED TO VERY BOTTOM ===== */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem} onPress={handleBackToHome}>
-          <Text style={styles.navIcon}>🏠</Text>
+          <PersonIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]} onPress={handleViewRequests}>
-          <Text style={styles.navIcon}>🔧</Text>
+          <WrenchIcon color="#AF101A" size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>📰</Text>
+          <ClipboardIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>News</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <Text style={[styles.navIcon, styles.navIconEmergency]}>🆘</Text>
+          <BellIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>

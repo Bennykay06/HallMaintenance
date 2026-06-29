@@ -1,4 +1,6 @@
 // src/screens/ServiceIssuesScreen.tsx
+import { ArrowLeftIcon } from '../components/Icons';
+
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -145,7 +147,7 @@ export default function ServiceIssuesScreen({ navigation, route }) {
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>←</Text>
+          <ArrowLeftIcon color="#AF101A" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{serviceType} Issues</Text>
         <View style={{ width: 40 }} />

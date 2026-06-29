@@ -1,4 +1,6 @@
 // src/screens/ArticleDetailScreen.tsx
+import { PersonIcon, ClipboardIcon, CalendarIcon, WrenchIcon, BellIcon, CloseIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
@@ -126,11 +128,11 @@ Elevator B has been returned to regular service as of this morning. We thank you
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>←</Text>
+          <ArrowLeftIcon color="#AF101A" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Article Detail</Text>
         <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-          <Text style={styles.shareButtonText}>↗</Text>
+          <ArrowRightIcon color="#AF101A" size={20} />
         </TouchableOpacity>
       </View>
 
@@ -190,7 +192,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
         <View style={styles.articleHeader}>
           <Text style={styles.articleTitle}>{article.title}</Text>
           <View style={styles.articleMeta}>
-            <Text style={styles.articleMetaText}>📅 {article.date}</Text>
+            <View style={{flexDirection: "row", alignItems: "center"}}><CalendarIcon color="#8F6F6C" size={14} /><Text style={styles.articleMetaText}> {article.date}</Text></View>
             <Text style={styles.articleMetaDot}>•</Text>
             <Text style={styles.articleMetaText}>By {article.author}</Text>
             <Text style={styles.articleMetaDot}>•</Text>
@@ -218,7 +220,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
             style={styles.modalCloseButton}
             onPress={() => setModalVisible(false)}
           >
-            <Text style={styles.modalCloseText}>✕</Text>
+            <CloseIcon color="#666" size={24} />
           </TouchableOpacity>
           {selectedImage && (
             <Image 
@@ -237,30 +239,33 @@ Elevator B has been returned to regular service as of this morning. We thank you
       <View style={styles.bottomNav}>
         <TouchableOpacity 
           style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('MainTabs', { screen: 'Home' })}
         >
-          <Text style={styles.navIcon}>🏠</Text>
+          <PersonIcon color={styles.navIcon.color || "#666"} size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.navItem}
-          onPress={() => navigation.navigate('Requests')}
+          onPress={() => navigation.navigate('MainTabs', { screen: 'Requests' })}
         >
-          <Text style={styles.navIcon}>🔧</Text>
+          <WrenchIcon color={styles.navIcon.color || "#666"} size={24} />
           <Text style={styles.navLabel}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={[styles.navItem, styles.navItemActive]}
-          onPress={() => navigation.navigate('News')}
+          onPress={() => navigation.navigate('MainTabs', { screen: 'News' })}
         >
-          <Text style={styles.navIcon}>📰</Text>
+          <ClipboardIcon color={styles.navIcon.color || "#666"} size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>News</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🆘</Text>
+        <TouchableOpacity 
+          style={styles.navItem}
+          onPress={() => navigation.navigate('MainTabs', { screen: 'Emergency' })}
+        >
+          <BellIcon color={styles.navIcon.color || "#666"} size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>

@@ -1,4 +1,6 @@
 // src/screens/RequestsScreen.tsx
+import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
+
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -15,13 +17,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function RequestsScreen({ navigation }) {
-  const [activeTab, setActiveTab] = useState('Active');
+export default function RequestsScreen({ navigation, route }) {
+  const [activeTab, setActiveTab] = useState(route?.params?.activeTab || 'Active');
   const [drafts, setDrafts] = useState([]);
   const [activeRequests, setActiveRequests] = useState([]);
   const [history, setHistory] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('User');
+
+  useEffect(() => {
+    if (route?.params?.activeTab) {
+      setActiveTab(route.params.activeTab);
+    }
+  }, [route?.params?.activeTab]);
 
   useEffect(() => {
     loadData();
@@ -128,7 +136,7 @@ export default function RequestsScreen({ navigation }) {
     if (drafts.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>📝</Text>
+          <ClipboardIcon color="#AF101A" size={24} />
           <Text style={styles.emptyText}>No drafts saved</Text>
           <Text style={styles.emptySubtext}>Start a new request to save drafts</Text>
         </View>
@@ -158,7 +166,7 @@ export default function RequestsScreen({ navigation }) {
     if (activeRequests.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>🔧</Text>
+          <WrenchIcon color="#AF101A" size={24} />
           <Text style={styles.emptyText}>No active requests</Text>
           <Text style={styles.emptySubtext}>Your active maintenance requests will appear here</Text>
         </View>
@@ -193,7 +201,7 @@ export default function RequestsScreen({ navigation }) {
     if (history.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>📋</Text>
+          <ClipboardIcon color="#AF101A" size={24} />
           <Text style={styles.emptyText}>No history</Text>
           <Text style={styles.emptySubtext}>Completed requests will appear here</Text>
         </View>
@@ -255,7 +263,7 @@ export default function RequestsScreen({ navigation }) {
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>←</Text>
+          <ArrowLeftIcon color="#AF101A" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Requests</Text>
         <View style={styles.avatar}>
@@ -318,22 +326,22 @@ export default function RequestsScreen({ navigation }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.navIcon}>🏠</Text>
+          <PersonIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <Text style={styles.navIcon}>🔧</Text>
+          <WrenchIcon color="#AF101A" size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>📰</Text>
+          <ClipboardIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>News</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <Text style={[styles.navIcon, styles.navIconEmergency]}>🆘</Text>
+          <BellIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>

@@ -102,7 +102,7 @@ export default function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="HomeTab"
+        name="Home"
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
@@ -113,7 +113,7 @@ export default function TabNavigator() {
       />
       
       <Tab.Screen
-        name="RequestsTab"
+        name="Requests"
         component={RequestsScreen}
         options={{
           tabBarLabel: 'Requests',
@@ -124,7 +124,7 @@ export default function TabNavigator() {
       />
       
       <Tab.Screen
-        name="NewsTab"
+        name="News"
         component={NewsScreen}
         options={{
           tabBarLabel: 'News',
@@ -135,7 +135,7 @@ export default function TabNavigator() {
       />
       
       <Tab.Screen
-        name="EmergencyTab"
+        name="Emergency"
         component={EmergencyScreen}
         options={{
           tabBarLabel: 'Emergency',

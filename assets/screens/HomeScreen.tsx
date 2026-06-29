@@ -1,5 +1,7 @@
 // src/screens/HomeScreen.tsx
-import React, { useState } from 'react';
+import { PersonIcon, GearIcon, CalendarIcon, WrenchIcon, BellIcon, SnowflakeIcon, LockIcon, BoltIcon, DropIcon, HammerIcon, BrickIcon, LocationIcon } from '../components/Icons';
+
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,22 +14,36 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  PersonIcon,
-  GearIcon,
-  ClipboardIcon,
-  CalendarIcon,
-  WrenchIcon,
-  BellIcon,
-  SnowflakeIcon,
-  LockIcon,
-  BoltIcon,
-  DropIcon,
-  HammerIcon,
-  BrickIcon,
-} from '../components/Icons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function HomeScreen({ navigation }: { navigation: any }) {
+  const [userName, setUserName] = useState('Resident');
+  const [hall, setHall] = useState('Unity Hall');
+  const [floor, setFloor] = useState('Floor 2');
+  const [room, setRoom] = useState('Room 204');
+  const [fullAddress, setFullAddress] = useState('Unity Hall, Floor 2, Room 204');
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const name = await AsyncStorage.getItem('userName');
+      const hallData = await AsyncStorage.getItem('userHall');
+      const floorData = await AsyncStorage.getItem('userFloor');
+      const roomData = await AsyncStorage.getItem('userRoom');
+      const location = await AsyncStorage.getItem('userLocation');
+      
+      if (name) setUserName(name);
+      if (hallData) setHall(hallData);
+      if (floorData) setFloor(floorData);
+      if (roomData) setRoom(roomData);
+      if (location) setFullAddress(location);
+    } catch (error) {
+      console.log('Error loading user data:', error);
+    }
+  };
+
   const scheduleItems = [
     {
       id: '1',
@@ -76,16 +92,33 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     });
   };
 
+  const getInitials = () => {
+    return userName
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar style="dark" backgroundColor="#F9F9F9" />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>HallMaintenance</Text>
-        <TouchableOpacity style={styles.profileButton}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>HallMaintenance</Text>
+          <View style={styles.headerAddress}>
+            <LocationIcon color="#8F6F6C" size={14} />
+            <Text style={styles.headerAddressText} numberOfLines={1}>
+              {fullAddress}
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Profile')}>
           <View style={styles.profileAvatar}>
-            <PersonIcon color="#FFFFFF" size={20} />
+            <Text style={styles.profileInitials}>{getInitials()}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -104,23 +137,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               <View style={styles.heroBackgroundIcon}>
                 <GearIcon color="#FFFFFF" size={80} />
               </View>
-              <Text style={styles.heroTitle}>Welcome Back, Resident.</Text>
+              <Text style={styles.heroTitle}>Welcome Back, {userName.split(' ')[0]}.</Text>
               <Text style={styles.heroSubtitle}>
                 Your comfort is our priority. Report issues, check hall news, or access emergency support instantly.
               </Text>
-              <View style={styles.heroActions}>
-                <TouchableOpacity style={[styles.heroActionButton, styles.actionRow]}>
-                  <ClipboardIcon color="#FFFFFF" size={14} />
-                  <Text style={styles.heroActionText}>Active Orders</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.heroActionButton, styles.heroActionButtonOutline, styles.actionRow]}
-                  onPress={() => Alert.alert('Profile', 'Navigate to Profile')}
-                >
-                  <PersonIcon color="#FFFFFF" size={14} />
-                  <Text style={styles.heroActionText}>My Profile</Text>
-                </TouchableOpacity>
-              </View>
             </LinearGradient>
           </View>
 
@@ -193,20 +213,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9F9F9',
   },
+  
+  // ===== HEADER =====
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    height: 56,
+    height: 64,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E4BEBA',
   },
+  headerLeft: {
+    flex: 1,
+  },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#AF101A',
+  },
+  headerAddress: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  headerAddressText: {
+    fontSize: 11,
+    color: '#8F6F6C',
+    fontWeight: '500',
+    flex: 1,
   },
   profileButton: {
     width: 36,
@@ -223,6 +260,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  profileInitials: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+
   scrollView: {
     flex: 1,
   },
@@ -231,6 +274,8 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 20,
   },
+  
+  // ===== HERO =====
   heroWrapper: {
     marginBottom: 24,
   },
@@ -252,43 +297,20 @@ const styles = StyleSheet.create({
     opacity: 0.1,
   },
   heroTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   heroSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: 'rgba(255,255,255,0.9)',
-    lineHeight: 20,
-    marginBottom: 16,
+    lineHeight: 18,
+    marginBottom: 0,
     maxWidth: '80%',
   },
-  heroActions: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  heroActionButton: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  heroActionButtonOutline: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-  },
-  heroActionText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+
+  // ===== SCHEDULE =====
   scheduleSection: {
     marginBottom: 24,
   },
@@ -347,6 +369,8 @@ const styles = StyleSheet.create({
     color: '#5B403D',
     marginTop: 2,
   },
+
+  // ===== SERVICES =====
   servicesSection: {
     flex: 1,
   },
@@ -388,6 +412,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#5B403D',
   },
+
+  // ===== FAB =====
   fab: {
     position: 'absolute',
     right: 24,

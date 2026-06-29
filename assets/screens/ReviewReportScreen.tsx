@@ -1,4 +1,6 @@
 // src/screens/ReviewReportScreen.js
+import { ArrowLeftIcon } from '../components/Icons';
+
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -179,7 +181,7 @@ export default function ReviewReportScreen({ navigation, route }) {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>←</Text>
+          <ArrowLeftIcon color="#AF101A" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review Report</Text>
         <View style={{ width: 40 }} />

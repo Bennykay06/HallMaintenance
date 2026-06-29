@@ -1,4 +1,6 @@
 // src/screens/NewsScreen.tsx
+import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon } from '../components/Icons';
+
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -228,7 +230,7 @@ export default function NewsScreen({ navigation }) {
         </View>
         <View style={styles.featuredContent}>
           <View style={styles.featuredCategory}>
-            <Text style={styles.featuredCategoryIcon}>🔧</Text>
+            <WrenchIcon color="#AF101A" size={24} />
             <Text style={styles.featuredCategoryText}>Infrastructure Update</Text>
           </View>
           <Text style={styles.featuredTitle}>{featuredNews.title}</Text>
@@ -305,7 +307,7 @@ export default function NewsScreen({ navigation }) {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerIcon}>🔔</Text>
+          <BellIcon color="#AF101A" size={24} />
           <Text style={styles.headerTitle}>Campus News</Text>
         </View>
         <View style={styles.headerRight}>
@@ -313,7 +315,7 @@ export default function NewsScreen({ navigation }) {
             <Text style={styles.headerButtonIcon}>🔍</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}>
-            <Text style={styles.headerButtonIcon}>👤</Text>
+            <PersonIcon color="#AF101A" size={24} />
           </TouchableOpacity>
         </View>
       </View>
@@ -372,7 +374,7 @@ export default function NewsScreen({ navigation }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.navIcon}>🏠</Text>
+          <PersonIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
@@ -380,17 +382,17 @@ export default function NewsScreen({ navigation }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Requests')}
         >
-          <Text style={styles.navIcon}>🔧</Text>
+          <WrenchIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <Text style={styles.navIcon}>📰</Text>
+          <ClipboardIcon color="#AF101A" size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>News</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🆘</Text>
+          <BellIcon color="#AF101A" size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>

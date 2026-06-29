@@ -13,6 +13,14 @@ import PhotosUploadScreen from './assets/screens/PhotosUploadScreen.tsx';
 import ReviewReportScreen from './assets/screens/ReviewReportScreen.tsx';
 import SuccessScreen from './assets/screens/SuccessScreen.tsx';
 import ArticleDetailScreen from './assets/screens/ArticleDetailScreen.tsx';
+import ProfileScreen from './assets/screens/ProfileScreen.tsx';
+import EditProfileScreen from './assets/screens/EditProfileScreen.tsx';
+import FacilityRulesScreen from './assets/screens/FacilityRulesScreen.tsx';
+import NotificationSettingsScreen from './assets/screens/NotificationSettingsScreen.tsx';
+import HelpSupportScreen from './assets/screens/HelpSupportScreen.tsx';
+import LoginScreen from './assets/screens/LoginScreen.tsx';
+import RegisterScreen from './assets/screens/RegisterScreen.tsx';
+import OnboardingScreen from './assets/screens/OnboardingScreen.tsx';
 
 const Stack = createStackNavigator();
 
@@ -37,12 +45,17 @@ export default function App() {
       <StatusBar style="dark" backgroundColor="#F9F9F9" />
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainTabs"
+          initialRouteName="Login"
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
           }}
         >
+          {/* Auth Screens */}
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          
           {/* Main Tab Navigator */}
           <Stack.Screen name="MainTabs" component={TabNavigator} />
           
@@ -52,6 +65,11 @@ export default function App() {
           <Stack.Screen name="ReviewReport" component={ReviewReportScreen} />
           <Stack.Screen name="Success" component={SuccessScreen} />
           <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="FacilityRules" component={FacilityRulesScreen} />
+          <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+          <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -1,4 +1,6 @@
 // src/screens/EmergencyScreen.tsx
+import { PersonIcon, WrenchIcon, SchoolIcon, SecurityIcon, SanitizerIcon } from '../components/Icons';
+
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -26,27 +28,27 @@ export default function EmergencyScreen({ navigation }) {
     phone: '+233 24 123 4567',
   };
 
-  const facilityEmergencies = [
+  const campusSecurity = [
     {
       id: '1',
-      name: 'Fire Services',
-      description: 'Immediate fire and rescue response.',
-      phone: '192',
-      icon: '🔥',
+      name: 'Campus Police Station',
+      description: 'Main security desk (24/7).',
+      phone: '+233 32 206 0418',
+      icon: <SecurityIcon color="#AF101A" size={24} />,
     },
     {
       id: '2',
-      name: 'Police Emergency',
-      description: 'Campus and local police dispatch.',
-      phone: '191',
-      icon: '👮',
+      name: 'Fire Department',
+      description: 'Campus fire emergency response.',
+      phone: '192',
+      icon: <SanitizerIcon color="#AF101A" size={24} />,
     },
     {
       id: '3',
-      name: 'Ambulance',
-      description: 'Emergency medical transport.',
-      phone: '193',
-      icon: '🚑',
+      name: 'Maintenance Emergency',
+      description: 'Severe leaks, power outages.',
+      phone: 'EXT 4321',
+      icon: <WrenchIcon color="#AF101A" size={24} />,
     },
   ];
 
@@ -56,14 +58,14 @@ export default function EmergencyScreen({ navigation }) {
       name: 'KNUST Hospital',
       description: 'Main university medical facility.',
       phone: '+233 32 206 0296',
-      icon: '🏥',
+      icon: <SchoolIcon color="#AF101A" size={24} />,
     },
     {
       id: '5',
       name: 'Student Health Services',
       description: 'Primary care for students.',
       phone: 'EXT 2222',
-      icon: '💊',
+      icon: <SanitizerIcon color="#AF101A" size={24} />,
     },
   ];
 
@@ -112,7 +114,7 @@ export default function EmergencyScreen({ navigation }) {
         <View style={styles.primaryContent}>
           <View style={styles.primaryLeft}>
             <View style={styles.primaryIconContainer}>
-              <Text style={styles.primaryIcon}>📞</Text>
+              <PersonIcon color="#AF101A" size={32} />
             </View>
             <View>
               <Text style={styles.primaryName}>{primaryContact.name}</Text>
@@ -124,7 +126,7 @@ export default function EmergencyScreen({ navigation }) {
             style={styles.primaryCallButton}
             onPress={() => makePhoneCall(primaryContact.phone)}
           >
-            <Text style={styles.primaryCallButtonText}>📞 Call Now</Text>
+            <View style={{flexDirection: "row", alignItems: "center"}}><PersonIcon color="#FFFFFF" size={20} /><Text style={styles.primaryCallButtonText}> Call Now</Text></View>
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -145,7 +147,7 @@ export default function EmergencyScreen({ navigation }) {
       <View key={item.id} style={styles.contactCard}>
         <View style={styles.contactLeft}>
           <View style={styles.contactIconContainer}>
-            <Text style={styles.contactIcon}>{item.icon}</Text>
+            <View style={styles.contactIconContainer}>{item.icon}</View>
           </View>
           <View>
             <Text style={styles.contactName}>{item.name}</Text>
@@ -157,7 +159,7 @@ export default function EmergencyScreen({ navigation }) {
           style={styles.callButton}
           onPress={() => makePhoneCall(item.phone)}
         >
-          <Text style={styles.callButtonText}>📞</Text>
+          <PersonIcon color="#AF101A" size={20} />
         </TouchableOpacity>
       </View>
     );
@@ -169,7 +171,7 @@ export default function EmergencyScreen({ navigation }) {
       
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerIcon}>🏫</Text>
+          <SchoolIcon color="#FFFFFF" size={80} />
           <Text style={styles.headerTitle}>Crimson Campus</Text>
         </View>
         <View style={styles.avatar}>
@@ -199,7 +201,7 @@ export default function EmergencyScreen({ navigation }) {
           <View style={styles.sectionContainer}>
             {renderSectionHeader('🔧', 'Facility Emergencies')}
             <View style={styles.contactGrid}>
-              {facilityEmergencies.map((item) => renderContactCard(item))}
+              {campusSecurity.map((item) => renderContactCard(item))}
             </View>
           </View>
 

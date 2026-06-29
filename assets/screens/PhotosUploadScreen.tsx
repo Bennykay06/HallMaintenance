@@ -1,4 +1,6 @@
 // src/screens/PhotosUploadScreen.tsx
+import { BoltIcon, CameraIcon, ImageIcon, VideoIcon, FolderIcon, CloseIcon, PlayIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
+
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
@@ -17,18 +19,6 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  BoltIcon,
-  CameraIcon,
-  ImageIcon,
-  VideoIcon,
-  FolderIcon,
-  CloseIcon,
-  PlayIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-} from '../components/Icons';
-
 export default function PhotosUploadScreen({ navigation, route }) {
   const { serviceType = 'Electrical', selectedIssue = 'Bulb flickering or not lighting up' } = route.params || {};
   
@@ -194,7 +184,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
   };
 
   const handleContinue = () => {
-    if (photos.length === 0 && !video && !showWrittenDetails) {
+    if (photos.length === 0 && !video && (!showWrittenDetails || writtenDetails.trim().length === 0)) {
       Alert.alert(
         'No Evidence',
         'Please add at least one photo, video, or written details to continue.'
@@ -228,7 +218,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
       drafts.push(draftData);
       await AsyncStorage.setItem('drafts', JSON.stringify(drafts));
       Alert.alert('Draft Saved', 'Your report has been saved as a draft.');
-      navigation.navigate('Home');
+      navigation.navigate('MainTabs', { screen: 'Requests', params: { activeTab: 'Drafts' } });
     } catch (error) {
       Alert.alert('Error', 'Failed to save draft. Please try again.');
     }
@@ -387,12 +377,12 @@ export default function PhotosUploadScreen({ navigation, route }) {
 
       <View style={styles.bottomActions}>
         <TouchableOpacity 
-          style={[styles.continueBtn, (photos.length === 0 && !video && !showWrittenDetails) && styles.continueBtnDisabled]}
+          style={[styles.continueBtn, (photos.length === 0 && !video && (!showWrittenDetails || writtenDetails.trim().length === 0)) && styles.continueBtnDisabled]}
           onPress={handleContinue}
-          disabled={photos.length === 0 && !video && !showWrittenDetails}
+          disabled={photos.length === 0 && !video && (!showWrittenDetails || writtenDetails.trim().length === 0)}
         >
           <LinearGradient
-            colors={photos.length > 0 || video || showWrittenDetails ? ['#AF101A', '#D32F2F'] : ['#CCCCCC', '#CCCCCC']}
+            colors={photos.length > 0 || video || (showWrittenDetails && writtenDetails.trim().length > 0) ? ['#AF101A', '#D32F2F'] : ['#CCCCCC', '#CCCCCC']}
             style={styles.continueGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -747,9 +737,16 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   continueGradient: {
+    flexDirection: 'row',
     paddingVertical: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 8,
+  },
+  continueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   continueText: {
     fontSize: 18,
