@@ -1,4 +1,5 @@
 // src/screens/ReviewReportScreen.js
+import { useTheme } from '../context/ThemeContext';
 import { ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ReviewReportScreen({ navigation, route }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const { 
     serviceType = 'Electrical',
     selectedIssue = 'Bulb / Fluorescent tube not lighting up',
@@ -176,12 +179,12 @@ export default function ReviewReportScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review Report</Text>
         <View style={{ width: 40 }} />
@@ -310,7 +313,7 @@ export default function ReviewReportScreen({ navigation, route }) {
           disabled={isSubmitting}
         >
           <LinearGradient
-            colors={['#AF101A', '#D32F2F']}
+            colors={[theme.primary, theme.primaryContainer]}
             style={styles.submitGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -328,10 +331,10 @@ export default function ReviewReportScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -353,7 +356,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
@@ -381,7 +384,7 @@ const styles = StyleSheet.create({
   stepText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -398,7 +401,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     borderRadius: 3,
   },
 
@@ -452,7 +455,7 @@ const styles = StyleSheet.create({
   editButton: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   reviewItemValue: {
     fontSize: 16,
@@ -478,7 +481,7 @@ const styles = StyleSheet.create({
 
   // ===== NOTES INPUT =====
   notesInput: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#E4BEBA',
@@ -498,7 +501,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#AF101A',
+    borderLeftColor: theme.primary,
   },
   infoText: {
     fontSize: 12,
@@ -536,7 +539,7 @@ const styles = StyleSheet.create({
     flex: 0.7,
     borderRadius: 8,
     overflow: 'hidden',
-    shadowColor: '#AF101A',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 12,

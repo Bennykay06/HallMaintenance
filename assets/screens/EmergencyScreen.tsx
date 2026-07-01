@@ -1,4 +1,5 @@
 // src/screens/EmergencyScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, WrenchIcon, SchoolIcon, SecurityIcon, SanitizerIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function EmergencyScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('User');
 
@@ -34,21 +37,21 @@ export default function EmergencyScreen({ navigation }) {
       name: 'Campus Police Station',
       description: 'Main security desk (24/7).',
       phone: '+233 32 206 0418',
-      icon: <SecurityIcon color="#AF101A" size={24} />,
+      icon: <SecurityIcon color={theme.primary} size={24} />,
     },
     {
       id: '2',
       name: 'Fire Department',
       description: 'Campus fire emergency response.',
       phone: '192',
-      icon: <SanitizerIcon color="#AF101A" size={24} />,
+      icon: <SanitizerIcon color={theme.primary} size={24} />,
     },
     {
       id: '3',
       name: 'Maintenance Emergency',
       description: 'Severe leaks, power outages.',
       phone: 'EXT 4321',
-      icon: <WrenchIcon color="#AF101A" size={24} />,
+      icon: <WrenchIcon color={theme.primary} size={24} />,
     },
   ];
 
@@ -58,14 +61,14 @@ export default function EmergencyScreen({ navigation }) {
       name: 'KNUST Hospital',
       description: 'Main university medical facility.',
       phone: '+233 32 206 0296',
-      icon: <SchoolIcon color="#AF101A" size={24} />,
+      icon: <SchoolIcon color={theme.primary} size={24} />,
     },
     {
       id: '5',
       name: 'Student Health Services',
       description: 'Primary care for students.',
       phone: 'EXT 2222',
-      icon: <SanitizerIcon color="#AF101A" size={24} />,
+      icon: <SanitizerIcon color={theme.primary} size={24} />,
     },
   ];
 
@@ -106,7 +109,7 @@ export default function EmergencyScreen({ navigation }) {
   const renderPrimaryContact = () => {
     return (
       <LinearGradient
-        colors={['#D32F2F', '#AF101A']}
+        colors={[theme.primaryContainer, theme.primary]}
         style={styles.primaryCard}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -114,7 +117,7 @@ export default function EmergencyScreen({ navigation }) {
         <View style={styles.primaryContent}>
           <View style={styles.primaryLeft}>
             <View style={styles.primaryIconContainer}>
-              <PersonIcon color="#AF101A" size={32} />
+              <PersonIcon color={theme.primary} size={32} />
             </View>
             <View>
               <Text style={styles.primaryName}>{primaryContact.name}</Text>
@@ -159,7 +162,7 @@ export default function EmergencyScreen({ navigation }) {
           style={styles.callButton}
           onPress={() => makePhoneCall(item.phone)}
         >
-          <PersonIcon color="#AF101A" size={20} />
+          <PersonIcon color={theme.primary} size={20} />
         </TouchableOpacity>
       </View>
     );
@@ -167,7 +170,7 @@ export default function EmergencyScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -221,10 +224,10 @@ export default function EmergencyScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -243,12 +246,12 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
   avatar: {
     width: 40,
@@ -295,8 +298,8 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#AF101A',
-    shadowColor: '#AF101A',
+    borderLeftColor: theme.primary,
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -358,7 +361,7 @@ const styles = StyleSheet.create({
   primaryCallButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
   sectionContainer: {
     marginBottom: 24,
@@ -371,12 +374,12 @@ const styles = StyleSheet.create({
   },
   sectionIcon: {
     fontSize: 20,
-    color: '#AF101A',
+    color: theme.primary,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -429,14 +432,14 @@ const styles = StyleSheet.create({
   contactPhone: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
   callButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 2,
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },

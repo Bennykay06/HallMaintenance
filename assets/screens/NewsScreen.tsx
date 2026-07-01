@@ -1,4 +1,5 @@
 // src/screens/NewsScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -22,6 +23,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get('window');
 
 export default function NewsScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [activeFilter, setActiveFilter] = useState('All');
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('User');
@@ -37,7 +40,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Routine safety inspections for the north wing elevators are scheduled for today between 2 PM and 4 PM.',
       time: '2 hours ago',
       icon: '🔧',
-      tagColor: '#AF101A',
+      tagColor: theme.primary,
       tagBg: '#FFE5E5',
       category: 'Facility Updates',
     },
@@ -230,7 +233,7 @@ export default function NewsScreen({ navigation }) {
         </View>
         <View style={styles.featuredContent}>
           <View style={styles.featuredCategory}>
-            <WrenchIcon color="#AF101A" size={24} />
+            <WrenchIcon color={theme.primary} size={24} />
             <Text style={styles.featuredCategoryText}>Infrastructure Update</Text>
           </View>
           <Text style={styles.featuredTitle}>{featuredNews.title}</Text>
@@ -302,12 +305,12 @@ export default function NewsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <BellIcon color="#AF101A" size={24} />
+          <BellIcon color={theme.primary} size={24} />
           <Text style={styles.headerTitle}>Campus News</Text>
         </View>
         <View style={styles.headerRight}>
@@ -315,7 +318,7 @@ export default function NewsScreen({ navigation }) {
             <Text style={styles.headerButtonIcon}>🔍</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}>
-            <PersonIcon color="#AF101A" size={24} />
+            <PersonIcon color={theme.primary} size={24} />
           </TouchableOpacity>
         </View>
       </View>
@@ -374,7 +377,7 @@ export default function NewsScreen({ navigation }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Home')}
         >
-          <PersonIcon color="#AF101A" size={24} />
+          <PersonIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
@@ -382,17 +385,17 @@ export default function NewsScreen({ navigation }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Requests')}
         >
-          <WrenchIcon color="#AF101A" size={24} />
+          <WrenchIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <ClipboardIcon color="#AF101A" size={24} />
+          <ClipboardIcon color={theme.primary} size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>News</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <BellIcon color="#AF101A" size={24} />
+          <BellIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>
@@ -401,10 +404,10 @@ export default function NewsScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -425,12 +428,12 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerRight: {
     flexDirection: 'row',
@@ -469,7 +472,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEEEEE',
   },
   activeFilterTab: {
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
   },
   filterText: {
     fontSize: 12,
@@ -477,7 +480,7 @@ const styles = StyleSheet.create({
     color: '#5B403D',
   },
   activeFilterText: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
   },
 
   // ===== RESULT COUNT =====
@@ -512,7 +515,7 @@ const styles = StyleSheet.create({
   featuredImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -524,7 +527,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     left: 12,
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
@@ -547,12 +550,12 @@ const styles = StyleSheet.create({
   },
   featuredCategoryIcon: {
     fontSize: 14,
-    color: '#AF101A',
+    color: theme.primary,
   },
   featuredCategoryText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -581,7 +584,7 @@ const styles = StyleSheet.create({
   featuredReadMore: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== RECENT UPDATES =====
@@ -628,7 +631,7 @@ const styles = StyleSheet.create({
   newsImagePlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -657,12 +660,12 @@ const styles = StyleSheet.create({
   newsTagText: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   urgentTagText: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
   },
   newsContent: {
     padding: 14,
@@ -691,7 +694,7 @@ const styles = StyleSheet.create({
   newsReadMore: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== EMPTY STATE =====
@@ -725,7 +728,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
     paddingHorizontal: 8,
     paddingTop: 8,
     paddingBottom: Platform.OS === 'ios' ? 28 : 12,
@@ -744,7 +747,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   navItemActive: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
   },
   navIcon: {
     fontSize: 24,

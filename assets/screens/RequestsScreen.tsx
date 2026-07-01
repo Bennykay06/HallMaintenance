@@ -1,4 +1,5 @@
 // src/screens/RequestsScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -18,6 +19,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RequestsScreen({ navigation, route }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [activeTab, setActiveTab] = useState(route?.params?.activeTab || 'Active');
   const [drafts, setDrafts] = useState([]);
   const [activeRequests, setActiveRequests] = useState([]);
@@ -74,7 +77,7 @@ export default function RequestsScreen({ navigation, route }) {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'in progress':
-        return '#AF101A';
+        return theme.primary;
       case 'scheduled':
         return '#F39C12';
       case 'completed':
@@ -136,7 +139,7 @@ export default function RequestsScreen({ navigation, route }) {
     if (drafts.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <ClipboardIcon color="#AF101A" size={24} />
+          <ClipboardIcon color={theme.primary} size={24} />
           <Text style={styles.emptyText}>No drafts saved</Text>
           <Text style={styles.emptySubtext}>Start a new request to save drafts</Text>
         </View>
@@ -166,7 +169,7 @@ export default function RequestsScreen({ navigation, route }) {
     if (activeRequests.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <WrenchIcon color="#AF101A" size={24} />
+          <WrenchIcon color={theme.primary} size={24} />
           <Text style={styles.emptyText}>No active requests</Text>
           <Text style={styles.emptySubtext}>Your active maintenance requests will appear here</Text>
         </View>
@@ -201,7 +204,7 @@ export default function RequestsScreen({ navigation, route }) {
     if (history.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <ClipboardIcon color="#AF101A" size={24} />
+          <ClipboardIcon color={theme.primary} size={24} />
           <Text style={styles.emptyText}>No history</Text>
           <Text style={styles.emptySubtext}>Completed requests will appear here</Text>
         </View>
@@ -259,11 +262,11 @@ export default function RequestsScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Requests</Text>
         <View style={styles.avatar}>
@@ -303,7 +306,7 @@ export default function RequestsScreen({ navigation, route }) {
 
           <TouchableOpacity style={styles.newRequestButton} onPress={handleNewRequest}>
             <LinearGradient
-              colors={['#AF101A', '#D32F2F']}
+              colors={[theme.primary, theme.primaryContainer]}
               style={styles.newRequestGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -326,22 +329,22 @@ export default function RequestsScreen({ navigation, route }) {
           style={styles.navItem}
           onPress={() => navigation.navigate('Home')}
         >
-          <PersonIcon color="#AF101A" size={24} />
+          <PersonIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <WrenchIcon color="#AF101A" size={24} />
+          <WrenchIcon color={theme.primary} size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <ClipboardIcon color="#AF101A" size={24} />
+          <ClipboardIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>News</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <BellIcon color="#AF101A" size={24} />
+          <BellIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>
@@ -350,10 +353,10 @@ export default function RequestsScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -373,12 +376,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   avatar: {
     width: 40,
@@ -419,7 +422,7 @@ const styles = StyleSheet.create({
     color: '#5B403D',
   },
   activeTabText: {
-    color: '#AF101A',
+    color: theme.primary,
   },
   tabIndicator: {
     position: 'absolute',
@@ -427,13 +430,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
   },
   newRequestButton: {
     borderRadius: 8,
     overflow: 'hidden',
     marginBottom: 20,
-    shadowColor: '#AF101A',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -507,7 +510,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   resumeButton: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -541,7 +544,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
     paddingHorizontal: 8,
     paddingTop: 8,
     paddingBottom: Platform.OS === 'ios' ? 28 : 12,
@@ -560,7 +563,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   navItemActive: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
   },
   navIcon: {
     fontSize: 24,

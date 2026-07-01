@@ -1,4 +1,5 @@
 // src/screens/EditProfileScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { CameraIcon, ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -20,6 +21,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function EditProfileScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [userName, setUserName] = useState('Alex Johnson');
   const [email, setEmail] = useState('a.johnson@university.edu');
   const [phone, setPhone] = useState('+1 (555) 123-4567');
@@ -125,12 +128,12 @@ export default function EditProfileScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Profile</Text>
         <View style={{ width: 40 }} />
@@ -191,7 +194,7 @@ export default function EditProfileScreen({ navigation }) {
                 }}
                 onPress={() => Alert.alert('Reset Password', 'Instructions to reset your password have been sent to your email.')}
               >
-                <Text style={{ color: '#AF101A', fontWeight: '600' }}>Reset Password</Text>
+                <Text style={{ color: theme.primary, fontWeight: '600' }}>Reset Password</Text>
               </TouchableOpacity>
             </View>
 
@@ -284,7 +287,7 @@ export default function EditProfileScreen({ navigation }) {
           <View style={styles.actionSection}>
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
               <LinearGradient
-                colors={['#AF101A', '#D32F2F']}
+                colors={[theme.primary, theme.primaryContainer]}
                 style={styles.saveGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -315,7 +318,7 @@ export default function EditProfileScreen({ navigation }) {
                   setEmergencyAlerts(value);
                   setIsEditing(true);
                 }}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={emergencyAlerts ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -333,7 +336,7 @@ export default function EditProfileScreen({ navigation }) {
                   setMaintenanceUpdates(value);
                   setIsEditing(true);
                 }}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={maintenanceUpdates ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -348,10 +351,10 @@ export default function EditProfileScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -373,12 +376,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== SCROLL VIEW =====
@@ -407,7 +410,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
@@ -430,7 +433,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -520,7 +523,7 @@ const styles = StyleSheet.create({
   saveButton: {
     borderRadius: 8,
     overflow: 'hidden',
-    shadowColor: '#AF101A',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -540,7 +543,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
@@ -548,7 +551,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== NOTIFICATIONS =====

@@ -1,4 +1,5 @@
 // src/screens/NotificationSettingsScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NotificationSettingsScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('User');
   
@@ -99,12 +102,12 @@ export default function NotificationSettingsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notification Settings</Text>
         <View style={styles.avatar}>
@@ -134,7 +137,7 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={pushNotifications}
                 onValueChange={setPushNotifications}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={pushNotifications ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -155,7 +158,7 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={maintenanceUpdates}
                 onValueChange={setMaintenanceUpdates}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={maintenanceUpdates ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -171,7 +174,7 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={campusNews}
                 onValueChange={setCampusNews}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={campusNews ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -190,7 +193,7 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={emergencyAlerts}
                 onValueChange={setEmergencyAlerts}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={emergencyAlerts ? '#FFFFFF' : '#FFFFFF'}
                 disabled={true}
               />
@@ -212,7 +215,7 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={quietHours}
                 onValueChange={setQuietHours}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={quietHours ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -228,7 +231,7 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={scheduledSummary}
                 onValueChange={setScheduledSummary}
-                trackColor={{ false: '#E4BEBA', true: '#AF101A' }}
+                trackColor={{ false: '#E4BEBA', true: theme.primary }}
                 thumbColor={scheduledSummary ? '#FFFFFF' : '#FFFFFF'}
               />
             </View>
@@ -237,7 +240,7 @@ export default function NotificationSettingsScreen({ navigation }) {
           {/* ===== SAVE BUTTON ===== */}
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <LinearGradient
-              colors={['#AF101A', '#D32F2F']}
+              colors={[theme.primary, theme.primaryContainer]}
               style={styles.saveGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -255,10 +258,10 @@ export default function NotificationSettingsScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -280,12 +283,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   avatar: {
     width: 36,
@@ -396,7 +399,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   emergencyTitle: {
-    color: '#AF101A',
+    color: theme.primary,
   },
   alwaysOnBadge: {
     backgroundColor: '#FFF5F5',
@@ -409,7 +412,7 @@ const styles = StyleSheet.create({
   alwaysOnText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     letterSpacing: 0.5,
   },
 
@@ -462,7 +465,7 @@ const styles = StyleSheet.create({
   saveButton: {
     borderRadius: 8,
     overflow: 'hidden',
-    shadowColor: '#AF101A',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

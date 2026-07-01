@@ -18,21 +18,66 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../context/ThemeContext';
 
 export default function OnboardingScreen({ navigation }) {
+  const { theme, setHall } = useTheme();
+  const styles = getStyles(theme);
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
   const [roomNumber, setRoomNumber] = useState('');
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  const halls = [
-    { id: '1', name: 'Unity Hall', campus: 'Main Campus', colors: ['#AF101A', '#FFFFFF'] },
-    { id: '2', name: 'Katanga Hall', campus: 'Main Campus', colors: ['#FFD700', '#000000'] },
-    { id: '3', name: 'Africa Hall', campus: 'Main Campus', colors: ['#FFD700', '#FFD700'] },
-    { id: '4', name: 'Republic Hall', campus: 'Main Campus', colors: ['#008000', '#008000'] },
-    { id: '5', name: 'Independent Hall', campus: 'Main Campus', colors: ['#8B0000', '#8B0000'] },
-    { id: '6', name: 'Queen Elizabeth II Hall', campus: 'Main Campus', colors: ['#006994', '#006994'] },
+  const halls: Hall[] = [
+    { 
+      id: '1', 
+      name: 'Unity Hall', 
+      campus: 'Main Campus', 
+      colors: ['#AF101A', '#D32F2F'],
+      textColor: '#FFFFFF',
+      icon: '🏛️'
+    },
+    { 
+      id: '2', 
+      name: 'University Hall (Katanga)', 
+      campus: 'Main Campus', 
+      colors: ['#FFCB05', '#E5B700'],
+      textColor: '#000000',
+      icon: '🦁'
+    },
+    { 
+      id: '3', 
+      name: 'Independence Hall', 
+      campus: 'Main Campus', 
+      colors: ['#AF101A', '#D32F2F'],
+      textColor: '#FFFFFF',
+      icon: '🦅'
+    },
+    { 
+      id: '4', 
+      name: 'Republic Hall', 
+      campus: 'Main Campus', 
+      colors: ['#1B5E20', '#2E7D32'],
+      textColor: '#FFFFFF',
+      icon: '🏛️'
+    },
+    { 
+      id: '5', 
+      name: 'Queens Hall', 
+      campus: 'Main Campus', 
+      colors: ['#006994', '#1A5276'],
+      textColor: '#FFFFFF',
+      icon: '👑'
+    },
+    { 
+      id: '6', 
+      name: 'Africa Hall', 
+      campus: 'Main Campus', 
+      colors: ['#F5C518', '#FFD700'],
+      textColor: '#1A1C1C',
+      icon: '🌍'
+    },
   ];
 
   const floors = ['Floor 1', 'Floor 2', 'Floor 3', 'Floor 4', 'Floor 5'];
@@ -41,6 +86,10 @@ export default function OnboardingScreen({ navigation }) {
 
   const handleHallSelect = (hallId: string) => {
     setSelectedHall(hallId);
+    const selectedHallData = halls.find(h => h.id === hallId);
+    if (selectedHallData) {
+      setHall(selectedHallData.name);
+    }
   };
 
   const handleFloorSelect = (floor: string) => {
@@ -109,7 +158,7 @@ export default function OnboardingScreen({ navigation }) {
             key={hall.id}
             style={[
               styles.hallItem,
-              selectedHall === hall.id && styles.hallItemSelected,
+              selectedHall === hall.id && { backgroundColor: theme.accent, borderLeftWidth: 4, borderLeftColor: theme.primary },
             ]}
             onPress={() => handleHallSelect(hall.id)}
             activeOpacity={0.7}
@@ -128,10 +177,10 @@ export default function OnboardingScreen({ navigation }) {
             </View>
             <View style={[
               styles.radioButton,
-              selectedHall === hall.id && styles.radioButtonSelected,
+              selectedHall === hall.id && { borderColor: theme.primary, backgroundColor: theme.primary },
             ]}>
               {selectedHall === hall.id && (
-                <PersonIcon color="#AF101A" size={24} />
+                <PersonIcon color={theme.text} size={24} />
               )}
             </View>
           </TouchableOpacity>
@@ -151,7 +200,7 @@ export default function OnboardingScreen({ navigation }) {
               key={floor}
               style={[
                 styles.floorItem,
-                selectedFloor === floor && styles.floorItemSelected,
+                selectedFloor === floor && { backgroundColor: theme.primary, borderColor: theme.primary },
               ]}
               onPress={() => handleFloorSelect(floor)}
               activeOpacity={0.7}
@@ -178,7 +227,7 @@ export default function OnboardingScreen({ navigation }) {
         </Text>
         
         <TextInput
-          style={styles.roomInput}
+          style={[styles.roomInput, { borderColor: theme.border }]}
           value={roomNumber}
           onChangeText={setRoomNumber}
           placeholder="Enter room number"
@@ -192,11 +241,11 @@ export default function OnboardingScreen({ navigation }) {
   const renderStepIndicator = () => {
     return (
       <View style={styles.stepIndicator}>
-        <View style={[styles.stepDot, step >= 1 && styles.stepDotActive]} />
-        <View style={[styles.stepLine, step >= 2 && styles.stepLineActive]} />
-        <View style={[styles.stepDot, step >= 2 && styles.stepDotActive]} />
-        <View style={[styles.stepLine, step >= 3 && styles.stepLineActive]} />
-        <View style={[styles.stepDot, step >= 3 && styles.stepDotActive]} />
+        <View style={[styles.stepDot, step >= 1 && { backgroundColor: theme.primary, width: 12, height: 12, borderRadius: 6 }]} />
+        <View style={[styles.stepLine, step >= 2 && { backgroundColor: theme.primary }]} />
+        <View style={[styles.stepDot, step >= 2 && { backgroundColor: theme.primary, width: 12, height: 12, borderRadius: 6 }]} />
+        <View style={[styles.stepLine, step >= 3 && { backgroundColor: theme.primary }]} />
+        <View style={[styles.stepDot, step >= 3 && { backgroundColor: theme.primary, width: 12, height: 12, borderRadius: 6 }]} />
       </View>
     );
   };
@@ -208,7 +257,7 @@ export default function OnboardingScreen({ navigation }) {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <View style={styles.headerSpacer} />
-        <Text style={styles.headerTitle}>Onboarding</Text>
+        <Text style={[styles.headerTitle, { color: theme.primary }]}>Onboarding</Text>
         <Text style={styles.stepBadge}>Step {step} of 3</Text>
       </View>
 
@@ -222,7 +271,7 @@ export default function OnboardingScreen({ navigation }) {
           {/* ===== HERO SECTION ===== */}
           <View style={styles.heroSection}>
             <Text style={styles.heroTitle}>
-              Where will you be <Text style={styles.heroTitleHighlight}>stationed?</Text>
+              Where will you be <Text style={[styles.heroTitleHighlight, { color: theme.primary }]}>stationed?</Text>
             </Text>
             <Text style={styles.heroSubtitle}>
               To personalize your maintenance dashboard and provide relevant campus alerts, please select your primary residence hall.
@@ -242,18 +291,18 @@ export default function OnboardingScreen({ navigation }) {
           {/* ===== BUTTONS ===== */}
           <View style={styles.buttonContainer}>
             {step > 1 && (
-              <TouchableOpacity style={styles.backButtonNav} onPress={handleBack}>
-                <Text style={styles.backButtonNavText}>Back</Text>
+              <TouchableOpacity style={[styles.backButtonNav, { borderColor: theme.primary }]} onPress={handleBack}>
+                <Text style={[styles.backButtonNavText, { color: theme.primary }]}>Back</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity 
-              style={[styles.continueButton, step === 1 && styles.continueButtonFull]}
+              style={[styles.continueButton, step === 1 && styles.continueButtonFull, { shadowColor: theme.primary }]}
               onPress={handleNext}
               disabled={isLoading}
               activeOpacity={0.8}
             >
               <LinearGradient
-                colors={['#AF101A', '#D32F2F']}
+                colors={[theme.gradientStart, theme.gradientEnd]}
                 style={styles.continueGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -261,7 +310,7 @@ export default function OnboardingScreen({ navigation }) {
                 {isLoading ? (
                   <ActivityIndicator color="#FFFFFF" size="small" />
                 ) : (
-                  <Text style={styles.continueButtonText}>
+                  <Text style={[styles.continueButtonText, { color: theme.primaryText }]}>
                     {step === 3 ? 'Complete' : 'Continue'}
                   </Text>
                 )}
@@ -284,7 +333,7 @@ export default function OnboardingScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9F9F9',
@@ -491,7 +540,7 @@ const styles = StyleSheet.create({
     color: '#1A1C1C',
   },
   floorTextSelected: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
   },
 
   // ===== ROOM INPUT =====

@@ -1,4 +1,5 @@
 // src/screens/PhotosUploadScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { BoltIcon, CameraIcon, ImageIcon, VideoIcon, FolderIcon, CloseIcon, PlayIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -20,6 +21,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function PhotosUploadScreen({ navigation, route }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const { serviceType = 'Electrical', selectedIssue = 'Bulb flickering or not lighting up' } = route.params || {};
   
   const [photos, setPhotos] = useState([]);
@@ -235,11 +238,11 @@ export default function PhotosUploadScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>{userLocation}</Text>
@@ -251,7 +254,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
 
       {loading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#AF101A" />
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>Processing...</Text>
         </View>
       )}
@@ -270,7 +273,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
 
         <View style={styles.summaryCard}>
           <View style={styles.summaryIcon}>
-            <BoltIcon color="#AF101A" size={28} />
+            <BoltIcon color={theme.primary} size={28} />
           </View>
           <View>
             <Text style={styles.summaryTitle}>Electrical Issue</Text>
@@ -301,11 +304,11 @@ export default function PhotosUploadScreen({ navigation, route }) {
           {photos.length < maxPhotos && (
             <View style={styles.addPhotoContainer}>
               <TouchableOpacity style={styles.addPhotoBtn} onPress={takePhoto}>
-                <CameraIcon color="#AF101A" size={24} />
+                <CameraIcon color={theme.primary} size={24} />
                 <Text style={styles.addPhotoText}>Take Photo</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.addPhotoBtn} onPress={pickPhoto}>
-                <ImageIcon color="#AF101A" size={24} />
+                <ImageIcon color={theme.primary} size={24} />
                 <Text style={styles.addPhotoText}>Choose from Gallery</Text>
               </TouchableOpacity>
             </View>
@@ -317,11 +320,11 @@ export default function PhotosUploadScreen({ navigation, route }) {
           {!video ? (
             <View style={styles.videoButtonContainer}>
               <TouchableOpacity style={styles.videoUploadBtn} onPress={recordVideo}>
-                <VideoIcon color="#AF101A" size={32} />
+                <VideoIcon color={theme.primary} size={32} />
                 <Text style={styles.videoUploadText}>Record Video</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.videoUploadBtn, styles.videoGalleryBtn]} onPress={pickVideo}>
-                <FolderIcon color="#AF101A" size={32} />
+                <FolderIcon color={theme.primary} size={32} />
                 <Text style={styles.videoUploadText}>Choose from Gallery</Text>
               </TouchableOpacity>
             </View>
@@ -382,7 +385,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
           disabled={photos.length === 0 && !video && (!showWrittenDetails || writtenDetails.trim().length === 0)}
         >
           <LinearGradient
-            colors={photos.length > 0 || video || (showWrittenDetails && writtenDetails.trim().length > 0) ? ['#AF101A', '#D32F2F'] : ['#CCCCCC', '#CCCCCC']}
+            colors={photos.length > 0 || video || (showWrittenDetails && writtenDetails.trim().length > 0) ? [theme.primary, theme.primaryContainer] : ['#CCCCCC', '#CCCCCC']}
             style={styles.continueGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -403,10 +406,10 @@ export default function PhotosUploadScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -427,23 +430,23 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#D32F2F',
+    shadowColor: theme.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
   avatarText: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -480,7 +483,7 @@ const styles = StyleSheet.create({
   stepText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -497,7 +500,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     borderRadius: 3,
   },
   summaryCard: {
@@ -509,7 +512,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E4BEBA',
-    shadowColor: '#D32F2F',
+    shadowColor: theme.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -631,7 +634,7 @@ const styles = StyleSheet.create({
   },
   videoGalleryBtn: {
     borderStyle: 'solid',
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
   videoUploadText: {
     fontSize: 11,
@@ -657,7 +660,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A',
   },
   videoUriText: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
     fontSize: 12,
     marginTop: 8,
   },
@@ -689,7 +692,7 @@ const styles = StyleSheet.create({
   writtenDetailsToggleText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
     textDecorationLine: 'underline',
   },
   writtenDetailsInput: {
@@ -716,7 +719,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   bottomActions: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: Platform.OS === 'ios' ? 28 : 16,
@@ -727,7 +730,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     marginBottom: 12,
-    shadowColor: '#AF101A',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
@@ -765,7 +768,7 @@ const styles = StyleSheet.create({
   draftText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   bottomSpacer: {
     height: 20,

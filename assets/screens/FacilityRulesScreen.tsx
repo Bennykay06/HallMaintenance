@@ -1,4 +1,5 @@
 // src/screens/FacilityRulesScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { ArrowLeftIcon, SchoolIcon, SearchIcon, GroupsIcon, EngineeringIcon, SecurityIcon, SanitizerIcon, MailIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -26,6 +27,8 @@ interface AccordionItem {
 }
 
 export default function FacilityRulesScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -36,7 +39,7 @@ export default function FacilityRulesScreen({ navigation }) {
       id: '1',
       title: 'General Conduct',
       subtitle: 'Noise, guests, and community',
-      icon: <GroupsIcon color="#AF101A" size={24} />,
+      icon: <GroupsIcon color={theme.primary} size={24} />,
       content: [
         {
           icon: 'timer',
@@ -59,7 +62,7 @@ export default function FacilityRulesScreen({ navigation }) {
       id: '2',
       title: 'Maintenance & Repairs',
       subtitle: 'Service requests and access',
-      icon: <EngineeringIcon color="#AF101A" size={24} />,
+      icon: <EngineeringIcon color={theme.primary} size={24} />,
       content: [
         {
           icon: 'report',
@@ -82,7 +85,7 @@ export default function FacilityRulesScreen({ navigation }) {
       id: '3',
       title: 'Safety & Security',
       subtitle: 'Emergency protocols and entry',
-      icon: <SecurityIcon color="#AF101A" size={24} />,
+      icon: <SecurityIcon color={theme.primary} size={24} />,
       content: [
         {
           icon: 'local_fire_department',
@@ -105,7 +108,7 @@ export default function FacilityRulesScreen({ navigation }) {
       id: '4',
       title: 'Health & Sanitation',
       subtitle: 'Waste, laundry, and hygiene',
-      icon: <SanitizerIcon color="#AF101A" size={24} />,
+      icon: <SanitizerIcon color={theme.primary} size={24} />,
       content: [
         {
           icon: 'delete_outline',
@@ -210,16 +213,16 @@ export default function FacilityRulesScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Rules & Guidelines</Text>
         <View style={styles.headerRight}>
-          <SchoolIcon color="#AF101A" size={24} />
+          <SchoolIcon color={theme.primary} size={24} />
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{getInitials()}</Text>
           </View>
@@ -287,7 +290,7 @@ export default function FacilityRulesScreen({ navigation }) {
               Contact the Residential Hall Director for further questions about these guidelines.
             </Text>
             <TouchableOpacity style={styles.supportButton}>
-              <MailIcon color="#AF101A" size={20} />
+              <MailIcon color={theme.primary} size={20} />
               <Text style={styles.supportButtonText}>Message Hall Director</Text>
             </TouchableOpacity>
           </View>
@@ -301,10 +304,10 @@ export default function FacilityRulesScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -326,12 +329,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerRight: {
     flexDirection: 'row',
@@ -399,7 +402,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 20,
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
   },
   featuredOverlay: {
     position: 'absolute',
@@ -550,12 +553,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
   },
   supportButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== EMPTY STATE =====

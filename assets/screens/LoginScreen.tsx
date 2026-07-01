@@ -18,8 +18,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getHallTheme } from '../config/HallThemes';
 
 export default function LoginScreen({ navigation }) {
+  const theme = getHallTheme('Unity Hall');
   const [email, setEmail] = useState('bnkwofie@st.knust.edu.gh');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -105,7 +107,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
       
       <KeyboardAvoidingView 
@@ -120,13 +122,13 @@ export default function LoginScreen({ navigation }) {
             
             {/* ===== UNIVERSITY NAME ===== */}
             <View style={styles.headerSection}>
-              <Text style={styles.universityName}>🏛️ University</Text>
-              <Text style={styles.universitySubtitle}>Facilities</Text>
+              <Text style={[styles.universityName, { color: theme.text }]}>🏛️ University</Text>
+              <Text style={[styles.universitySubtitle, { color: theme.primary }]}>Facilities</Text>
             </View>
 
             {/* ===== WELCOME TEXT ===== */}
             <View style={styles.welcomeSection}>
-              <Text style={styles.welcomeTitle}>Welcome Back</Text>
+              <Text style={[styles.welcomeTitle, { color: theme.text }]}>Welcome Back</Text>
               <Text style={styles.welcomeSubtitle}>
                 Log in to manage university assets and work orders.
               </Text>
@@ -136,9 +138,9 @@ export default function LoginScreen({ navigation }) {
             <View style={styles.formSection}>
               {/* Email Input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Email Address</Text>
+                <Text style={[styles.inputLabel, { color: theme.text }]}>Email Address</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: theme.card, borderColor: theme.border }]}
                   value={email}
                   onChangeText={setEmail}
                   placeholder="Enter your email"
@@ -151,10 +153,10 @@ export default function LoginScreen({ navigation }) {
 
               {/* Password Input */}
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Password</Text>
+                <Text style={[styles.inputLabel, { color: theme.text }]}>Password</Text>
                 <View style={styles.passwordContainer}>
                   <TextInput
-                    style={[styles.input, styles.passwordInput]}
+                    style={[styles.input, styles.passwordInput, { backgroundColor: theme.card, borderColor: theme.border }]}
                     value={password}
                     onChangeText={setPassword}
                     placeholder="Enter your password"
@@ -179,7 +181,7 @@ export default function LoginScreen({ navigation }) {
                 style={styles.forgotPasswordContainer}
                 onPress={handleForgotPassword}
               >
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                <Text style={[styles.forgotPasswordText, { color: theme.primary }]}>Forgot Password?</Text>
               </TouchableOpacity>
 
               {/* Remember Me */}
@@ -190,30 +192,30 @@ export default function LoginScreen({ navigation }) {
               >
                 <View style={[
                   styles.checkbox,
-                  rememberMe && styles.checkboxChecked,
+                  rememberMe && { backgroundColor: theme.primary, borderColor: theme.primary },
                 ]}>
-                  {rememberMe && <PersonIcon color="#AF101A" size={24} />}
+                  {rememberMe && <PersonIcon color={theme.text} size={16} />}
                 </View>
                 <Text style={styles.rememberText}>Keep me signed in for 30 days</Text>
               </TouchableOpacity>
 
               {/* Sign In Button */}
               <TouchableOpacity 
-                style={styles.signInButton}
+                style={[styles.signInButton, { shadowColor: theme.primary }]}
                 onPress={handleLogin}
                 disabled={isLoading}
                 activeOpacity={0.8}
               >
                 <LinearGradient
-                  colors={['#AF101A', '#D32F2F']}
+                  colors={[theme.gradientStart, theme.gradientEnd]}
                   style={styles.signInGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                 >
                   {isLoading ? (
-                    <ActivityIndicator color="#FFFFFF" size="small" />
+                    <ActivityIndicator color={theme.text} size="small" />
                   ) : (
-                    <Text style={styles.signInButtonText}>Sign In</Text>
+                    <Text style={[styles.signInButtonText, { color: theme.text }]}>Sign In</Text>
                   )}
                 </LinearGradient>
               </TouchableOpacity>
@@ -222,7 +224,7 @@ export default function LoginScreen({ navigation }) {
               <View style={styles.signUpContainer}>
                 <Text style={styles.signUpText}>Don't have an account? </Text>
                 <TouchableOpacity onPress={handleSignUp}>
-                  <Text style={styles.signUpLink}>Sign Up</Text>
+                  <Text style={[styles.signUpLink, { color: theme.primary }]}>Sign Up</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -230,10 +232,10 @@ export default function LoginScreen({ navigation }) {
             {/* ===== BOTTOM NAV ===== */}
             <View style={styles.bottomNav}>
               <TouchableOpacity 
-                style={[styles.navItem, styles.navItemActive]}
+                style={[styles.navItem, { backgroundColor: theme.primary }]}
                 onPress={() => setIsLogin(true)}
               >
-                <Text style={[styles.navLabel, styles.navLabelActive]}>Login</Text>
+                <Text style={[styles.navLabel, styles.navLabelActive, { color: theme.text }]}>Login</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.navItem}

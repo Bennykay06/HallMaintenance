@@ -1,4 +1,5 @@
 // src/screens/ServiceIssuesScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState } from 'react';
@@ -67,6 +68,8 @@ const SERVICE_DATA = {
 };
 
 export default function ServiceIssuesScreen({ navigation, route }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const { serviceType = 'Electrical' } = route.params || {};
   const serviceData = SERVICE_DATA[serviceType] || SERVICE_DATA.Electrical;
 
@@ -143,11 +146,11 @@ export default function ServiceIssuesScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{serviceType} Issues</Text>
         <View style={{ width: 40 }} />
@@ -238,7 +241,7 @@ export default function ServiceIssuesScreen({ navigation, route }) {
           disabled={selectedCount === 0}
         >
           <LinearGradient
-            colors={selectedCount > 0 ? ['#AF101A', '#D32F2F'] : ['#CCCCCC', '#CCCCCC']}
+            colors={selectedCount > 0 ? [theme.primary, theme.primaryContainer] : ['#CCCCCC', '#CCCCCC']}
             style={styles.continueGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -251,10 +254,10 @@ export default function ServiceIssuesScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -274,7 +277,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
@@ -292,7 +295,7 @@ const styles = StyleSheet.create({
   serviceTypeTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     marginBottom: 4,
   },
   serviceTypeDescription: {
@@ -341,7 +344,7 @@ const styles = StyleSheet.create({
     borderColor: '#E4BEBA',
   },
   issueItemSelected: {
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
     borderWidth: 2,
     backgroundColor: '#FFF5F5',
   },
@@ -361,7 +364,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   issueTextSelected: {
-    color: '#AF101A',
+    color: theme.primary,
     fontWeight: '600',
   },
   issueTextOther: {
@@ -379,8 +382,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkmarkCircleSelected: {
-    borderColor: '#AF101A',
-    backgroundColor: '#AF101A',
+    borderColor: theme.primary,
+    backgroundColor: theme.primary,
   },
   checkmarkText: {
     fontSize: 14,
@@ -388,7 +391,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   checkmarkTextSelected: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
   },
   manualInputContainer: {
     marginHorizontal: 16,
@@ -397,7 +400,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
     borderStyle: 'dashed',
   },
   manualInputLabel: {
@@ -411,7 +414,7 @@ const styles = StyleSheet.create({
     color: '#1A1C1C',
     minHeight: 80,
     padding: 10,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#E4BEBA',
@@ -426,7 +429,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#AF101A',
+    borderLeftColor: theme.primary,
   },
   warningText: {
     fontSize: 12,
@@ -487,7 +490,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...Platform.select({
       ios: {
-        shadowColor: '#AF101A',
+        shadowColor: theme.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -505,7 +508,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   continueText: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
     fontSize: 14,
     fontWeight: '700',
   },

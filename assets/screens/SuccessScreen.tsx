@@ -1,4 +1,5 @@
 // src/screens/SuccessScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
 
 import React, { useEffect, useRef } from 'react';
@@ -16,6 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SuccessScreen({ navigation, route }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const { referenceId = 'MT-82941', location = 'North Hall, Room 402' } = route.params || {};
   
   // Animation values
@@ -67,16 +70,16 @@ export default function SuccessScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBackToHome} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Success</Text>
         <View style={styles.avatar}>
-          <PersonIcon color="#AF101A" size={24} />
+          <PersonIcon color={theme.primary} size={24} />
         </View>
       </View>
 
@@ -216,7 +219,7 @@ export default function SuccessScreen({ navigation, route }) {
         >
           <TouchableOpacity style={styles.primaryButton} onPress={handleViewRequests}>
             <LinearGradient
-              colors={['#AF101A', '#D32F2F']}
+              colors={[theme.primary, theme.primaryContainer]}
               style={styles.primaryGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -237,22 +240,22 @@ export default function SuccessScreen({ navigation, route }) {
       {/* ===== BOTTOM NAV - PUSHED TO VERY BOTTOM ===== */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem} onPress={handleBackToHome}>
-          <PersonIcon color="#AF101A" size={24} />
+          <PersonIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.navItem, styles.navItemActive]} onPress={handleViewRequests}>
-          <WrenchIcon color="#AF101A" size={24} />
+          <WrenchIcon color={theme.primary} size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>Requests</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <ClipboardIcon color="#AF101A" size={24} />
+          <ClipboardIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>News</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem}>
-          <BellIcon color="#AF101A" size={24} />
+          <BellIcon color={theme.primary} size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>
@@ -261,10 +264,10 @@ export default function SuccessScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -286,12 +289,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   avatar: {
     width: 40,
@@ -398,7 +401,7 @@ const styles = StyleSheet.create({
   referenceId: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
     marginTop: 2,
   },
 
@@ -466,7 +469,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     width: '100%',
-    shadowColor: '#AF101A',
+    shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
@@ -486,7 +489,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
@@ -494,7 +497,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== BOTTOM SPACER =====
@@ -507,7 +510,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
     paddingHorizontal: 8,
     paddingTop: 8,
     paddingBottom: Platform.OS === 'ios' ? 34 : 16, // Increased for safe area
@@ -526,7 +529,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   navItemActive: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
   },
   navIcon: {
     fontSize: 24,

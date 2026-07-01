@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import Screens
+import { ThemeProvider } from './assets/context/ThemeContext.tsx';
 import TabNavigator from './assets/navigation/TabNavigator.tsx';
 import ServiceIssuesScreen from './assets/screens/ServiceIssuesScreen.tsx';
 import PhotosUploadScreen from './assets/screens/PhotosUploadScreen.tsx';
@@ -41,37 +42,39 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" backgroundColor="#F9F9F9" />
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Login"
-          screenOptions={{
-            headerShown: false,
-            animation: 'slide_from_right',
-          }}
-        >
-          {/* Auth Screens */}
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          
-          {/* Main Tab Navigator */}
-          <Stack.Screen name="MainTabs" component={TabNavigator} />
-          
-          {/* Modal/Full Screen Screens */}
-          <Stack.Screen name="ServiceIssues" component={ServiceIssuesScreen} />
-          <Stack.Screen name="PhotosUpload" component={PhotosUploadScreen} />
-          <Stack.Screen name="ReviewReport" component={ReviewReportScreen} />
-          <Stack.Screen name="Success" component={SuccessScreen} />
-          <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-          <Stack.Screen name="FacilityRules" component={FacilityRulesScreen} />
-          <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
-          <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider>
+        <StatusBar style="dark" backgroundColor="#F9F9F9" />
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_right',
+            }}
+          >
+            {/* Auth Screens */}
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            
+            {/* Main Tab Navigator */}
+            <Stack.Screen name="MainTabs" component={TabNavigator} />
+            
+            {/* Modal/Full Screen Screens */}
+            <Stack.Screen name="ServiceIssues" component={ServiceIssuesScreen} />
+            <Stack.Screen name="PhotosUpload" component={PhotosUploadScreen} />
+            <Stack.Screen name="ReviewReport" component={ReviewReportScreen} />
+            <Stack.Screen name="Success" component={SuccessScreen} />
+            <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="FacilityRules" component={FacilityRulesScreen} />
+            <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+            <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }

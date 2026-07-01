@@ -15,7 +15,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../context/ThemeContext';
+
 export default function HomeScreen({ navigation }: { navigation: any }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [userName, setUserName] = useState('Resident');
   const [hall, setHall] = useState('Unity Hall');
   const [floor, setFloor] = useState('Floor 2');
@@ -102,21 +106,21 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar style="dark" backgroundColor="#F9F9F9" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
+      <StatusBar style="dark" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>HallMaintenance</Text>
+          <Text style={[styles.headerTitle, { color: theme.primary }]}>HallMaintenance</Text>
           <View style={styles.headerAddress}>
-            <LocationIcon color="#8F6F6C" size={14} />
-            <Text style={styles.headerAddressText} numberOfLines={1}>
+            <LocationIcon color={theme.textSecondary} size={14} />
+            <Text style={[styles.headerAddressText, { color: theme.textSecondary }]} numberOfLines={1}>
               {fullAddress}
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity style={[styles.profileButton, { backgroundColor: theme.primaryContainer }]} onPress={() => navigation.navigate('Profile')}>
           <View style={styles.profileAvatar}>
             <Text style={styles.profileInitials}>{getInitials()}</Text>
           </View>
@@ -129,16 +133,16 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           {/* ===== HERO SECTION ===== */}
           <View style={styles.heroWrapper}>
             <LinearGradient
-              colors={['#AF101A', '#D32F2F']}
+              colors={[theme.gradientStart, theme.gradientEnd]}
               style={styles.heroCard}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
               <View style={styles.heroBackgroundIcon}>
-                <GearIcon color="#FFFFFF" size={80} />
+                <GearIcon color={theme.primaryText} size={80} />
               </View>
-              <Text style={styles.heroTitle}>Welcome Back, {userName.split(' ')[0]}.</Text>
-              <Text style={styles.heroSubtitle}>
+              <Text style={[styles.heroTitle, { color: theme.primaryText }]}>Welcome Back, {userName.split(' ')[0]}.</Text>
+              <Text style={[styles.heroSubtitle, { color: theme.primaryText }]}>
                 Your comfort is our priority. Report issues, check hall news, or access emergency support instantly.
               </Text>
             </LinearGradient>
@@ -147,23 +151,23 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           {/* ===== MAINTENANCE SCHEDULE ===== */}
           <View style={styles.scheduleSection}>
             <View style={[styles.sectionHeader, styles.titleRow]}>
-              <CalendarIcon color="#AF101A" size={18} />
-              <Text style={styles.sectionTitle}>Maintenance Schedule</Text>
+              <CalendarIcon color={theme.primary} size={18} />
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Schedule</Text>
             </View>
             
             <View style={styles.scheduleGrid}>
               {scheduleItems.map((item) => (
-                <View key={item.id} style={styles.scheduleCard}>
+                <View key={item.id} style={[styles.scheduleCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                   <View style={styles.scheduleLeft}>
                     <View style={styles.scheduleIcon}>
-                      <item.Icon color="#AF101A" size={20} />
+                      <item.Icon color={theme.primary} size={20} />
                     </View>
                     <View>
-                      <Text style={styles.scheduleTitle}>{item.title}</Text>
-                      <Text style={styles.scheduleDate}>{item.date}</Text>
+                      <Text style={[styles.scheduleTitle, { color: theme.text }]}>{item.title}</Text>
+                      <Text style={[styles.scheduleDate, { color: theme.textSecondary }]}>{item.date}</Text>
                     </View>
                   </View>
-                  <LockIcon color="#5B403D" size={16} />
+                  <LockIcon color={theme.textSecondary} size={16} />
                 </View>
               ))}
             </View>
@@ -172,23 +176,23 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           {/* ===== MAINTENANCE SERVICES ===== */}
           <View style={styles.servicesSection}>
             <View style={[styles.sectionHeader, styles.titleRow]}>
-              <WrenchIcon color="#AF101A" size={18} />
-              <Text style={styles.sectionTitle}>Maintenance Services</Text>
+              <WrenchIcon color={theme.primary} size={18} />
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Services</Text>
             </View>
             
             <View style={styles.servicesGrid}>
               {services.map((service) => (
                 <TouchableOpacity
                   key={service.id}
-                  style={styles.serviceCard}
+                  style={[styles.serviceCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
                   onPress={() => handleServicePress(service)}
                   activeOpacity={0.8}
                 >
                   <View style={styles.serviceIcon}>
-                    <service.Icon color="#AF101A" size={22} />
+                    <service.Icon color={theme.primary} size={22} />
                   </View>
-                  <Text style={styles.serviceTitle}>{service.title}</Text>
-                  <Text style={styles.serviceDescription}>{service.description}</Text>
+                  <Text style={[styles.serviceTitle, { color: theme.text }]}>{service.title}</Text>
+                  <Text style={[styles.serviceDescription, { color: theme.textSecondary }]}>{service.description}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -200,7 +204,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       </ScrollView>
 
       {/* ===== FAB ===== */}
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity style={[styles.fab, { backgroundColor: theme.primary, shadowColor: theme.primary }]}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
 
@@ -208,7 +212,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9F9F9',

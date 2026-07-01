@@ -1,4 +1,5 @@
 // src/screens/HelpSupportScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, ClipboardIcon, ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -20,6 +21,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HelpSupportScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [userName, setUserName] = useState('User');
@@ -108,12 +111,12 @@ export default function HelpSupportScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Help & Support</Text>
         <View style={styles.avatar}>
@@ -133,7 +136,7 @@ export default function HelpSupportScreen({ navigation }) {
           
           {/* ===== HERO SECTION ===== */}
           <LinearGradient
-            colors={['#AF101A', '#D32F2F']}
+            colors={[theme.primary, theme.primaryContainer]}
             style={styles.heroSection}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -172,7 +175,7 @@ export default function HelpSupportScreen({ navigation }) {
             {/* Report Issue */}
             <TouchableOpacity style={[styles.actionCard, styles.actionCardRed]} onPress={handleCreateTicket}>
               <View style={styles.actionCardIconContainer}>
-                <ClipboardIcon color="#AF101A" size={24} />
+                <ClipboardIcon color={theme.primary} size={24} />
               </View>
               <Text style={styles.actionCardTitle}>Report a Technical Issue</Text>
               <Text style={styles.actionCardDescription}>
@@ -274,12 +277,12 @@ export default function HelpSupportScreen({ navigation }) {
             </Text>
             <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
               <LinearGradient
-                colors={['#BA1A1A', '#D32F2F']}
+                colors={['#BA1A1A', theme.primaryContainer]}
                 style={styles.emergencyGradient}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
               >
-                <PersonIcon color="#AF101A" size={24} />
+                <PersonIcon color={theme.primary} size={24} />
                 <Text style={styles.emergencyButtonText}>(555) 0199</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -305,10 +308,10 @@ export default function HelpSupportScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -330,12 +333,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   avatar: {
     width: 36,
@@ -433,13 +436,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   searchButton: {
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
   },
   searchButtonText: {
-    color: '#FFFFFF',
+    color: theme.primaryText,
     fontSize: 12,
     fontWeight: '600',
   },
@@ -463,7 +466,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   actionCardRed: {
-    borderLeftColor: '#AF101A',
+    borderLeftColor: theme.primary,
   },
   actionCardOrange: {
     borderLeftColor: '#B51A1B',
@@ -504,7 +507,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   actionCardLinkRed: {
-    color: '#AF101A',
+    color: theme.primary,
   },
   actionCardLinkOrange: {
     color: '#B51A1B',
@@ -530,7 +533,7 @@ const styles = StyleSheet.create({
   faqTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     borderBottomWidth: 2,
     borderBottomColor: '#FFDAD6',
     paddingBottom: 8,
@@ -576,7 +579,7 @@ const styles = StyleSheet.create({
 
   // ===== CONTACT SECTION =====
   contactSection: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
@@ -634,7 +637,7 @@ const styles = StyleSheet.create({
   emergencyTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 6,

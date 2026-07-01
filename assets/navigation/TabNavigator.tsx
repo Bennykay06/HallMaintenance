@@ -46,10 +46,10 @@ type TabIconProps = {
   label: string;
 };
 
-const TabIcon = ({ focused, Icon, label }: TabIconProps) => {
+const TabIcon = ({ focused, Icon, label, theme }: TabIconProps & { theme: any }) => {
   const scale = useRef(new Animated.Value(1)).current;
   const isEmergency = label === 'Emergency';
-  const iconColor = focused ? '#FFFFFF' : '#666';
+  const iconColor = focused ? theme.primaryText : '#666';
 
   React.useEffect(() => {
     Animated.spring(scale, {
@@ -64,8 +64,8 @@ const TabIcon = ({ focused, Icon, label }: TabIconProps) => {
     <Animated.View
       style={[
         styles.tabItem,
-        focused && styles.tabItemActive,
-        isEmergency && focused && styles.tabItemEmergency,
+        focused && { backgroundColor: theme.primary, shadowColor: theme.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 4 },
+        isEmergency && focused && { backgroundColor: theme.primaryContainer, shadowColor: theme.primaryContainer, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6 },
         { transform: [{ scale }] },
       ]}
     >
@@ -89,7 +89,11 @@ const TabIcon = ({ focused, Icon, label }: TabIconProps) => {
   );
 };
 
+import { useTheme } from '../context/ThemeContext';
+
 export default function TabNavigator() {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -107,7 +111,7 @@ export default function TabNavigator() {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} Icon={HomeIcon} label="Home" />
+            <TabIcon focused={focused} Icon={HomeIcon} label="Home" theme={theme} />
           ),
         }}
       />
@@ -118,7 +122,7 @@ export default function TabNavigator() {
         options={{
           tabBarLabel: 'Requests',
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} Icon={RequestsIcon} label="Requests" />
+            <TabIcon focused={focused} Icon={RequestsIcon} label="Requests" theme={theme} />
           ),
         }}
       />
@@ -129,7 +133,7 @@ export default function TabNavigator() {
         options={{
           tabBarLabel: 'News',
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} Icon={NewsIcon} label="News" />
+            <TabIcon focused={focused} Icon={NewsIcon} label="News" theme={theme} />
           ),
         }}
       />
@@ -140,7 +144,7 @@ export default function TabNavigator() {
         options={{
           tabBarLabel: 'Emergency',
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} Icon={EmergencyIcon} label="Emergency" />
+            <TabIcon focused={focused} Icon={EmergencyIcon} label="Emergency" theme={theme} />
           ),
         }}
       />

@@ -1,4 +1,5 @@
 // src/screens/ProfileScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, CalendarIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
@@ -17,6 +18,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen({ navigation }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('Alex Johnson');
   const [hall, setHall] = useState('Unity Hall');
@@ -102,12 +105,12 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Profile</Text>
         <TouchableOpacity style={styles.moreButton}>
@@ -138,7 +141,7 @@ export default function ProfileScreen({ navigation }) {
             <View>
               <Text style={styles.profileName}>{userName}</Text>
               <View style={styles.locationBadge}>
-                <PersonIcon color="#AF101A" size={24} />
+                <PersonIcon color={theme.primary} size={24} />
                 <Text style={styles.locationText}>{fullAddress}</Text>
               </View>
               <Text style={styles.studentId}>Student ID: <Text style={styles.studentIdBold}>{studentId}</Text></Text>
@@ -158,7 +161,7 @@ export default function ProfileScreen({ navigation }) {
             </View>
             <View style={styles.statsCard}>
               <View style={[styles.statsIconContainer, styles.statsIconContainerSecondary]}>
-                <CalendarIcon color="#AF101A" size={24} />
+                <CalendarIcon color={theme.primary} size={24} />
               </View>
               <View>
                 <Text style={styles.statsLabel}>Joined</Text>
@@ -172,7 +175,7 @@ export default function ProfileScreen({ navigation }) {
             <TouchableOpacity style={styles.actionItem} onPress={handleEditProfile}>
               <View style={styles.actionLeft}>
                 <View style={styles.actionIcon}>
-                  <PersonIcon color="#AF101A" size={24} />
+                  <PersonIcon color={theme.primary} size={24} />
                 </View>
                 <Text style={styles.actionText}>Edit Profile</Text>
               </View>
@@ -182,7 +185,7 @@ export default function ProfileScreen({ navigation }) {
             <TouchableOpacity style={styles.actionItem} onPress={handleNotificationSettings}>
               <View style={styles.actionLeft}>
                 <View style={styles.actionIcon}>
-                  <BellIcon color="#AF101A" size={24} />
+                  <BellIcon color={theme.primary} size={24} />
                 </View>
                 <Text style={styles.actionText}>Notification Settings</Text>
               </View>
@@ -228,10 +231,10 @@ export default function ProfileScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -253,12 +256,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   moreButton: {
     width: 40,
@@ -297,7 +300,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 4,
@@ -320,7 +323,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -484,7 +487,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#AF101A',
+    borderColor: theme.primary,
     width: '100%',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -499,7 +502,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
   },
   versionText: {
     fontSize: 11,

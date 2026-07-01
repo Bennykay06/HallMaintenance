@@ -1,4 +1,5 @@
 // src/screens/ArticleDetailScreen.tsx
+import { useTheme } from '../context/ThemeContext';
 import { PersonIcon, ClipboardIcon, CalendarIcon, WrenchIcon, BellIcon, CloseIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -36,6 +37,8 @@ const ARTICLE_IMAGES = {
 };
 
 export default function ArticleDetailScreen({ navigation, route }) {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const { article } = route.params || {
     id: '1',
     title: 'Elevator B Modernization Complete',
@@ -123,16 +126,16 @@ Elevator B has been returned to regular service as of this morning. We thank you
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color="#AF101A" size={24} />
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Article Detail</Text>
         <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-          <ArrowRightIcon color="#AF101A" size={20} />
+          <ArrowRightIcon color={theme.primary} size={20} />
         </TouchableOpacity>
       </View>
 
@@ -172,7 +175,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
         >
           {imageLoading && (
             <View style={styles.imageLoader}>
-              <ActivityIndicator size="large" color="#AF101A" />
+              <ActivityIndicator size="large" color={theme.primary} />
             </View>
           )}
           <Image 
@@ -274,10 +277,10 @@ Elevator B has been returned to regular service as of this morning. We thank you
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: theme.background,
   },
 
   // ===== HEADER =====
@@ -299,12 +302,12 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#AF101A',
+    color: theme.primary,
   },
   shareButton: {
     width: 40,
@@ -314,7 +317,7 @@ const styles = StyleSheet.create({
   },
   shareButtonText: {
     fontSize: 24,
-    color: '#AF101A',
+    color: theme.primary,
   },
 
   // ===== PROGRESS BAR =====
@@ -328,7 +331,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#AF101A',
+    backgroundColor: theme.primary,
   },
 
   // ===== SCROLL VIEW =====
@@ -382,7 +385,7 @@ const styles = StyleSheet.create({
   articleTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     marginBottom: 8,
   },
   articleMeta: {
@@ -417,7 +420,7 @@ const styles = StyleSheet.create({
   headingText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#AF101A',
+    color: theme.primary,
     marginTop: 8,
     marginBottom: 8,
   },
@@ -496,7 +499,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   navItemActive: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: theme.primaryContainer,
   },
   navIcon: {
     fontSize: 24,
