@@ -324,30 +324,7 @@ export default function RequestsScreen({ navigation, route }) {
         </View>
       </ScrollView>
 
-      <View style={styles.bottomNav}>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <PersonIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Home</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <WrenchIcon color={theme.primary} size={24} />
-          <Text style={[styles.navLabel, styles.navLabelActive]}>Requests</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <ClipboardIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>News</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <BellIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Emergency</Text>
-        </TouchableOpacity>
-      </View>
 
     </SafeAreaView>
   );
@@ -364,9 +341,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
@@ -387,14 +364,15 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
   },
   avatarText: {
     fontSize: 18,
+    color: theme.text,
   },
   scrollView: {
     flex: 1,
@@ -407,7 +385,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    borderBottomColor: theme.border,
     marginBottom: 16,
   },
   tab: {
@@ -419,7 +397,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   tabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
   activeTabText: {
     color: theme.primary,
@@ -450,7 +428,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   newRequestText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.primaryText,
   },
   requestList: {
     flex: 1,
@@ -458,15 +436,15 @@ const getStyles = (theme: any) => StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 12,
   },
   requestCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
     marginBottom: 12,
   },
   completedCard: {
@@ -481,21 +459,21 @@ const getStyles = (theme: any) => StyleSheet.create({
   requestTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
     flex: 1,
   },
   requestLocation: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginBottom: 2,
   },
   requestDate: {
     fontSize: 12,
-    color: '#8F6F6C',
+    color: theme.textSecondary,
   },
   requestId: {
     fontSize: 12,
-    color: '#8F6F6C',
+    color: theme.textSecondary,
     marginTop: 4,
   },
   statusBadge: {
@@ -519,7 +497,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   resumeButtonText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.primaryText,
   },
   emptyContainer: {
     alignItems: 'center',
@@ -533,52 +511,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   emptyText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#5B403D',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: theme.background,
-    paddingHorizontal: 8,
-    paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E4BEBA',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  navItemActive: {
-    backgroundColor: theme.primaryContainer,
-  },
-  navIcon: {
-    fontSize: 24,
-  },
-  navIconEmergency: {
-    color: '#BA1A1A',
-  },
-  navLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: '#666',
-    marginTop: 2,
-  },
-  navLabelActive: {
-    color: '#FFFFFF',
+    color: theme.textSecondary,
   },
   bottomSpacer: {
     height: 80,

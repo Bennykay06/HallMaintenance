@@ -119,9 +119,7 @@ export default function HelpSupportScreen({ navigation }) {
           <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Help & Support</Text>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{getInitials()}</Text>
-        </View>
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView 
@@ -321,9 +319,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderBottomWidth: 0.5,
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
@@ -344,16 +342,16 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderWidth: 0,
+    borderColor: theme.border,
   },
   avatarText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
   },
 
   // ===== SCROLL VIEW =====
@@ -371,7 +369,7 @@ const getStyles = (theme: any) => StyleSheet.create({
 
   // ===== HERO SECTION =====
   heroSection: {
-    borderRadius: 12,
+    borderRadius: 24,
     padding: 20,
     position: 'relative',
     overflow: 'hidden',
@@ -385,7 +383,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   heroTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.surface,
     marginBottom: 6,
   },
   heroSubtitle: {
@@ -413,25 +411,25 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.95)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderRadius: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     paddingHorizontal: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 12,
   },
   searchIcon: {
     fontSize: 20,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#1A1C1C',
+    color: theme.text,
     paddingVertical: 12,
     paddingHorizontal: 0,
   },
@@ -439,7 +437,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: theme.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 16,
   },
   searchButtonText: {
     color: theme.primaryText,
@@ -450,20 +448,20 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== QUICK ACTIONS =====
   quickActions: {
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 32,
   },
   actionCard: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    padding: 24,
+    borderRadius: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     borderLeftWidth: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   actionCardRed: {
     borderLeftColor: theme.primary,
@@ -489,12 +487,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   actionCardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   actionCardDescription: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 18,
     marginBottom: 10,
   },
@@ -518,17 +516,17 @@ const getStyles = (theme: any) => StyleSheet.create({
 
   // ===== FAQ SECTION =====
   faqSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   faqTitle: {
     fontSize: 16,
@@ -542,7 +540,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     letterSpacing: 0.5,
   },
   faqItem: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#F0F0F0',
   },
   faqHeader: {
@@ -554,12 +552,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   faqQuestion: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     flex: 1,
   },
   faqArrow: {
     fontSize: 24,
-    color: '#5B403D',
+    color: theme.textSecondary,
     transform: [{ rotate: '0deg' }],
   },
   faqArrowExpanded: {
@@ -573,15 +571,15 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   faqAnswer: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 20,
   },
 
   // ===== CONTACT SECTION =====
   contactSection: {
     backgroundColor: theme.primaryContainer,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 24,
+    padding: 24,
     marginBottom: 20,
   },
   contactTitle: {
@@ -597,7 +595,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   contactItemLeft: {
@@ -607,13 +605,13 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   contactItemIcon: {
     fontSize: 20,
-    color: '#FFFFFF',
+    color: theme.surface,
     marginTop: 2,
   },
   contactItemTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: theme.surface,
   },
   contactItemValue: {
     fontSize: 13,
@@ -622,17 +620,17 @@ const getStyles = (theme: any) => StyleSheet.create({
 
   // ===== EMERGENCY SECTION =====
   emergencySection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   emergencyTitle: {
     fontSize: 11,
@@ -644,11 +642,11 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   emergencyDescription: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginBottom: 12,
   },
   emergencyButton: {
-    borderRadius: 8,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   emergencyGradient: {
@@ -660,12 +658,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   emergencyButtonIcon: {
     fontSize: 20,
-    color: '#FFFFFF',
+    color: theme.surface,
   },
   emergencyButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.surface,
   },
 
   // ===== COMMITMENT SECTION =====
@@ -688,12 +686,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   commitmentTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   commitmentDescription: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     textAlign: 'center',
     maxWidth: 300,
     lineHeight: 18,

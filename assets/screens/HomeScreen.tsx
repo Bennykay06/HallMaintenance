@@ -16,6 +16,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
+import { getAppointments, Appointment } from '../utils/appointments';
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const { theme } = useTheme();
@@ -25,10 +26,20 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const [floor, setFloor] = useState('Floor 2');
   const [room, setRoom] = useState('Room 204');
   const [fullAddress, setFullAddress] = useState('Unity Hall, Floor 2, Room 204');
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
     loadUserData();
-  }, []);
+    loadAppointments();
+    // Refresh booked appointments whenever Home regains focus (e.g. after
+    // confirming/declining an appointment in the chat screen).
+    const unsubscribe = navigation.addListener('focus', loadAppointments);
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadAppointments = async () => {
+    setAppointments(await getAppointments());
+  };
 
   const loadUserData = async () => {
     try {
@@ -113,18 +124,17 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
         <View style={styles.headerLeft}>
           <Text style={[styles.headerTitle, { color: theme.primary }]}>HallMaintenance</Text>
-          <View style={styles.headerAddress}>
-            <LocationIcon color={theme.textSecondary} size={14} />
-            <Text style={[styles.headerAddressText, { color: theme.textSecondary }]} numberOfLines={1}>
-              {fullAddress}
-            </Text>
-          </View>
         </View>
-        <TouchableOpacity style={[styles.profileButton, { backgroundColor: theme.primaryContainer }]} onPress={() => navigation.navigate('Profile')}>
-          <View style={styles.profileAvatar}>
-            <Text style={styles.profileInitials}>{getInitials()}</Text>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Notification')}>
+            <BellIcon color={theme.primary} size={20} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.profileButton, { backgroundColor: theme.primary }]} onPress={() => navigation.navigate('Profile')}>
+            <View style={styles.profileAvatar}>
+              <PersonIcon color={theme.primaryText} size={20} />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -139,27 +149,38 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               end={{ x: 1, y: 1 }}
             >
               <View style={styles.heroBackgroundIcon}>
-                <GearIcon color={theme.primaryText} size={80} />
+                <WrenchIcon color={theme.primaryText} size={150} />
               </View>
-              <Text style={[styles.heroTitle, { color: theme.primaryText }]}>Welcome Back, {userName.split(' ')[0]}.</Text>
+              <Text style={[styles.heroTitle, { color: theme.primaryText }]}>Welcome, {userName.split(' ')[0]}.</Text>
               <Text style={[styles.heroSubtitle, { color: theme.primaryText }]}>
                 Your comfort is our priority. Report issues, check hall news, or access emergency support instantly.
               </Text>
+              
+              <View style={styles.heroBadge}>
+                <LocationIcon color={theme.primaryText} size={20} />
+                <View style={styles.heroBadgeTextContainer}>
+                  <Text style={[styles.heroBadgeLabel, { color: theme.primaryText }]}>CURRENT RESIDENCE</Text>
+                  <Text style={[styles.heroBadgeValue, { color: theme.primaryText }]}>{fullAddress}</Text>
+                </View>
+              </View>
             </LinearGradient>
           </View>
 
           {/* ===== MAINTENANCE SCHEDULE ===== */}
           <View style={styles.scheduleSection}>
             <View style={[styles.sectionHeader, styles.titleRow]}>
-              <CalendarIcon color={theme.primary} size={18} />
+              <CalendarIcon color={theme.primary} size={24} />
               <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Schedule</Text>
             </View>
             
             <View style={styles.scheduleGrid}>
-              {scheduleItems.map((item) => (
+              {[
+                ...appointments.map((a) => ({ id: a.id, title: a.title, date: a.date, Icon: WrenchIcon })),
+                ...scheduleItems,
+              ].map((item) => (
                 <View key={item.id} style={[styles.scheduleCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                   <View style={styles.scheduleLeft}>
-                    <View style={styles.scheduleIcon}>
+                    <View style={[styles.scheduleIcon, { backgroundColor: theme.surfaceContainer }]}>
                       <item.Icon color={theme.primary} size={20} />
                     </View>
                     <View>
@@ -167,7 +188,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                       <Text style={[styles.scheduleDate, { color: theme.textSecondary }]}>{item.date}</Text>
                     </View>
                   </View>
-                  <LockIcon color={theme.textSecondary} size={16} />
+                  <View style={[styles.infoIcon, { borderColor: theme.primary }]}>
+                    <Text style={{ color: theme.primary, fontSize: 12, fontWeight: 'bold' }}>i</Text>
+                  </View>
                 </View>
               ))}
             </View>
@@ -175,8 +198,8 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
           {/* ===== MAINTENANCE SERVICES ===== */}
           <View style={styles.servicesSection}>
-            <View style={[styles.sectionHeader, styles.titleRow]}>
-              <WrenchIcon color={theme.primary} size={18} />
+            <View style={[styles.sectionHeader, styles.titleRow, { marginBottom: 16 }]}>
+              <WrenchIcon color={theme.primary} size={24} />
               <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Services</Text>
             </View>
             
@@ -188,7 +211,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   onPress={() => handleServicePress(service)}
                   activeOpacity={0.8}
                 >
-                  <View style={styles.serviceIcon}>
+                  <View style={[styles.serviceIcon, { backgroundColor: theme.surfaceContainer }]}>
                     <service.Icon color={theme.primary} size={22} />
                   </View>
                   <Text style={[styles.serviceTitle, { color: theme.text }]}>{service.title}</Text>
@@ -233,21 +256,21 @@ const getStyles = (theme: any) => StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: '700',
     color: '#AF101A',
   },
-  headerAddress: {
+  headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 2,
+    gap: 8,
   },
-  headerAddressText: {
-    fontSize: 11,
-    color: '#8F6F6C',
-    fontWeight: '500',
-    flex: 1,
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileButton: {
     width: 36,
@@ -263,11 +286,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  profileInitials: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
   },
 
   scrollView: {
@@ -296,22 +314,51 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   heroBackgroundIcon: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    top: 0,
+    right: 0,
+    padding: 32,
     opacity: 0.1,
   },
   heroTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 42,
+    fontWeight: '800',
     color: '#FFFFFF',
-    marginBottom: 6,
+    marginBottom: 8,
+    letterSpacing: -1,
   },
   heroSubtitle: {
-    fontSize: 13,
+    fontSize: 16,
     color: 'rgba(255,255,255,0.9)',
-    lineHeight: 18,
+    lineHeight: 24,
     marginBottom: 0,
-    maxWidth: '80%',
+    maxWidth: '90%',
+  },
+  heroBadge: {
+    marginTop: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    alignSelf: 'flex-start',
+  },
+  heroBadgeTextContainer: {
+    flexDirection: 'column',
+  },
+  heroBadgeLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    opacity: 0.7,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  heroBadgeValue: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 
   // ===== SCHEDULE =====
@@ -365,13 +412,21 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   scheduleTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1A1C1C',
   },
   scheduleDate: {
     fontSize: 14,
     color: '#5B403D',
     marginTop: 2,
+  },
+  infoIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   // ===== SERVICES =====

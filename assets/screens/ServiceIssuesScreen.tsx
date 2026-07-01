@@ -265,9 +265,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     height: 56,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
@@ -282,7 +282,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
   },
   scrollView: {
     flex: 1,
@@ -300,12 +300,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   serviceTypeDescription: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 20,
   },
   divider: {
     height: 1,
-    backgroundColor: '#E4BEBA',
+    backgroundColor: theme.border,
     marginHorizontal: 16,
     marginVertical: 8,
   },
@@ -320,12 +320,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#8F6F6C',
+    color: theme.textSecondary,
     letterSpacing: 1,
   },
   selectionHint: {
     fontSize: 11,
-    color: '#8F6F6C',
+    color: theme.textSecondary,
     fontStyle: 'italic',
   },
   issuesList: {
@@ -336,20 +336,20 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
   },
   issueItemSelected: {
     borderColor: theme.primary,
     borderWidth: 2,
-    backgroundColor: '#FFF5F5',
+    backgroundColor: theme.surfaceContainer,
   },
   issueItemOther: {
-    borderColor: '#D4A5A5',
+    borderColor: theme.textSecondary,
     borderStyle: 'dashed',
   },
   issueLeft: {
@@ -360,7 +360,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   issueText: {
     fontSize: 14,
-    color: '#1A1C1C',
+    color: theme.text,
     flex: 1,
   },
   issueTextSelected: {
@@ -368,7 +368,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontWeight: '600',
   },
   issueTextOther: {
-    color: '#8F6F6C',
+    color: theme.textSecondary,
     fontStyle: 'italic',
   },
   checkmarkCircle: {
@@ -376,8 +376,8 @@ const getStyles = (theme: any) => StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#CCCCCC',
-    backgroundColor: '#FFFFFF',
+    borderColor: theme.border,
+    backgroundColor: theme.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -397,7 +397,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 8,
     padding: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.primary,
@@ -406,22 +406,22 @@ const getStyles = (theme: any) => StyleSheet.create({
   manualInputLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 8,
   },
   manualInput: {
     fontSize: 14,
-    color: '#1A1C1C',
+    color: theme.text,
     minHeight: 80,
     padding: 10,
     backgroundColor: theme.background,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
     textAlignVertical: 'top',
   },
   warningContainer: {
-    backgroundColor: '#FFF5F5',
+    backgroundColor: theme.surfaceContainer,
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 16,
@@ -433,18 +433,18 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   warningText: {
     fontSize: 12,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 16,
   },
   bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E4BEBA',
+    borderTopColor: theme.border,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -462,7 +462,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   stepText: {
     fontSize: 12,
-    color: '#8F6F6C',
+    color: theme.textSecondary,
     fontWeight: '600',
   },
   statusContainer: {
@@ -474,7 +474,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
   },
   statusDot: {
     width: 8,

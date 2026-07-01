@@ -188,7 +188,7 @@ export default function EditProfileScreen({ navigation }) {
                   paddingHorizontal: 16,
                   backgroundColor: '#f5f5f5',
                   borderRadius: 6,
-                  borderWidth: 1,
+                  borderWidth: 0,
                   borderColor: '#E4BEBA',
                   alignItems: 'center'
                 }}
@@ -365,7 +365,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#E4BEBA',
   },
   backButton: {
@@ -400,7 +400,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== PROFILE PHOTO =====
   photoSection: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
   avatarContainer: {
     position: 'relative',
@@ -417,9 +417,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     borderColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 12,
   },
   avatarText: {
     fontSize: 36,
@@ -440,9 +440,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     borderColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 12,
   },
   editPhotoText: {
     fontSize: 16,
@@ -455,16 +455,16 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== FORM =====
   formSection: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
     borderColor: '#E4BEBA',
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   formGroup: {
     marginBottom: 16,
@@ -480,7 +480,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   formInput: {
     fontSize: 16,
     color: '#1A1C1C',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#E4BEBA',
     paddingVertical: 8,
     paddingHorizontal: 4,
@@ -501,7 +501,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: '#E8F5E9',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 24,
   },
   verifiedText: {
     fontSize: 11,
@@ -518,16 +518,16 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== ACTION BUTTONS =====
   actionSection: {
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 32,
   },
   saveButton: {
-    borderRadius: 8,
+    borderRadius: 16,
     overflow: 'hidden',
     shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 12,
   },
   saveGradient: {
     paddingVertical: 14,
@@ -541,7 +541,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: theme.primary,
     justifyContent: 'center',
@@ -557,15 +557,15 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== NOTIFICATIONS =====
   notificationSection: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
     borderColor: '#E4BEBA',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   notificationTitle: {
     fontSize: 16,
@@ -578,7 +578,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 10,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#F0F0F0',
   },
   notificationLabel: {

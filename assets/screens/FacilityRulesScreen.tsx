@@ -223,9 +223,6 @@ export default function FacilityRulesScreen({ navigation }) {
         <Text style={styles.headerTitle}>Rules & Guidelines</Text>
         <View style={styles.headerRight}>
           <SchoolIcon color={theme.primary} size={24} />
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{getInitials()}</Text>
-          </View>
         </View>
       </View>
 
@@ -317,9 +314,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderBottomWidth: 0.5,
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
@@ -345,16 +342,16 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderWidth: 0,
+    borderColor: theme.border,
   },
   avatarText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
   },
 
   // ===== SCROLL VIEW =====
@@ -377,29 +374,29 @@ const getStyles = (theme: any) => StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     paddingHorizontal: 14,
     height: 50,
   },
   searchIcon: {
     fontSize: 20,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginRight: 10,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#1A1C1C',
+    color: theme.text,
     padding: 0,
   },
 
   // ===== FEATURED BANNER =====
   featuredBanner: {
     height: 160,
-    borderRadius: 12,
+    borderRadius: 24,
     overflow: 'hidden',
     marginBottom: 20,
     backgroundColor: theme.primary,
@@ -427,7 +424,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   featuredTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.surface,
     marginBottom: 4,
   },
   featuredSubtitle: {
@@ -441,17 +438,17 @@ const getStyles = (theme: any) => StyleSheet.create({
     marginBottom: 20,
   },
   accordionItem: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     overflow: 'hidden',
   },
   accordionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: 24,
   },
   accordionHeaderLeft: {
     flexDirection: 'row',
@@ -470,15 +467,15 @@ const getStyles = (theme: any) => StyleSheet.create({
   accordionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
   },
   accordionSubtitle: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
   accordionArrow: {
     fontSize: 24,
-    color: '#5B403D',
+    color: theme.textSecondary,
     transform: [{ rotate: '0deg' }],
   },
   accordionArrowExpanded: {
@@ -486,8 +483,8 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   accordionContent: {
     borderTopWidth: 1,
-    borderTopColor: '#E4BEBA',
-    padding: 16,
+    borderTopColor: theme.border,
+    padding: 24,
     backgroundColor: 'rgba(175, 16, 26, 0.02)',
   },
   accordionContentItem: {
@@ -498,7 +495,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   accordionContentIconContainer: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: 16,
     backgroundColor: 'rgba(175, 16, 26, 0.06)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -513,12 +510,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   accordionContentTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 2,
   },
   accordionContentDescription: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 18,
   },
 
@@ -527,20 +524,20 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: 'rgba(91, 64, 61, 0.05)',
     borderRadius: 16,
     padding: 20,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderWidth: 0,
+    borderColor: theme.border,
     borderStyle: 'dashed',
     alignItems: 'center',
   },
   supportTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   supportSubtitle: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
@@ -548,7 +545,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,
@@ -574,12 +571,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
 
   // ===== BOTTOM SPACER =====

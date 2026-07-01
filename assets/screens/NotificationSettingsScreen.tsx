@@ -110,9 +110,7 @@ export default function NotificationSettingsScreen({ navigation }) {
           <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notification Settings</Text>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{getInitials()}</Text>
-        </View>
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView 
@@ -137,8 +135,8 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={pushNotifications}
                 onValueChange={setPushNotifications}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={pushNotifications ? '#FFFFFF' : '#FFFFFF'}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor={pushNotifications ? theme.surface : theme.surface}
               />
             </View>
           </View>
@@ -158,8 +156,8 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={maintenanceUpdates}
                 onValueChange={setMaintenanceUpdates}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={maintenanceUpdates ? '#FFFFFF' : '#FFFFFF'}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor={maintenanceUpdates ? theme.surface : theme.surface}
               />
             </View>
 
@@ -174,8 +172,8 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={campusNews}
                 onValueChange={setCampusNews}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={campusNews ? '#FFFFFF' : '#FFFFFF'}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor={campusNews ? theme.surface : theme.surface}
               />
             </View>
 
@@ -193,8 +191,8 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={emergencyAlerts}
                 onValueChange={setEmergencyAlerts}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={emergencyAlerts ? '#FFFFFF' : '#FFFFFF'}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor={emergencyAlerts ? theme.surface : theme.surface}
                 disabled={true}
               />
             </View>
@@ -215,8 +213,8 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={quietHours}
                 onValueChange={setQuietHours}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={quietHours ? '#FFFFFF' : '#FFFFFF'}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor={quietHours ? theme.surface : theme.surface}
               />
             </View>
 
@@ -231,8 +229,8 @@ export default function NotificationSettingsScreen({ navigation }) {
               <Switch
                 value={scheduledSummary}
                 onValueChange={setScheduledSummary}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={scheduledSummary ? '#FFFFFF' : '#FFFFFF'}
+                trackColor={{ false: theme.border, true: theme.primary }}
+                thumbColor={scheduledSummary ? theme.surface : theme.surface}
               />
             </View>
           </View>
@@ -271,9 +269,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderBottomWidth: 0.5,
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
@@ -294,16 +292,16 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderWidth: 0,
+    borderColor: theme.border,
   },
   avatarText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
   },
 
   // ===== SCROLL VIEW =====
@@ -321,17 +319,17 @@ const getStyles = (theme: any) => StyleSheet.create({
 
   // ===== PUSH NOTIFICATIONS =====
   sectionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -341,27 +339,27 @@ const getStyles = (theme: any) => StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
   },
   sectionSubtitle: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginTop: 2,
   },
 
   // ===== PREFERENCE CATEGORIES =====
   categoriesSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   categoriesTitle: {
     fontSize: 12,
@@ -376,7 +374,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#F0F0F0',
   },
   categoryContent: {
@@ -386,12 +384,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   categoryTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   categoryDescription: {
     fontSize: 12,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 16,
   },
   emergencyItem: {
@@ -418,17 +416,17 @@ const getStyles = (theme: any) => StyleSheet.create({
 
   // ===== DELIVERY SCHEDULE =====
   deliverySection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
-    marginBottom: 24,
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    padding: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
+    marginBottom: 32,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   deliveryTitle: {
     fontSize: 12,
@@ -443,7 +441,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#F0F0F0',
   },
   deliveryContent: {
@@ -453,23 +451,23 @@ const getStyles = (theme: any) => StyleSheet.create({
   deliveryItemTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 2,
   },
   deliveryItemDescription: {
     fontSize: 12,
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
 
   // ===== SAVE BUTTON =====
   saveButton: {
-    borderRadius: 8,
+    borderRadius: 16,
     overflow: 'hidden',
     shadowColor: theme.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 12,
   },
   saveGradient: {
     paddingVertical: 14,
@@ -479,7 +477,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.surface,
   },
 
   // ===== BOTTOM SPACER =====

@@ -145,6 +145,9 @@ export default function ProfileScreen({ navigation }) {
                 <Text style={styles.locationText}>{fullAddress}</Text>
               </View>
               <Text style={styles.studentId}>Student ID: <Text style={styles.studentIdBold}>{studentId}</Text></Text>
+              <TouchableOpacity style={styles.editProfilePill} onPress={handleEditProfile}>
+                <Text style={styles.editProfilePillText}>Edit Profile</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -244,9 +247,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderBottomWidth: 0.5,
+    borderBottomColor: theme.border,
   },
   backButton: {
     width: 40,
@@ -271,7 +274,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   moreButtonText: {
     fontSize: 24,
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
 
   // ===== SCROLL VIEW =====
@@ -290,7 +293,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== PROFILE HEADER =====
   profileHeader: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
   avatarContainer: {
     position: 'relative',
@@ -304,16 +307,16 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 4,
-    borderColor: '#FFFFFF',
+    borderColor: theme.surface,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 12,
   },
   avatarText: {
     fontSize: 48,
-    color: '#FFFFFF',
+    color: theme.surface,
     fontWeight: '700',
   },
   editAvatarButton: {
@@ -327,21 +330,21 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: theme.surface,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 12,
   },
   editAvatarText: {
     fontSize: 18,
-    color: '#FFFFFF',
+    color: theme.surface,
   },
   profileName: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
     textAlign: 'center',
     marginBottom: 6,
   },
@@ -352,7 +355,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: '#EEEEEE',
     paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 24,
     alignSelf: 'center',
     marginBottom: 4,
   },
@@ -362,44 +365,44 @@ const getStyles = (theme: any) => StyleSheet.create({
   locationText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
   studentId: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     textAlign: 'center',
   },
   studentIdBold: {
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
   },
 
   // ===== STATS =====
   statsContainer: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 32,
   },
   statsCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    padding: 20,
+    borderRadius: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   statsIconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 8,
+    borderRadius: 16,
     backgroundColor: 'rgba(175, 16, 26, 0.08)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -413,29 +416,29 @@ const getStyles = (theme: any) => StyleSheet.create({
   statsLabel: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#5B403D',
+    color: theme.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   statsValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
   },
 
   // ===== ACTION LIST =====
   actionList: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
+    backgroundColor: theme.surface,
+    borderRadius: 24,
+    borderWidth: 0,
+    borderColor: theme.border,
     overflow: 'hidden',
-    marginBottom: 24,
+    marginBottom: 32,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   actionItem: {
     flexDirection: 'row',
@@ -443,8 +446,8 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    borderBottomWidth: 0.5,
+    borderBottomColor: theme.border,
   },
   actionItemLast: {
     borderBottomWidth: 0,
@@ -457,8 +460,8 @@ const getStyles = (theme: any) => StyleSheet.create({
   actionIcon: {
     width: 36,
     height: 36,
-    borderRadius: 8,
-    backgroundColor: '#F3F3F3',
+    borderRadius: 16,
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -467,7 +470,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   actionText: {
     fontSize: 15,
-    color: '#1A1C1C',
+    color: theme.text,
   },
   actionChevron: {
     fontSize: 20,
@@ -482,19 +485,19 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 12,
+    borderRadius: 24,
     borderWidth: 2,
     borderColor: theme.primary,
     width: '100%',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   logoutIcon: {
     fontSize: 20,
@@ -506,7 +509,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   versionText: {
     fontSize: 11,
-    color: '#5B403D',
+    color: theme.textSecondary,
     opacity: 0.6,
     marginTop: 16,
   },

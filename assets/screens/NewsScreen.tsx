@@ -314,11 +314,10 @@ export default function NewsScreen({ navigation }) {
           <Text style={styles.headerTitle}>Campus News</Text>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerButton}>
-            <Text style={styles.headerButtonIcon}>🔍</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton}>
-            <PersonIcon color={theme.primary} size={24} />
+          <TouchableOpacity style={[styles.profileButton, { backgroundColor: theme.primary }]} onPress={() => navigation.navigate('Profile')}>
+            <View style={styles.profileAvatar}>
+              <PersonIcon color={theme.primaryText} size={20} />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -371,35 +370,6 @@ export default function NewsScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* ===== BOTTOM NAV ===== */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <PersonIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Home</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => navigation.navigate('Requests')}
-        >
-          <WrenchIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Requests</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
-          <ClipboardIcon color={theme.primary} size={24} />
-          <Text style={[styles.navLabel, styles.navLabelActive]}>News</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <BellIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Emergency</Text>
-        </TouchableOpacity>
-      </View>
-
     </SafeAreaView>
   );
 }
@@ -410,16 +380,15 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: theme.background,
   },
 
-  // ===== HEADER =====
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E8E8E8',
+    borderBottomColor: theme.border,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -440,12 +409,20 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  headerButton: {
-    padding: 4,
+  profileButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: theme.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  headerButtonIcon: {
-    fontSize: 22,
-    color: '#5B403D',
+  profileAvatar: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   // ===== SCROLL VIEW =====
@@ -469,7 +446,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: theme.surfaceContainer,
   },
   activeFilterTab: {
     backgroundColor: theme.primary,
@@ -477,7 +454,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   filterText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
   activeFilterText: {
     color: theme.primaryText,
@@ -489,16 +466,16 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   resultCountText: {
     fontSize: 12,
-    color: '#5B403D',
+    color: theme.textSecondary,
     fontStyle: 'italic',
   },
 
   // ===== FEATURED CARD =====
   featuredCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
     overflow: 'hidden',
     marginBottom: 20,
     shadowColor: '#000',
@@ -562,13 +539,13 @@ const getStyles = (theme: any) => StyleSheet.create({
   featuredTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 6,
     lineHeight: 26,
   },
   featuredDescription: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -579,7 +556,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   featuredTime: {
     fontSize: 12,
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
   featuredReadMore: {
     fontSize: 13,
@@ -600,7 +577,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   recentTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
   },
 
   // ===== NEWS GRID =====
@@ -608,10 +585,10 @@ const getStyles = (theme: any) => StyleSheet.create({
     gap: 16,
   },
   newsCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -672,18 +649,18 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   newsTime: {
     fontSize: 11,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginBottom: 4,
   },
   newsTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   newsDescription: {
     fontSize: 13,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 18,
     marginBottom: 8,
   },
@@ -710,55 +687,16 @@ const getStyles = (theme: any) => StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#5B403D',
+    color: theme.textSecondary,
   },
 
   // ===== BOTTOM SPACER =====
   bottomSpacer: {
     height: 20,
-  },
-
-  // ===== BOTTOM NAV =====
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: theme.background,
-    paddingHorizontal: 8,
-    paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E8E8E8',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  navItemActive: {
-    backgroundColor: theme.primaryContainer,
-  },
-  navIcon: {
-    fontSize: 24,
-  },
-  navLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: '#666',
-    marginTop: 2,
-  },
-  navLabelActive: {
-    color: '#FFFFFF',
   },
 });

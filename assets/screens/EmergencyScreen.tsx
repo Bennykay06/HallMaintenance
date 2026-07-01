@@ -117,7 +117,7 @@ export default function EmergencyScreen({ navigation }) {
         <View style={styles.primaryContent}>
           <View style={styles.primaryLeft}>
             <View style={styles.primaryIconContainer}>
-              <PersonIcon color={theme.primary} size={32} />
+              <SecurityIcon color={theme.primary} size={32} />
             </View>
             <View>
               <Text style={styles.primaryName}>{primaryContact.name}</Text>
@@ -136,10 +136,10 @@ export default function EmergencyScreen({ navigation }) {
     );
   };
 
-  const renderSectionHeader = (icon: string, title: string) => {
+  const renderSectionHeader = (icon: React.ReactNode, title: string) => {
     return (
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionIcon}>{icon}</Text>
+        {icon}
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
     );
@@ -202,14 +202,14 @@ export default function EmergencyScreen({ navigation }) {
           {renderPrimaryContact()}
 
           <View style={styles.sectionContainer}>
-            {renderSectionHeader('🔧', 'Facility Emergencies')}
+            {renderSectionHeader(<WrenchIcon color={theme.primary} size={24} />, 'Facility Emergencies')}
             <View style={styles.contactGrid}>
               {campusSecurity.map((item) => renderContactCard(item))}
             </View>
           </View>
 
           <View style={styles.sectionContainer}>
-            {renderSectionHeader('🏥', 'Medical Support')}
+            {renderSectionHeader(<SanitizerIcon color={theme.primary} size={24} />, 'Medical Support')}
             <View style={styles.contactGrid}>
               {medicalSupport.map((item) => renderContactCard(item))}
             </View>
@@ -235,9 +235,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E8E8E8',
+    borderBottomColor: theme.border,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -257,16 +257,16 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
   },
   avatarText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
   },
   scrollView: {
     flex: 1,
@@ -285,12 +285,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 4,
   },
   pageSubtitle: {
     fontSize: 16,
-    color: '#5B403D',
+    color: theme.textSecondary,
     lineHeight: 22,
   },
   primaryCard: {
@@ -333,7 +333,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   primaryName: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.primaryText,
     marginBottom: 2,
   },
   primaryDescription: {
@@ -344,11 +344,11 @@ const getStyles = (theme: any) => StyleSheet.create({
   primaryPhone: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.primaryText,
     letterSpacing: 1,
   },
   primaryCallButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
@@ -372,10 +372,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  sectionIcon: {
-    fontSize: 20,
-    color: theme.primary,
-  },
+
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
@@ -387,11 +384,11 @@ const getStyles = (theme: any) => StyleSheet.create({
     gap: 12,
   },
   contactCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.surface,
     padding: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E4BEBA',
+    borderColor: theme.border,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -411,7 +408,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: theme.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -421,12 +418,12 @@ const getStyles = (theme: any) => StyleSheet.create({
   contactName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1C1C',
+    color: theme.text,
     marginBottom: 2,
   },
   contactDescription: {
     fontSize: 12,
-    color: '#5B403D',
+    color: theme.textSecondary,
     marginBottom: 2,
   },
   contactPhone: {

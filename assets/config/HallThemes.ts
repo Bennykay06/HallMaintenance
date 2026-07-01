@@ -5,6 +5,7 @@ export interface HallTheme {
   secondary: string;
   background: string;
   surface: string;
+  surfaceContainer: string;
   text: string;
   textSecondary: string;
   border: string;
@@ -23,6 +24,7 @@ export const HALL_THEMES: Record<string, HallTheme> = {
     secondary: '#B51A1B',
     background: '#F9F9F9',
     surface: '#FFFFFF',
+    surfaceContainer: '#F3F3F3',
     text: '#1A1C1C',
     textSecondary: '#5B403D',
     border: '#E4BEBA',
@@ -39,6 +41,7 @@ export const HALL_THEMES: Record<string, HallTheme> = {
     secondary: '#B51A1B',
     background: '#F9F9F9',
     surface: '#FFFFFF',
+    surfaceContainer: '#F3F3F3',
     text: '#1A1C1C',
     textSecondary: '#5B403D',
     border: '#E4BEBA',
@@ -55,6 +58,7 @@ export const HALL_THEMES: Record<string, HallTheme> = {
     secondary: '#1E1E1E',
     background: '#121212',
     surface: '#1E1E1E',
+    surfaceContainer: '#2A2A2A',
     text: '#FFFFFF',
     textSecondary: '#B0B0B0',
     border: '#333333',
@@ -71,6 +75,7 @@ export const HALL_THEMES: Record<string, HallTheme> = {
     secondary: '#1B5E20',
     background: '#F1F8F1',
     surface: '#FFFFFF',
+    surfaceContainer: '#E8F5E9',
     text: '#1A1C1C',
     textSecondary: '#5B403D',
     border: '#C8E6C9',
@@ -87,6 +92,7 @@ export const HALL_THEMES: Record<string, HallTheme> = {
     secondary: '#006994',
     background: '#F0F8FF',
     surface: '#FFFFFF',
+    surfaceContainer: '#E3F2FD',
     text: '#1A1C1C',
     textSecondary: '#5B403D',
     border: '#B3D9E8',
@@ -103,6 +109,7 @@ export const HALL_THEMES: Record<string, HallTheme> = {
     secondary: '#1A1A1A',
     background: '#FFFDF5',
     surface: '#FFFFFF',
+    surfaceContainer: '#FEF9E7',
     text: '#1A1C1C',
     textSecondary: '#5B403D',
     border: '#F9E79F',

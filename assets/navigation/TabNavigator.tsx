@@ -23,19 +23,19 @@ const HomeIcon = ({ color, size }: IconProps) => (
 
 const RequestsIcon = ({ color, size }: IconProps) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-    <Path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" />
+    <Path d="M21.67 18.17l-5.3-5.3h-.99l-2.54 2.54v.99l5.3 5.3c.39.39 1.02.39 1.41 0l2.12-2.12c.39-.38.39-1.02 0-1.41zM17.34 10.19l1.41-1.41 2.12 2.12c1.17-1.17 1.17-3.07 0-4.24l-3.54-3.54-1.41 1.41V1.71L15.22 1l-3.54 3.54.71 1.41h2.83l-1.41 1.41 1.06 1.06-2.83 2.83-3.54-3.54c-1.17-1.17-3.07-1.17-4.24 0L1 11.22l1.41 1.41v2.83l3.54 3.54c1.17 1.17 3.07 1.17 4.24 0l3.54-3.54 1.41-1.41 2.12 2.12z" />
   </Svg>
 );
 
 const NewsIcon = ({ color, size }: IconProps) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-    <Path d="M22 3l-1.67 1.67L18.67 3 17 4.67 15.33 3l-1.66 1.67L12 3l-1.67 1.67L8.67 3 7 4.67 5.33 3 3.67 4.67 2 3v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V3zM11 19H4v-6h7v6zm9 0h-7v-2h7v2zm0-4h-7v-2h7v2zm0-4H4V8h16v3z" />
+    <Path d="M20 3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H4V5h16v11zm-2-9H6v2h12V7zm0 4H6v2h12v-2zm-6 4H6v2h6v-2z" />
   </Svg>
 );
 
 const EmergencyIcon = ({ color, size }: IconProps) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-    <Path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+    <Path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L3 21l3.38-1.97C7.92 20.26 9.87 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-1.63 0-3.16-.44-4.46-1.22l-.32-.19-2.09 1.21 1.21-2.09-.19-.32C5.44 15.16 5 13.63 5 12c0-3.86 3.14-7 7-7s7 3.14 7 7-3.14 7-7 7z" />
   </Svg>
 );
 
@@ -74,17 +74,11 @@ const TabIcon = ({ focused, Icon, label, theme }: TabIconProps & { theme: any })
         numberOfLines={1}
         style={[
           styles.tabLabel,
-          focused && styles.tabLabelActive,
-          isEmergency && focused && styles.tabLabelEmergency,
+          focused && { color: theme.primaryText },
+          isEmergency && focused && { color: theme.primaryText },
         ]}>
         {label}
       </Text>
-      {focused && (
-        <View style={[
-          styles.tabIndicator,
-          isEmergency && styles.tabIndicatorEmergency,
-        ]} />
-      )}
     </Animated.View>
   );
 };
@@ -98,9 +92,9 @@ export default function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: '#666',
+        tabBarStyle: [styles.tabBar, { backgroundColor: theme.surface, borderTopColor: theme.border }],
+        tabBarActiveTintColor: theme.primaryText,
+        tabBarInactiveTintColor: theme.textSecondary,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
       }}
@@ -154,16 +148,18 @@ export default function TabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: '#1E1E1E',
     borderTopWidth: 1,
-    borderTopColor: '#E4BEBA',
+    borderTopColor: '#333333',
     height: Platform.OS === 'ios' ? 90 : 72,
     paddingBottom: Platform.OS === 'ios' ? 4 : 2,
-    paddingTop: 14,
+    paddingTop: 10,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.04,
@@ -173,10 +169,10 @@ const styles = StyleSheet.create({
   tabItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 20,
-    minWidth: 68,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    minWidth: 72,
     position: 'relative',
   },
   tabItemActive: {
@@ -197,15 +193,17 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 10,
-    fontWeight: '500',
-    color: '#666',
+    fontWeight: '700',
+    color: '#AAAAAA',
     marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   tabLabelActive: {
-    color: '#FFFFFF',
+    color: '#121212',
   },
   tabLabelEmergency: {
-    color: '#FFFFFF',
+    color: '#121212',
   },
   tabIndicator: {
     position: 'absolute',

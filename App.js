@@ -22,6 +22,9 @@ import HelpSupportScreen from './assets/screens/HelpSupportScreen.tsx';
 import LoginScreen from './assets/screens/LoginScreen.tsx';
 import RegisterScreen from './assets/screens/RegisterScreen.tsx';
 import OnboardingScreen from './assets/screens/OnboardingScreen.tsx';
+import NotificationScreen from './assets/screens/NotificationScreen.tsx';
+import NotificationDetailScreen from './assets/screens/NotificationDetailScreen.tsx';
+import ChatScreen from './assets/screens/ChatScreen.tsx';
 
 const Stack = createStackNavigator();
 
@@ -71,6 +74,9 @@ export default function App() {
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="FacilityRules" component={FacilityRulesScreen} />
             <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+            <Stack.Screen name="Notification" component={NotificationScreen} />
+            <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} />
+            <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
           </Stack.Navigator>
         </NavigationContainer>

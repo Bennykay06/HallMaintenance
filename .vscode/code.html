@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#121212",
+                    "primary": "#FFCB05",
+                    "on-primary": "#121212",
+                    "surface": "#1E1E1E",
+                    "on-surface": "#FFFFFF",
+                    "surface-container": "#2A2A2A",
+                    "outline-variant": "#333333",
+                    "on-surface-variant": "#AAAAAA"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "xl": "64px",
+                    "sm": "12px",
+                    "margin": "32px",
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "title-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+        }
+        .sunflower-gradient {
+            background: linear-gradient(135deg, #FFCB05 0%, #E5B600 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-surface border-b border-outline-variant z-40 flex justify-between items-center px-4 h-16">
+<div class="flex items-center gap-3">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">HallMaintenance</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary flex items-center justify-center text-on-primary font-bold">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 pt-6 space-y-8">
+<!-- Welcome Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter items-stretch">
+<div class="lg:col-span-2 sunflower-gradient rounded-xl p-8 text-black flex flex-col justify-center relative overflow-hidden shadow-lg">
+<div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">engineering</span>
+</div>
+<h2 class="font-display-lg text-display-lg mb-2">Welcome, Alex.</h2>
+<p class="font-body-lg text-body-lg opacity-90 max-w-md">Your comfort is our priority. Report issues, check hall news, or access emergency support instantly.</p>
+<div class="mt-6 flex items-center gap-2 bg-black/10 border border-black/20 rounded-lg px-4 py-3 w-fit">
+<span class="material-symbols-outlined text-black">location_on</span>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-black/70 uppercase tracking-widest">Current Residence</span>
+<span class="font-title-md text-black">Unity Hall, Floor 2, Room 204</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Maintenance Schedule -->
+<section class="space-y-4">
+<h3 class="font-title-md text-title-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">calendar_month</span> Maintenance Schedule
+            </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface p-4 rounded-xl border border-outline-variant flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">notifications_active</span>
+</div>
+<div>
+<p class="font-title-md text-body-lg font-bold">Fire Alarm Testing</p>
+<p class="font-body-sm text-on-surface-variant">Oct 25 • 10:00 AM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">info</span>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">airware</span>
+</div>
+<div>
+<p class="font-title-md text-body-lg font-bold">AC Filter Replacement</p>
+<p class="font-body-sm text-on-surface-variant">Oct 28 • All Day</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">info</span>
+</div>
+</div>
+</section>
+<!-- Maintenance Services -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="md:col-span-2 grid grid-cols-2 gap-4">
+<div class="col-span-2">
+<h3 class="font-title-md text-title-md text-primary mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined">handyman</span> Maintenance Services
+                    </h3>
+</div>
+<!-- Electrical -->
+<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
+<span class="material-symbols-outlined">electrical_services</span>
+</div>
+<p class="font-title-md text-title-md mb-1">Electrical</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lighting, outlets, etc.</p>
+</div>
+<!-- Plumbing -->
+<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
+<span class="material-symbols-outlined">plumbing</span>
+</div>
+<p class="font-title-md text-title-md mb-1">Plumbing</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Leaks, taps, drainage.</p>
+</div>
+<!-- Carpentry -->
+<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
+<span class="material-symbols-outlined">carpenter</span>
+</div>
+<p class="font-title-md text-title-md mb-1">Carpentry</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Doors, windows, desks.</p>
+</div>
+<!-- Masonry -->
+<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
+<span class="material-symbols-outlined">foundation</span>
+</div>
+<p class="font-title-md text-title-md mb-1">Masonry</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Walls, floors, tiles.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-2 pb-safe bg-surface z-50 rounded-t-xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)] border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-1 transition-all duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-90 px-4 py-1" href="#">
+<span class="material-symbols-outlined">handyman</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Requests</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-90 px-4 py-1" href="#">
+<span class="material-symbols-outlined">newspaper</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">News</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-90 px-4 py-1" href="#">
+<span class="material-symbols-outlined">emergency_share</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Emergency</span>
+</a>
+</nav>
+<!-- FAB -->
+<button class="fixed right-6 bottom-24 w-14 h-14 rounded-2xl bg-primary text-black shadow-[0_4px_20px_rgba(255,203,5,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-[32px] font-bold">add</span>
+</button>
+<script>
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-lg');
+            } else {
+                header.classList.remove('shadow-lg');
+            }
+        });
+    </script>
+</body></html>
