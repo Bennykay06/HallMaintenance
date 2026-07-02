@@ -148,9 +148,9 @@ export default function TabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#0d0d0d',
     borderTopWidth: 1,
-    borderTopColor: '#333333',
+    borderTopColor: '#0e0e0e',
     height: Platform.OS === 'ios' ? 90 : 72,
     paddingBottom: Platform.OS === 'ios' ? 4 : 2,
     paddingTop: 10,

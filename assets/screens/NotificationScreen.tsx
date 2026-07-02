@@ -298,9 +298,7 @@ export default function NotificationScreen({ navigation }) {
           <Text style={[styles.backButtonText, { color: theme.primary }]}>←</Text>
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Notification Center</Text>
-        <TouchableOpacity style={styles.shareButton}>
-          <Text style={[styles.shareButtonText, { color: theme.primary }]}>↗</Text>
-        </TouchableOpacity>
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView
@@ -413,14 +411,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  shareButton: {
+  headerSpacer: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  shareButtonText: {
-    fontSize: 24,
   },
 
   // ===== SCROLL VIEW =====

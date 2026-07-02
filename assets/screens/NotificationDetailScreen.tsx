@@ -9,6 +9,7 @@ import {
   StatusBar,
   Platform,
   Alert,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -54,6 +55,11 @@ export default function NotificationDetailScreen({ navigation, route }) {
     online: false,
   };
 
+  // A completed/resolved work order is read-only: show the work details, time,
+  // and the specialist who resolved it — no messaging.
+  const status = (notificationData.status || '').toLowerCase();
+  const isResolved = status === 'completed' || status === 'resolved';
+
   useEffect(() => {
     loadUserData();
   }, []);
@@ -85,8 +91,25 @@ export default function NotificationDetailScreen({ navigation, route }) {
     });
   };
 
-  const handleShare = () => {
-    Alert.alert('Share', 'Share this notification details.');
+  const handleShare = async () => {
+    const specialistLabel = isResolved ? 'Resolved by' : 'Technician';
+    const lines = [
+      notificationData.title,
+      `Status: ${notificationData.status}`,
+      `Issue: ${notificationData.category}`,
+      `Time: ${notificationData.time}`,
+      `${specialistLabel}: ${technician.name}${technician.role ? ` (${technician.role})` : ''}`,
+      '',
+      notificationData.description,
+    ];
+    try {
+      await Share.share({
+        title: notificationData.title,
+        message: lines.join('\n'),
+      });
+    } catch (error) {
+      console.log('Error sharing notification:', error);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -94,6 +117,7 @@ export default function NotificationDetailScreen({ navigation, route }) {
       case 'in progress':
         return '#AF101A';
       case 'completed':
+      case 'resolved':
         return '#22C55E';
       case 'scheduled':
         return '#F59E0B';
@@ -123,7 +147,7 @@ export default function NotificationDetailScreen({ navigation, route }) {
       <ScrollView 
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={isResolved ? styles.scrollContentResolved : styles.scrollContent}
       >
         <View style={styles.content}>
           
@@ -169,13 +193,15 @@ export default function NotificationDetailScreen({ navigation, route }) {
             </View>
           </View>
 
-          {/* ===== ASSIGNED TECHNICIAN ===== */}
+          {/* ===== ASSIGNED / RESOLVING TECHNICIAN ===== */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionIcon}>🔧</Text>
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Assigned Technician</Text>
+              <Text style={styles.sectionIcon}>{isResolved ? '✅' : '🔧'}</Text>
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>
+                {isResolved ? 'Resolved By' : 'Assigned Technician'}
+              </Text>
             </View>
-            <View style={[styles.technicianCard, { 
+            <View style={[styles.technicianCard, {
               backgroundColor: theme.surface,
               borderColor: theme.border,
             }]}>
@@ -186,25 +212,32 @@ export default function NotificationDetailScreen({ navigation, route }) {
                       {getInitials(technician.name)}
                     </Text>
                   </View>
-                  {technician.online && (
+                  {!isResolved && technician.online && (
                     <View style={[styles.onlineDot, { backgroundColor: '#22C55E' }]} />
                   )}
                 </View>
-                <View>
+                <View style={styles.technicianText}>
                   <Text style={[styles.technicianName, { color: theme.text }]}>
                     {technician.name}
                   </Text>
                   <Text style={[styles.technicianRole, { color: theme.textSecondary }]}>
                     {technician.role}
                   </Text>
+                  {isResolved && (
+                    <Text style={[styles.resolvedMeta, { color: theme.textSecondary }]}>
+                      Resolved • {notificationData.time}
+                    </Text>
+                  )}
                 </View>
               </View>
-              <TouchableOpacity 
-                style={[styles.messageButton, { backgroundColor: theme.primary }]}
-                onPress={handleMessageTechnician}
-              >
-                <Text style={styles.messageButtonText}>💬</Text>
-              </TouchableOpacity>
+              {!isResolved && (
+                <TouchableOpacity
+                  style={[styles.messageButton, { backgroundColor: theme.primary }]}
+                  onPress={handleMessageTechnician}
+                >
+                  <Text style={styles.messageButtonText}>💬</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -213,25 +246,27 @@ export default function NotificationDetailScreen({ navigation, route }) {
         </View>
       </ScrollView>
 
-      {/* ===== BOTTOM ACTION ===== */}
-      <View style={[styles.bottomContainer, { 
-        backgroundColor: theme.surface,
-        borderTopColor: theme.border,
-      }]}>
-        <View style={styles.actionContainer}>
-          <TouchableOpacity 
-            style={[styles.messageActionButton, { 
-              borderColor: theme.primary,
-            }]}
-            onPress={handleMessageTechnician}
-          >
-            <Text style={[styles.messageActionText, { color: theme.primary }]}>
-              Message Technician
-            </Text>
-            <Text style={[styles.messageActionIcon, { color: theme.primary }]}>💬</Text>
-          </TouchableOpacity>
+      {/* ===== BOTTOM ACTION (hidden once resolved — read-only) ===== */}
+      {!isResolved && (
+        <View style={[styles.bottomContainer, {
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
+        }]}>
+          <View style={styles.actionContainer}>
+            <TouchableOpacity
+              style={[styles.messageActionButton, {
+                borderColor: theme.primary,
+              }]}
+              onPress={handleMessageTechnician}
+            >
+              <Text style={[styles.messageActionText, { color: theme.primary }]}>
+                Message Technician
+              </Text>
+              <Text style={[styles.messageActionIcon, { color: theme.primary }]}>💬</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
 
     </SafeAreaView>
   );
@@ -280,6 +315,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 120,
+  },
+  scrollContentResolved: {
+    paddingBottom: 20,
   },
   content: {
     paddingHorizontal: 16,
@@ -394,6 +432,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    flex: 1,
+  },
+  technicianText: {
+    flex: 1,
+  },
+  resolvedMeta: {
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '500',
   },
   technicianAvatarContainer: {
     position: 'relative',
