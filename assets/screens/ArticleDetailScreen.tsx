@@ -1,6 +1,6 @@
 // src/screens/ArticleDetailScreen.tsx
 import { useTheme } from '../context/ThemeContext';
-import { PersonIcon, ClipboardIcon, CalendarIcon, WrenchIcon, BellIcon, CloseIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
+import { PersonIcon, ClipboardIcon, CalendarIcon, WrenchIcon, BellIcon, CloseIcon, ArrowLeftIcon, ShareIcon } from '../components/Icons';
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -17,6 +17,7 @@ import {
   Dimensions,
   Modal,
   ActivityIndicator,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -67,9 +68,9 @@ Elevator B has been returned to regular service as of this morning. We thank you
   const [selectedImage, setSelectedImage] = useState(null);
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  // Get article images
+  // Get article images (prefer the image passed in from the news list)
   const articleImages = ARTICLE_IMAGES[article.id] || ARTICLE_IMAGES['1'];
-  const heroImage = articleImages?.hero || 'https://via.placeholder.com/800x400/af101a/ffffff?text=Article+Image';
+  const heroImage = article.image || articleImages?.hero || 'https://via.placeholder.com/800x400/af101a/ffffff?text=Article+Image';
 
   useEffect(() => {
     loadUserData();
@@ -84,8 +85,15 @@ Elevator B has been returned to regular service as of this morning. We thank you
     }
   };
 
-  const handleShare = () => {
-    Alert.alert('Share', 'Share this article with others');
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        title: article.title,
+        message: `${article.title}\n\n${article.content.trim()}`,
+      });
+    } catch (error) {
+      Alert.alert('Unable to share', 'Something went wrong while sharing this article.');
+    }
   };
 
   const handleImagePress = (imageUri) => {
@@ -135,7 +143,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Article Detail</Text>
         <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-          <ArrowRightIcon color={theme.primary} size={20} />
+          <ShareIcon color={theme.primary} size={22} />
         </TouchableOpacity>
       </View>
 
@@ -218,24 +226,28 @@ Elevator B has been returned to regular service as of this morning. We thank you
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity 
+        <TouchableOpacity
+          style={styles.modalContainer}
+          activeOpacity={1}
+          onPress={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
             style={styles.modalCloseButton}
             onPress={() => setModalVisible(false)}
           >
             <CloseIcon color="#666" size={24} />
           </TouchableOpacity>
           {selectedImage && (
-            <Image 
+            <Image
               source={{ uri: selectedImage }}
               style={styles.modalImage}
               resizeMode="contain"
             />
           )}
           <View style={styles.modalFooter}>
-            <Text style={styles.modalFooterText}>Tap outside image to close</Text>
+            <Text style={styles.modalFooterText}>Tap anywhere to close</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
 
       {/* ===== BOTTOM NAV - PUSHED TO VERY BOTTOM ===== */}

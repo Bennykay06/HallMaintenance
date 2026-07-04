@@ -1,6 +1,6 @@
 // src/screens/SuccessScreen.tsx
 import { useTheme } from '../context/ThemeContext';
-import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
+import { CheckIcon, ClockIcon, EyeIcon } from '../components/Icons';
 
 import React, { useEffect, useRef } from 'react';
 import {
@@ -74,13 +74,7 @@ export default function SuccessScreen({ navigation, route }) {
       
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackToHome} style={styles.backButton}>
-          <ArrowLeftIcon color={theme.primary} size={24} />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Success</Text>
-        <View style={styles.avatar}>
-          <PersonIcon color={theme.primary} size={24} />
-        </View>
       </View>
 
       <ScrollView 
@@ -99,16 +93,9 @@ export default function SuccessScreen({ navigation, route }) {
           ]}
         >
           <View style={styles.successCircle}>
-            <Animated.Text 
-              style={[
-                styles.successCheckmark,
-                {
-                  transform: [{ scale: checkmarkScale }],
-                }
-              ]}
-            >
-              ✓
-            </Animated.Text>
+            <Animated.View style={{ transform: [{ scale: checkmarkScale }] }}>
+              <CheckIcon color="#2E7D32" size={56} />
+            </Animated.View>
           </View>
           <View style={styles.glowEffect} />
         </Animated.View>
@@ -180,7 +167,7 @@ export default function SuccessScreen({ navigation, route }) {
           <View style={styles.infoCard}>
             <View style={styles.infoCardContent}>
               <View style={styles.infoIconContainer}>
-                <Text style={styles.infoIcon}>⏰</Text>
+                <ClockIcon color={theme.primary} size={20} />
               </View>
               <View style={styles.infoTextContainer}>
                 <Text style={styles.infoTitle}>Quick Response</Text>
@@ -195,7 +182,7 @@ export default function SuccessScreen({ navigation, route }) {
           <View style={styles.infoCard}>
             <View style={styles.infoCardContent}>
               <View style={styles.infoIconContainer}>
-                <Text style={styles.infoIcon}>👁️</Text>
+                <EyeIcon color={theme.primary} size={20} />
               </View>
               <View style={styles.infoTextContainer}>
                 <Text style={styles.infoTitle}>Track Status</Text>
@@ -237,29 +224,6 @@ export default function SuccessScreen({ navigation, route }) {
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* ===== BOTTOM NAV - PUSHED TO VERY BOTTOM ===== */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={handleBackToHome}>
-          <PersonIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Home</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]} onPress={handleViewRequests}>
-          <WrenchIcon color={theme.primary} size={24} />
-          <Text style={[styles.navLabel, styles.navLabelActive]}>Requests</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <ClipboardIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>News</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItem}>
-          <BellIcon color={theme.primary} size={24} />
-          <Text style={styles.navLabel}>Emergency</Text>
-        </TouchableOpacity>
-      </View>
-
     </SafeAreaView>
   );
 }
@@ -273,7 +237,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== HEADER =====
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -281,33 +245,10 @@ const getStyles = (theme: any) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E4BEBA',
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: theme.primary,
-  },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: theme.primary,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#F3F3F3',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
-  },
-  avatarText: {
-    fontSize: 18,
   },
 
   // ===== SCROLL VIEW =====
@@ -338,11 +279,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     zIndex: 1,
-  },
-  successCheckmark: {
-    fontSize: 48,
-    color: '#2E7D32',
-    fontWeight: '700',
   },
   glowEffect: {
     position: 'absolute',
@@ -440,9 +376,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexShrink: 0,
-  },
-  infoIcon: {
-    fontSize: 20,
   },
   infoTextContainer: {
     flex: 1,

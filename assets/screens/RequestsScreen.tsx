@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getReports, isDoneStatus, processDueResolutions, deleteReport, clearHistory } from '../utils/reports';
 
 export default function RequestsScreen({ navigation, route }) {
   const { theme } = useTheme();
@@ -37,7 +38,24 @@ export default function RequestsScreen({ navigation, route }) {
   useEffect(() => {
     loadData();
     loadUserName();
-  }, []);
+    // On focus, let the simulated technician resolve any due requests (which
+    // also posts a notification), then refresh so resolved items move to
+    // History.
+    const onFocus = async () => {
+      await processDueResolutions();
+      await loadData();
+    };
+    const unsubscribe = navigation.addListener('focus', onFocus);
+    // While the screen is open, keep checking so a resolution appears live.
+    const interval = setInterval(async () => {
+      const changed = await processDueResolutions();
+      if (changed) await loadData();
+    }, 5000);
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
+  }, [navigation]);
 
   const loadUserName = async () => {
     try {
@@ -50,11 +68,10 @@ export default function RequestsScreen({ navigation, route }) {
 
   const loadData = async () => {
     try {
-      const reportsData = await AsyncStorage.getItem('reports');
-      const reports = reportsData ? JSON.parse(reportsData) : [];
+      const reports = await getReports();
 
-      const active = reports.filter(r => r.status !== 'completed');
-      const completed = reports.filter(r => r.status === 'completed');
+      const active = reports.filter(r => !isDoneStatus(r.status));
+      const completed = reports.filter(r => isDoneStatus(r.status));
 
       setActiveRequests(active);
       setHistory(completed);
@@ -102,6 +119,44 @@ export default function RequestsScreen({ navigation, route }) {
 
   const handleNewRequest = () => {
     navigation.navigate('Home');
+  };
+
+  const handleClearReport = (request) => {
+    Alert.alert(
+      'Clear Report',
+      'Remove this report from your history? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            const id = request.id || request.timestamp;
+            const remaining = await deleteReport(id);
+            setHistory(remaining.filter(r => isDoneStatus(r.status)));
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClearHistory = () => {
+    if (history.length === 0) return;
+    Alert.alert(
+      'Clear History',
+      'Remove all resolved reports from your history? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: async () => {
+            await clearHistory();
+            setHistory([]);
+          },
+        },
+      ]
+    );
   };
 
   const handleResumeDraft = (draft) => {
@@ -196,6 +251,7 @@ export default function RequestsScreen({ navigation, route }) {
         <Text style={styles.requestId}>
           ID: {request.referenceId || 'Pending'} • Submitted {request.timestamp ? new Date(request.timestamp).toLocaleDateString() : 'recently'}
         </Text>
+        <Text style={styles.awaitingText}>A technician will update you when this is resolved.</Text>
       </View>
     ));
   };
@@ -211,25 +267,36 @@ export default function RequestsScreen({ navigation, route }) {
       );
     }
 
-    return history.map((request) => (
-      <View key={request.id || request.timestamp} style={[styles.requestCard, styles.completedCard]}>
-        <View style={styles.requestHeader}>
-          <Text style={styles.requestTitle}>{request.serviceType || 'Request'}</Text>
-          <View style={[
-            styles.statusBadge,
-            { backgroundColor: 'rgba(39, 174, 96, 0.1)' }
-          ]}>
-            <Text style={[styles.statusText, { color: '#27AE60' }]}>
-              Completed
-            </Text>
+    return history.map((request) => {
+      const statusLabel = (request.status || 'completed').toLowerCase();
+      const displayStatus = statusLabel.charAt(0).toUpperCase() + statusLabel.slice(1);
+      const doneDate = request.resolvedAt || request.completedAt || request.timestamp;
+      return (
+        <View key={request.id || request.timestamp} style={[styles.requestCard, styles.completedCard]}>
+          <View style={styles.requestHeader}>
+            <Text style={styles.requestTitle}>{request.serviceType || 'Request'}</Text>
+            <View style={[
+              styles.statusBadge,
+              { backgroundColor: 'rgba(39, 174, 96, 0.1)' }
+            ]}>
+              <Text style={[styles.statusText, { color: '#27AE60' }]}>
+                {displayStatus}
+              </Text>
+            </View>
           </View>
+          <Text style={styles.requestLocation}>{request.location || 'No location'}</Text>
+          <Text style={styles.requestId}>
+            ID: {request.referenceId || 'N/A'} • {displayStatus} {doneDate ? new Date(doneDate).toLocaleDateString() : 'recently'}
+          </Text>
+          <TouchableOpacity
+            style={styles.cardClearButton}
+            onPress={() => handleClearReport(request)}
+          >
+            <Text style={styles.cardClearText}>Clear</Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.requestLocation}>{request.location || 'No location'}</Text>
-        <Text style={styles.requestId}>
-          ID: {request.referenceId || 'N/A'} • Completed {request.timestamp ? new Date(request.timestamp).toLocaleDateString() : 'recently'}
-        </Text>
-      </View>
-    ));
+      );
+    });
   };
 
   const renderContent = () => {
@@ -244,7 +311,14 @@ export default function RequestsScreen({ navigation, route }) {
       case 'History':
         return (
           <>
-            <Text style={styles.sectionTitle}>History</Text>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>History</Text>
+              {history.length > 0 && (
+                <TouchableOpacity onPress={handleClearHistory}>
+                  <Text style={styles.clearAllText}>Clear All</Text>
+                </TouchableOpacity>
+              )}
+            </View>
             {renderHistory()}
           </>
         );
@@ -269,9 +343,7 @@ export default function RequestsScreen({ navigation, route }) {
           <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Requests</Text>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{getInitials()}</Text>
-        </View>
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView 
@@ -439,6 +511,32 @@ const getStyles = (theme: any) => StyleSheet.create({
     color: theme.text,
     marginBottom: 12,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  clearAllText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: theme.primary,
+    marginBottom: 12,
+  },
+  cardClearButton: {
+    alignSelf: 'flex-end',
+    marginTop: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  cardClearText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: theme.primary,
+    textTransform: 'uppercase',
+  },
   requestCard: {
     backgroundColor: theme.surface,
     padding: 16,
@@ -486,6 +584,12 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     textTransform: 'uppercase',
+  },
+  awaitingText: {
+    fontSize: 12,
+    color: theme.textSecondary,
+    fontStyle: 'italic',
+    marginTop: 10,
   },
   resumeButton: {
     backgroundColor: theme.primaryContainer,

@@ -1,73 +1,119 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
+<html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register | Crimson Campus</title>
+<!-- Tailwind CSS with Plugins -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Hanken Grotesk -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Design System Configuration -->
 <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
             "colors": {
-                    "background": "#121212",
-                    "primary": "#FFCB05",
-                    "on-primary": "#121212",
-                    "surface": "#1E1E1E",
-                    "on-surface": "#FFFFFF",
-                    "surface-container": "#2A2A2A",
-                    "outline-variant": "#333333",
-                    "on-surface-variant": "#AAAAAA"
+                "on-tertiary-fixed": "#001945",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#4c56af",
+                "outline-variant": "#c6c5d4",
+                "secondary-container": "#cfe6f2",
+                "background": "#f8f9fa",
+                "error-container": "#ffdad6",
+                "on-primary-fixed-variant": "#343d96",
+                "tertiary": "#001944",
+                "inverse-surface": "#2e3132",
+                "surface": "#f8f9fa",
+                "on-error": "#ffffff",
+                "primary": "#000666",
+                "on-tertiary-fixed-variant": "#00429c",
+                "error": "#ba1a1a",
+                "surface-container-low": "#f3f4f5",
+                "on-secondary-container": "#526772",
+                "surface-bright": "#f8f9fa",
+                "surface-dim": "#d9dadb",
+                "on-secondary-fixed-variant": "#354a53",
+                "inverse-on-surface": "#f0f1f2",
+                "primary-fixed-dim": "#bdc2ff",
+                "surface-container-highest": "#e1e3e4",
+                "secondary": "#4c616c",
+                "on-background": "#191c1d",
+                "tertiary-fixed": "#d9e2ff",
+                "inverse-primary": "#bdc2ff",
+                "outline": "#767683",
+                "on-tertiary-container": "#6b95f3",
+                "surface-variant": "#e1e3e4",
+                "surface-container-high": "#e7e8e9",
+                "surface-container-lowest": "#ffffff",
+                "on-surface": "#191c1d",
+                "on-primary-fixed": "#000767",
+                "secondary-fixed-dim": "#b4cad6",
+                "tertiary-container": "#002c6e",
+                "on-error-container": "#93000a",
+                "primary-container": "#1a237e",
+                "on-primary-container": "#8690ee",
+                "tertiary-fixed-dim": "#b0c6ff",
+                "surface-container": "#edeeef",
+                "on-surface-variant": "#454652",
+                "secondary-fixed": "#cfe6f2",
+                "on-secondary-fixed": "#071e27",
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "primary-fixed": "#e0e0ff"
             },
             "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
             },
             "spacing": {
-                    "xs": "4px",
-                    "xl": "64px",
-                    "sm": "12px",
-                    "margin": "32px",
-                    "lg": "48px",
-                    "gutter": "24px",
-                    "md": "24px",
-                    "base": "8px"
+                "gutter": "16px",
+                "base": "8px",
+                "stack-md": "24px",
+                "stack-sm": "12px",
+                "container-padding-desktop": "40px",
+                "container-padding-mobile": "20px",
+                "stack-lg": "48px"
             },
             "fontFamily": {
-                    "display-lg": ["Inter"],
-                    "body-sm": ["Inter"],
-                    "title-md": ["Inter"],
-                    "label-md": ["Inter"],
-                    "body-lg": ["Inter"],
-                    "headline-lg-mobile": ["Inter"],
-                    "headline-lg": ["Inter"]
+                "label-md": ["Hanken Grotesk"],
+                "headline-md": ["Hanken Grotesk"],
+                "headline-lg": ["Hanken Grotesk"],
+                "body-md": ["Hanken Grotesk"],
+                "headline-lg-mobile": ["Hanken Grotesk"],
+                "body-lg": ["Hanken Grotesk"],
+                "label-sm": ["Hanken Grotesk"]
             },
             "fontSize": {
-                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
             }
           },
         },
       }
     </script>
 <style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .auth-card {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #CFD8DC;
+        }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #121212;
-        }
-        .sunflower-gradient {
-            background: linear-gradient(135deg, #FFCB05 0%, #E5B600 100%);
         }
     </style>
 <style>
@@ -76,145 +122,117 @@
     }
   </style>
 </head>
-<body class="text-on-surface min-h-screen pb-24">
-<!-- TopAppBar -->
-<header class="w-full top-0 sticky bg-surface border-b border-outline-variant z-40 flex justify-between items-center px-4 h-16">
-<div class="flex items-center gap-3">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">HallMaintenance</h1>
-</div>
+<body class="min-h-screen flex flex-col selection:bg-primary-fixed-dim selection:text-primary">
+<!-- TopAppBar Section -->
+<header class="bg-surface dark:bg-on-background flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop h-16 w-full z-50">
 <div class="flex items-center gap-2">
-<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors active:scale-95">
-<span class="material-symbols-outlined text-primary">notifications</span>
-</button>
-<div class="w-10 h-10 rounded-full overflow-hidden bg-primary flex items-center justify-center text-on-primary font-bold">
-<span class="material-symbols-outlined">person</span>
-</div>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" data-icon="account_balance">account_balance</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Crimson Campus</h1>
 </div>
 </header>
-<main class="max-w-7xl mx-auto px-4 pt-6 space-y-8">
-<!-- Welcome Hero Section -->
-<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter items-stretch">
-<div class="lg:col-span-2 sunflower-gradient rounded-xl p-8 text-black flex flex-col justify-center relative overflow-hidden shadow-lg">
-<div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-<span class="material-symbols-outlined text-[120px]">engineering</span>
+<!-- Main Content: Registration Form -->
+<main class="flex-grow flex items-center justify-center px-container-padding-mobile py-stack-lg relative overflow-hidden">
+<!-- Atmospheric Background Element -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-40 pointer-events-none">
+
 </div>
-<h2 class="font-display-lg text-display-lg mb-2">Welcome, Alex.</h2>
-<p class="font-body-lg text-body-lg opacity-90 max-w-md">Your comfort is our priority. Report issues, check hall news, or access emergency support instantly.</p>
-<div class="mt-6 flex items-center gap-2 bg-black/10 border border-black/20 rounded-lg px-4 py-3 w-fit">
-<span class="material-symbols-outlined text-black">location_on</span>
-<div class="flex flex-col">
-<span class="text-[10px] font-bold text-black/70 uppercase tracking-widest">Current Residence</span>
-<span class="font-title-md text-black">Unity Hall, Floor 2, Room 204</span>
+<!-- Registration Card -->
+<section class="auth-card bg-surface-container-lowest rounded-xl w-full max-w-[440px] p-8 md:p-10 z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="mb-stack-md text-center">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Join Resident Portal</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Enter your university credentials to register your account.</p>
 </div>
-</div>
-</div>
-</section>
-<!-- Maintenance Schedule -->
-<section class="space-y-4">
-<h3 class="font-title-md text-title-md text-primary flex items-center gap-2">
-<span class="material-symbols-outlined">calendar_month</span> Maintenance Schedule
-            </h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="bg-surface p-4 rounded-xl border border-outline-variant flex items-center justify-between shadow-sm">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">notifications_active</span>
-</div>
-<div>
-<p class="font-title-md text-body-lg font-bold">Fire Alarm Testing</p>
-<p class="font-body-sm text-on-surface-variant">Oct 25 • 10:00 AM</p>
+<form class="space-y-6" onsubmit="event.preventDefault();">
+<!-- Full Name -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block" for="full_name">Full Name</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" data-icon="person">person</span>
+<input class="w-full h-12 pl-10 pr-4 rounded-lg border border-outline-variant bg-surface focus:ring-0 focus:border-primary transition-all font-body-md text-body-md" id="full_name" placeholder="John Doe" type="text"/>
 </div>
 </div>
-<span class="material-symbols-outlined text-primary">info</span>
-</div>
-<div class="bg-surface p-4 rounded-xl border border-outline-variant flex items-center justify-between shadow-sm">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">airware</span>
-</div>
-<div>
-<p class="font-title-md text-body-lg font-bold">AC Filter Replacement</p>
-<p class="font-body-sm text-on-surface-variant">Oct 28 • All Day</p>
+<!-- Email Address -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block" for="email">Email Address</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" data-icon="mail">mail</span>
+<input class="w-full h-12 pl-10 pr-4 rounded-lg border border-outline-variant bg-surface focus:ring-0 focus:border-primary transition-all font-body-md text-body-md" id="email" placeholder="j.doe@university.edu" type="email"/>
 </div>
 </div>
-<span class="material-symbols-outlined text-primary">info</span>
+<!-- Password -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block" for="password">Password</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" data-icon="lock">lock</span>
+<input class="w-full h-12 pl-10 pr-10 rounded-lg border border-outline-variant bg-surface focus:ring-0 focus:border-primary transition-all font-body-md text-body-md" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
 </div>
 </div>
-</section>
-<!-- Maintenance Services -->
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
-<div class="md:col-span-2 grid grid-cols-2 gap-4">
-<div class="col-span-2">
-<h3 class="font-title-md text-title-md text-primary mb-2 flex items-center gap-2">
-<span class="material-symbols-outlined">handyman</span> Maintenance Services
-                    </h3>
+<!-- Checkbox Section -->
+<div class="flex items-start gap-3 py-2">
+<div class="flex items-center h-5">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20 transition-all cursor-pointer" id="terms" type="checkbox"/>
 </div>
-<!-- Electrical -->
-<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
-<span class="material-symbols-outlined">electrical_services</span>
+<label class="font-label-md text-label-md text-on-surface-variant cursor-pointer leading-relaxed" for="terms">
+                        I agree to the <a class="text-primary font-bold hover:underline" href="#">Terms of Service</a> and <a class="text-primary font-bold hover:underline" href="#">Facility Usage Guidelines</a>.
+                    </label>
 </div>
-<p class="font-title-md text-title-md mb-1">Electrical</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Lighting, outlets, etc.</p>
-</div>
-<!-- Plumbing -->
-<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
-<span class="material-symbols-outlined">plumbing</span>
-</div>
-<p class="font-title-md text-title-md mb-1">Plumbing</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Leaks, taps, drainage.</p>
-</div>
-<!-- Carpentry -->
-<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
-<span class="material-symbols-outlined">carpenter</span>
-</div>
-<p class="font-title-md text-title-md mb-1">Carpentry</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Doors, windows, desks.</p>
-</div>
-<!-- Masonry -->
-<div class="bg-surface p-6 rounded-xl border border-outline-variant hover:border-primary transition-all hover:shadow-lg cursor-pointer group">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-colors mb-4">
-<span class="material-symbols-outlined">foundation</span>
-</div>
-<p class="font-title-md text-title-md mb-1">Masonry</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Walls, floors, tiles.</p>
-</div>
+<!-- Primary CTA -->
+<button class="w-full h-12 bg-primary-container hover:bg-primary text-white rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm font-label-md text-label-md group" type="submit">
+                    Create Account
+                    <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Bottom Link -->
+<div class="mt-8 pt-6 border-t border-outline-variant text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Already have an account? 
+                    <a class="text-primary font-bold hover:underline active:opacity-70 transition-opacity" href="#">Login</a>
+</p>
 </div>
 </section>
 </main>
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-2 pb-safe bg-surface z-50 rounded-t-xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)] border-t border-outline-variant">
-<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-full px-4 py-1 transition-all duration-200 active:scale-90" href="#">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
-<span class="text-[10px] font-bold uppercase tracking-wide">Home</span>
+<!-- BottomNavBar Section (Mobile Only Visibility based on Destination Rule) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-surface dark:bg-on-background pb-safe border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="login">login</span>
+<span class="font-label-sm text-label-sm mt-1">Login</span>
 </a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-90 px-4 py-1" href="#">
-<span class="material-symbols-outlined">handyman</span>
-<span class="text-[10px] font-bold uppercase tracking-wide">Requests</span>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary-fixed-dim text-on-secondary-container dark:text-on-secondary-fixed rounded-xl px-4 py-1 transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="person_add" style="font-variation-settings: 'FILL' 1;">person_add</span>
+<span class="font-label-sm text-label-sm mt-1">Register</span>
 </a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-90 px-4 py-1" href="#">
-<span class="material-symbols-outlined">newspaper</span>
-<span class="text-[10px] font-bold uppercase tracking-wide">News</span>
-</a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-200 active:scale-90 px-4 py-1" href="#">
-<span class="material-symbols-outlined">emergency_share</span>
-<span class="text-[10px] font-bold uppercase tracking-wide">Emergency</span>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1 hover:bg-surface-container-low transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-label-sm text-label-sm mt-1">Support</span>
 </a>
 </nav>
-<!-- FAB -->
-<button class="fixed right-6 bottom-24 w-14 h-14 rounded-2xl bg-primary text-black shadow-[0_4px_20px_rgba(255,203,5,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
-<span class="material-symbols-outlined text-[32px] font-bold">add</span>
-</button>
+<!-- Interactive Micro-interactions -->
 <script>
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 10) {
-                header.classList.add('shadow-lg');
-            } else {
-                header.classList.remove('shadow-lg');
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Password Visibility Toggle
+            const toggleBtn = document.querySelector('button[type="button"]');
+            const passwordInput = document.getElementById('password');
+            const visibilityIcon = toggleBtn.querySelector('.material-symbols-outlined');
+
+            toggleBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                visibilityIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+            });
+
+            // Focus states for input icons
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                });
+            });
         });
     </script>
 </body></html>

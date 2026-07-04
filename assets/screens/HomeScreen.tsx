@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -160,10 +159,37 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 <LocationIcon color={theme.primaryText} size={20} />
                 <View style={styles.heroBadgeTextContainer}>
                   <Text style={[styles.heroBadgeLabel, { color: theme.primaryText }]}>CURRENT RESIDENCE</Text>
-                  <Text style={[styles.heroBadgeValue, { color: theme.primaryText }]}>{fullAddress}</Text>
+                  <Text style={[styles.heroBadgeValue, { color: theme.primaryText }]} numberOfLines={1}>
+                    {fullAddress.replace('University Hall (Katanga)', 'Katanga Hall')}
+                  </Text>
                 </View>
               </View>
             </LinearGradient>
+          </View>
+
+          {/* ===== MAINTENANCE SERVICES ===== */}
+          <View style={styles.servicesSection}>
+            <View style={[styles.sectionHeader, styles.titleRow, { marginBottom: 16 }]}>
+              <WrenchIcon color={theme.primary} size={24} />
+              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Services</Text>
+            </View>
+
+            <View style={styles.servicesGrid}>
+              {services.map((service) => (
+                <TouchableOpacity
+                  key={service.id}
+                  style={[styles.serviceCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                  onPress={() => handleServicePress(service)}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.serviceIcon, { backgroundColor: theme.surfaceContainer }]}>
+                    <service.Icon color={theme.primary} size={22} />
+                  </View>
+                  <Text style={[styles.serviceTitle, { color: theme.text }]}>{service.title}</Text>
+                  <Text style={[styles.serviceDescription, { color: theme.textSecondary }]}>{service.description}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
 
           {/* ===== MAINTENANCE SCHEDULE ===== */}
@@ -172,7 +198,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               <CalendarIcon color={theme.primary} size={24} />
               <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Schedule</Text>
             </View>
-            
+
             <View style={styles.scheduleGrid}>
               {[
                 ...appointments.map((a) => ({ id: a.id, title: a.title, date: a.date, Icon: WrenchIcon })),
@@ -196,40 +222,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             </View>
           </View>
 
-          {/* ===== MAINTENANCE SERVICES ===== */}
-          <View style={styles.servicesSection}>
-            <View style={[styles.sectionHeader, styles.titleRow, { marginBottom: 16 }]}>
-              <WrenchIcon color={theme.primary} size={24} />
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Services</Text>
-            </View>
-            
-            <View style={styles.servicesGrid}>
-              {services.map((service) => (
-                <TouchableOpacity
-                  key={service.id}
-                  style={[styles.serviceCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
-                  onPress={() => handleServicePress(service)}
-                  activeOpacity={0.8}
-                >
-                  <View style={[styles.serviceIcon, { backgroundColor: theme.surfaceContainer }]}>
-                    <service.Icon color={theme.primary} size={22} />
-                  </View>
-                  <Text style={[styles.serviceTitle, { color: theme.text }]}>{service.title}</Text>
-                  <Text style={[styles.serviceDescription, { color: theme.textSecondary }]}>{service.description}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
           <View style={styles.bottomSpacer} />
 
         </View>
       </ScrollView>
-
-      {/* ===== FAB ===== */}
-      <TouchableOpacity style={[styles.fab, { backgroundColor: theme.primary, shadowColor: theme.primary }]}>
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
 
     </SafeAreaView>
   );
@@ -431,7 +427,7 @@ const getStyles = (theme: any) => StyleSheet.create({
 
   // ===== SERVICES =====
   servicesSection: {
-    flex: 1,
+    marginBottom: 24,
   },
   servicesGrid: {
     flexDirection: 'row',
@@ -472,28 +468,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     color: '#5B403D',
   },
 
-  // ===== FAB =====
-  fab: {
-    position: 'absolute',
-    right: 24,
-    bottom: Platform.OS === 'ios' ? 100 : 80,
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: '#AF101A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
-  },
-  fabText: {
-    fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: '300',
-  },
   bottomSpacer: {
     height: 20,
   },

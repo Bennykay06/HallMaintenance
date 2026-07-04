@@ -19,6 +19,9 @@ import EditProfileScreen from './assets/screens/EditProfileScreen.tsx';
 import FacilityRulesScreen from './assets/screens/FacilityRulesScreen.tsx';
 import NotificationSettingsScreen from './assets/screens/NotificationSettingsScreen.tsx';
 import HelpSupportScreen from './assets/screens/HelpSupportScreen.tsx';
+import FAQScreen from './assets/screens/FAQScreen.tsx';
+import ReportIssueScreen from './assets/screens/ReportIssueScreen.tsx';
+import SupportChatScreen from './assets/screens/SupportChatScreen.tsx';
 import LoginScreen from './assets/screens/LoginScreen.tsx';
 import RegisterScreen from './assets/screens/RegisterScreen.tsx';
 import OnboardingScreen from './assets/screens/OnboardingScreen.tsx';
@@ -78,6 +81,9 @@ export default function App() {
             <Stack.Screen name="NotificationDetail" component={NotificationDetailScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="FAQ" component={FAQScreen} />
+            <Stack.Screen name="ReportIssue" component={ReportIssueScreen} />
+            <Stack.Screen name="SupportChat" component={SupportChatScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

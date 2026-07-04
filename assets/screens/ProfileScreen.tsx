@@ -1,6 +1,17 @@
 // src/screens/ProfileScreen.tsx
 import { useTheme } from '../context/ThemeContext';
-import { PersonIcon, CalendarIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
+import {
+  PersonIcon,
+  CalendarIcon,
+  BellIcon,
+  ArrowLeftIcon,
+  EditIcon,
+  CheckCircleIcon,
+  HelpIcon,
+  LogoutIcon,
+  DescriptionIcon,
+  ChevronRightIcon,
+} from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -26,7 +37,6 @@ export default function ProfileScreen({ navigation }) {
   const [floor, setFloor] = useState('Floor 2');
   const [room, setRoom] = useState('Room 204');
   const [fullAddress, setFullAddress] = useState('Unity Hall, Floor 2, Room 204');
-  const [studentId, setStudentId] = useState('88204192');
   const [joinDate, setJoinDate] = useState("Fall '23");
   const [status, setStatus] = useState('Active');
 
@@ -113,9 +123,7 @@ export default function ProfileScreen({ navigation }) {
           <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Profile</Text>
-        <TouchableOpacity style={styles.moreButton}>
-          <Text style={styles.moreButtonText}>⋯</Text>
-        </TouchableOpacity>
+        <View style={styles.moreButton} />
       </View>
 
       <ScrollView 
@@ -135,7 +143,7 @@ export default function ProfileScreen({ navigation }) {
                 <Text style={styles.avatarText}>{getInitials()}</Text>
               </View>
               <TouchableOpacity style={styles.editAvatarButton} onPress={handleEditProfile}>
-                <Text style={styles.editAvatarText}>✎</Text>
+                <EditIcon color={theme.surface} size={20} />
               </TouchableOpacity>
             </View>
             <View>
@@ -144,10 +152,6 @@ export default function ProfileScreen({ navigation }) {
                 <PersonIcon color={theme.primary} size={24} />
                 <Text style={styles.locationText}>{fullAddress}</Text>
               </View>
-              <Text style={styles.studentId}>Student ID: <Text style={styles.studentIdBold}>{studentId}</Text></Text>
-              <TouchableOpacity style={styles.editProfilePill} onPress={handleEditProfile}>
-                <Text style={styles.editProfilePillText}>Edit Profile</Text>
-              </TouchableOpacity>
             </View>
           </View>
 
@@ -155,7 +159,7 @@ export default function ProfileScreen({ navigation }) {
           <View style={styles.statsContainer}>
             <View style={styles.statsCard}>
               <View style={styles.statsIconContainer}>
-                <Text style={styles.statsIcon}>✅</Text>
+                <CheckCircleIcon color={theme.primary} size={24} />
               </View>
               <View>
                 <Text style={styles.statsLabel}>Status</Text>
@@ -182,7 +186,7 @@ export default function ProfileScreen({ navigation }) {
                 </View>
                 <Text style={styles.actionText}>Edit Profile</Text>
               </View>
-              <Text style={styles.actionChevron}>›</Text>
+              <ChevronRightIcon color="#8F6F6C" size={20} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionItem} onPress={handleNotificationSettings}>
@@ -192,34 +196,34 @@ export default function ProfileScreen({ navigation }) {
                 </View>
                 <Text style={styles.actionText}>Notification Settings</Text>
               </View>
-              <Text style={styles.actionChevron}>›</Text>
+              <ChevronRightIcon color="#8F6F6C" size={20} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionItem} onPress={handleFacilityRules}>
               <View style={styles.actionLeft}>
                 <View style={styles.actionIcon}>
-                  <Text style={styles.actionIconText}>📄</Text>
+                  <DescriptionIcon color={theme.primary} size={24} />
                 </View>
                 <Text style={styles.actionText}>Facility Rules & Guidelines</Text>
               </View>
-              <Text style={styles.actionChevron}>›</Text>
+              <ChevronRightIcon color="#8F6F6C" size={20} />
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.actionItem, styles.actionItemLast]} onPress={handleHelpSupport}>
               <View style={styles.actionLeft}>
                 <View style={styles.actionIcon}>
-                  <Text style={styles.actionIconText}>❓</Text>
+                  <HelpIcon color={theme.primary} size={24} />
                 </View>
                 <Text style={styles.actionText}>Help & Support</Text>
               </View>
-              <Text style={styles.actionChevron}>›</Text>
+              <ChevronRightIcon color="#8F6F6C" size={20} />
             </TouchableOpacity>
           </View>
 
           {/* ===== LOGOUT BUTTON ===== */}
           <View style={styles.logoutSection}>
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-              <Text style={styles.logoutIcon}>🚪</Text>
+              <LogoutIcon color={theme.primary} size={20} />
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
             <Text style={styles.versionText}>App Version 2.4.1 (Build 109)</Text>
@@ -271,10 +275,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  moreButtonText: {
-    fontSize: 24,
-    color: theme.textSecondary,
   },
 
   // ===== SCROLL VIEW =====
@@ -337,10 +337,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     shadowRadius: 12,
     elevation: 12,
   },
-  editAvatarText: {
-    fontSize: 18,
-    color: theme.surface,
-  },
   profileName: {
     fontSize: 22,
     fontWeight: '700',
@@ -367,16 +363,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontWeight: '600',
     color: theme.textSecondary,
   },
-  studentId: {
-    fontSize: 13,
-    color: theme.textSecondary,
-    textAlign: 'center',
-  },
-  studentIdBold: {
-    fontWeight: '700',
-    color: theme.text,
-  },
-
   // ===== STATS =====
   statsContainer: {
     flexDirection: 'row',
@@ -409,9 +395,6 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   statsIconContainerSecondary: {
     backgroundColor: 'rgba(181, 26, 27, 0.08)',
-  },
-  statsIcon: {
-    fontSize: 20,
   },
   statsLabel: {
     fontSize: 10,
@@ -465,16 +448,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  actionIconText: {
-    fontSize: 18,
-  },
   actionText: {
     fontSize: 15,
     color: theme.text,
-  },
-  actionChevron: {
-    fontSize: 20,
-    color: '#8F6F6C',
   },
 
   // ===== LOGOUT =====
@@ -498,9 +474,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 8,
-  },
-  logoutIcon: {
-    fontSize: 20,
   },
   logoutText: {
     fontSize: 16,

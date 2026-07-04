@@ -15,6 +15,7 @@ import {
   Alert,
   RefreshControl,
   Dimensions,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -40,8 +41,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Routine safety inspections for the north wing elevators are scheduled for today between 2 PM and 4 PM.',
       time: '2 hours ago',
       icon: '🔧',
-      tagColor: theme.primary,
-      tagBg: '#FFE5E5',
+      image: 'https://picsum.photos/seed/elevator/600/400',
       category: 'Facility Updates',
     },
     {
@@ -51,8 +51,7 @@ export default function NewsScreen({ navigation }) {
       description: 'The Student Union cafeteria has officially reopened with expanded seating and new sustainable waste stations.',
       time: '5 hours ago',
       icon: '🍽️',
-      tagColor: '#10B981',
-      tagBg: '#D1FAE5',
+      image: 'https://picsum.photos/seed/dininghall/600/400',
       category: 'Student Life',
     },
     {
@@ -62,8 +61,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Water pressure may be low in the West Residence Quad while emergency crews repair a main line break.',
       time: '8 hours ago',
       icon: '💧',
-      tagColor: '#EF4444',
-      tagBg: '#FEE2E2',
+      image: 'https://picsum.photos/seed/watermain/600/400',
       category: 'Emergency',
       urgent: true,
     },
@@ -74,8 +72,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Annual tree trimming and botanical planting will take place across the Main Quad over the next two weeks.',
       time: 'Yesterday',
       icon: '🌿',
-      tagColor: '#F59E0B',
-      tagBg: '#FEF3C7',
+      image: 'https://picsum.photos/seed/landscaping/600/400',
       category: 'Facility Updates',
     },
     {
@@ -85,8 +82,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Level 3 of Parking Structure 4 will be closed for power washing this coming Saturday from 6 AM to 12 PM.',
       time: '1 day ago',
       icon: '🚗',
-      tagColor: '#6366F1',
-      tagBg: '#E0E7FF',
+      image: 'https://picsum.photos/seed/parking/600/400',
       category: 'Events',
     },
     {
@@ -96,8 +92,7 @@ export default function NewsScreen({ navigation }) {
       description: 'The renovation of the South Hall common area is complete! New ergonomic workstations and lounge seating are now open for use.',
       time: 'Oct 19, 2023',
       icon: '👥',
-      tagColor: '#10B981',
-      tagBg: '#D1FAE5',
+      image: 'https://picsum.photos/seed/commonroom/600/400',
       category: 'Student Life',
     },
     {
@@ -107,8 +102,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Mandatory fire alarm testing will occur across all residential blocks this Friday from 9 AM to 12 PM.',
       time: 'Oct 18, 2023',
       icon: '🔥',
-      tagColor: '#EF4444',
-      tagBg: '#FEE2E2',
+      image: 'https://picsum.photos/seed/firealarm/600/400',
       category: 'Emergency',
       urgent: true,
     },
@@ -119,8 +113,7 @@ export default function NewsScreen({ navigation }) {
       description: 'Join the hall cleanliness competition this Friday. Prizes to be won for the cleanest floor!',
       time: 'Oct 16, 2023',
       icon: '🏆',
-      tagColor: '#6366F1',
-      tagBg: '#E0E7FF',
+      image: 'https://picsum.photos/seed/cleaning/600/400',
       category: 'Events',
     },
   ];
@@ -131,6 +124,8 @@ export default function NewsScreen({ navigation }) {
     title: 'New Centralized Science Wing HVAC System Implementation',
     description: 'Starting next Monday, the Facilities Management team will begin the final phase of the energy-efficient HVAC overhaul in the Science District. This project aims to reduce campus carbon emissions by 15% while providing better climate control for laboratories.',
     time: '1 hour ago',
+    icon: '🏗️',
+    image: 'https://picsum.photos/seed/hvac/800/400',
     category: 'Facility Updates',
     type: 'featured',
   };
@@ -182,7 +177,7 @@ export default function NewsScreen({ navigation }) {
         author: 'Facilities Management',
         readTime: '3 min read',
         content: item.description + ' More details about this update will be shared soon.',
-        image: 'https://images.unsplash.com/photo-1581092335873-2c2d9b8c8c7b?w=800&h=400&fit=crop',
+        image: item.image,
       }
     });
   };
@@ -218,18 +213,13 @@ export default function NewsScreen({ navigation }) {
 
   const renderFeaturedCard = () => {
     return (
-      <TouchableOpacity 
-        style={styles.featuredCard}
-        onPress={() => handleNewsPress(featuredNews)}
-        activeOpacity={0.9}
-      >
+      <View style={styles.featuredCard}>
         <View style={styles.featuredImageContainer}>
-          <View style={styles.featuredImagePlaceholder}>
-            <Text style={styles.featuredImageText}>🏗️</Text>
-          </View>
-          <View style={styles.featuredBadge}>
-            <Text style={styles.featuredBadgeText}>Featured</Text>
-          </View>
+          <Image
+            source={{ uri: featuredNews.image }}
+            style={styles.featuredImage}
+            resizeMode="cover"
+          />
         </View>
         <View style={styles.featuredContent}>
           <View style={styles.featuredCategory}>
@@ -242,10 +232,12 @@ export default function NewsScreen({ navigation }) {
           </Text>
           <View style={styles.featuredFooter}>
             <Text style={styles.featuredTime}>{featuredNews.time}</Text>
-            <Text style={styles.featuredReadMore}>Read More →</Text>
+            <TouchableOpacity onPress={() => handleNewsPress(featuredNews)} activeOpacity={0.7}>
+              <Text style={styles.featuredReadMore}>Read More →</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -253,33 +245,19 @@ export default function NewsScreen({ navigation }) {
     const isUrgent = item.urgent || item.type === 'Emergency';
     
     return (
-      <TouchableOpacity 
-        key={item.id} 
+      <View
+        key={item.id}
         style={[
           styles.newsCard,
           isUrgent && styles.urgentCard,
         ]}
-        onPress={() => handleNewsPress(item)}
-        activeOpacity={0.8}
       >
         <View style={styles.newsImageContainer}>
-          <View style={[
-            styles.newsImagePlaceholder,
-            isUrgent && styles.urgentImagePlaceholder,
-          ]}>
-            <Text style={styles.newsImageText}>{item.icon}</Text>
-          </View>
-          <View style={[
-            styles.newsTag,
-            isUrgent && styles.urgentTag,
-          ]}>
-            <Text style={[
-              styles.newsTagText,
-              isUrgent && styles.urgentTagText,
-            ]}>
-              {item.type}
-            </Text>
-          </View>
+          <Image
+            source={{ uri: item.image }}
+            style={styles.newsImage}
+            resizeMode="cover"
+          />
         </View>
         <View style={styles.newsContent}>
           <Text style={styles.newsTime}>{item.time}</Text>
@@ -288,10 +266,12 @@ export default function NewsScreen({ navigation }) {
             {item.description}
           </Text>
           <View style={styles.newsFooter}>
-            <Text style={styles.newsReadMore}>Details →</Text>
+            <TouchableOpacity onPress={() => handleNewsPress(item)} activeOpacity={0.7}>
+              <Text style={styles.newsReadMore}>Details →</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -310,7 +290,6 @@ export default function NewsScreen({ navigation }) {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <BellIcon color={theme.primary} size={24} />
           <Text style={styles.headerTitle}>Campus News</Text>
         </View>
         <View style={styles.headerRight}>
@@ -488,33 +467,11 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: '100%',
     height: 200,
     position: 'relative',
+    backgroundColor: theme.surfaceContainer,
   },
-  featuredImagePlaceholder: {
+  featuredImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: theme.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  featuredImageText: {
-    fontSize: 64,
-    opacity: 0.3,
-  },
-  featuredBadge: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    backgroundColor: theme.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  featuredBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   featuredContent: {
     padding: 16,
@@ -598,51 +555,17 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   urgentCard: {
     borderLeftWidth: 4,
-    borderLeftColor: '#EF4444',
+    borderLeftColor: theme.primary,
   },
   newsImageContainer: {
     width: '100%',
     height: 150,
     position: 'relative',
+    backgroundColor: theme.surfaceContainer,
   },
-  newsImagePlaceholder: {
+  newsImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: theme.primaryContainer,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  urgentImagePlaceholder: {
-    backgroundColor: '#EF4444',
-  },
-  newsImageText: {
-    fontSize: 40,
-    opacity: 0.3,
-  },
-  newsTag: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(175, 16, 26, 0.2)',
-  },
-  urgentTag: {
-    backgroundColor: '#EF4444',
-    borderColor: '#EF4444',
-  },
-  newsTagText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: theme.primary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  urgentTagText: {
-    color: theme.primaryText,
   },
   newsContent: {
     padding: 14,

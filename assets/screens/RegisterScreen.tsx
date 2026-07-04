@@ -1,5 +1,14 @@
 // src/screens/RegisterScreen.tsx
-import { PersonIcon, SecurityIcon } from '../components/Icons';
+import {
+  BankIcon,
+  PersonIcon,
+  MailIcon,
+  LockIcon,
+  EyeIcon,
+  EyeOffIcon,
+  ArrowRightIcon,
+  CheckIcon,
+} from '../components/Icons';
 
 import React, { useState } from 'react';
 import {
@@ -16,8 +25,21 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// ===== Crimson Campus palette (from design mockups) =====
+const C = {
+  background: '#F8F9FA',
+  card: '#FFFFFF',
+  inputBg: '#F8F9FA',
+  primary: '#000666',
+  primaryContainer: '#1A237E',
+  onPrimary: '#FFFFFF',
+  onSurface: '#191C1D',
+  onSurfaceVariant: '#454652',
+  outline: '#767683',
+  outlineVariant: '#C6C5D4',
+};
 
 export default function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -84,13 +106,15 @@ export default function RegisterScreen({ navigation }) {
     navigation.navigate('Login');
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
+      <StatusBar barStyle="dark-content" backgroundColor={C.background} />
+
+      {/* ===== TOP APP BAR ===== */}
+      <View style={styles.appBar}>
+        <BankIcon color={C.primary} size={28} />
+        <Text style={styles.appBarTitle}>Knust Campus</Text>
+      </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -100,146 +124,123 @@ export default function RegisterScreen({ navigation }) {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.content}>
-            {/* ===== UNIVERSITY HEADER ===== */}
-            <View style={styles.headerSection}>
-              <View style={styles.headerLeft}>
-                <SecurityIcon color="#AF101A" size={24} />
-                <Text style={styles.headerTitle}>University Facilities</Text>
-              </View>
-              <View style={styles.headerRight}>
-                <Text style={styles.headerBadge}>Secure Portal Access</Text>
-              </View>
-            </View>
-
-            {/* ===== WELCOME SECTION ===== */}
-            <View style={styles.welcomeSection}>
-              <Text style={styles.welcomeTitle}>Join Resident Portal</Text>
-              <Text style={styles.welcomeSubtitle}>
+          {/* ===== REGISTRATION CARD ===== */}
+          <View style={styles.card}>
+            <View style={styles.headingSection}>
+              <Text style={styles.heading}>Join Resident Portal</Text>
+              <Text style={styles.subheading}>
                 Enter your university credentials to register your account.
               </Text>
             </View>
 
-            {/* ===== REGISTRATION FORM ===== */}
-            <View style={styles.formSection}>
-              {/* Full Name */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Full Name</Text>
+            {/* Full Name */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Full Name</Text>
+              <View style={styles.inputWrapper}>
+                <View style={styles.leadingIcon}>
+                  <PersonIcon color={C.outline} size={20} />
+                </View>
                 <TextInput
                   style={styles.input}
                   value={fullName}
                   onChangeText={setFullName}
                   placeholder="John Doe"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={C.outline}
                 />
               </View>
+            </View>
 
-              {/* Email Address */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Email Address</Text>
+            {/* Email Address */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email Address</Text>
+              <View style={styles.inputWrapper}>
+                <View style={styles.leadingIcon}>
+                  <MailIcon color={C.outline} size={20} />
+                </View>
                 <TextInput
                   style={styles.input}
                   value={email}
                   onChangeText={setEmail}
                   placeholder="j.doe@university.edu"
-                  placeholderTextColor="#999"
+                  placeholderTextColor={C.outline}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
                 />
               </View>
+            </View>
 
-              {/* Password */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Password</Text>
-                <View style={styles.passwordContainer}>
-                  <Text style={styles.passwordIcon}>🔒</Text>
-                  <TextInput
-                    style={[styles.input, styles.passwordInput]}
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="••••••••"
-                    placeholderTextColor="#999"
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                  <TouchableOpacity
-                    style={styles.eyeButton}
-                    onPress={togglePasswordVisibility}
-                  >
-                    <Text style={styles.eyeButtonText}>
-                      {showPassword ? '👁️' : '👁️‍🗨️'}
-                    </Text>
-                  </TouchableOpacity>
+            {/* Password */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <View style={styles.inputWrapper}>
+                <View style={styles.leadingIcon}>
+                  <LockIcon color={C.outline} size={20} />
                 </View>
-              </View>
-
-              {/* Terms and Conditions */}
-              <TouchableOpacity
-                style={styles.termsContainer}
-                onPress={() => setAgreeTerms(!agreeTerms)}
-                activeOpacity={0.7}
-              >
-                <View style={[
-                  styles.checkbox,
-                  agreeTerms && styles.checkboxChecked,
-                ]}>
-                  {agreeTerms && <PersonIcon color="#AF101A" size={24} />}
-                </View>
-                <Text style={styles.termsText}>
-                  I agree to the <Text style={styles.termsLink}>Terms of Service</Text> and <Text style={styles.termsLink}>Facility Usage Guidelines</Text>.
-                </Text>
-              </TouchableOpacity>
-
-              {/* Create Account Button */}
-              <TouchableOpacity
-                style={styles.createButton}
-                onPress={handleRegister}
-                disabled={isLoading}
-                activeOpacity={0.8}
-              >
-                <LinearGradient
-                  colors={['#AF101A', '#D32F2F']}
-                  style={styles.createGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
+                <TextInput
+                  style={[styles.input, styles.inputWithTrailing]}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="••••••••"
+                  placeholderTextColor={C.outline}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <TouchableOpacity
+                  style={styles.trailingIcon}
+                  onPress={() => setShowPassword(!showPassword)}
                 >
-                  {isLoading ? (
-                    <ActivityIndicator color="#FFFFFF" size="small" />
+                  {showPassword ? (
+                    <EyeOffIcon color={C.outline} size={22} />
                   ) : (
-                    <>
-                      <Text style={styles.createButtonText}>Create Account</Text>
-                      <Text style={styles.createButtonArrow}>→</Text>
-                    </>
+                    <EyeIcon color={C.outline} size={22} />
                   )}
-                </LinearGradient>
-              </TouchableOpacity>
-
-              {/* Login Link */}
-              <View style={styles.loginContainer}>
-                <Text style={styles.loginText}>Already have an account? </Text>
-                <TouchableOpacity onPress={handleLogin}>
-                  <Text style={styles.loginLink}>Login</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
-            {/* ===== BOTTOM NAV ===== */}
-            <View style={styles.bottomNav}>
-              <TouchableOpacity
-                style={styles.navItem}
-                onPress={handleLogin}
-              >
-                <Text style={styles.navLabel}>Login</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.navItem, styles.navItemActive]}
-              >
-                <Text style={[styles.navLabel, styles.navLabelActive]}>Register</Text>
-              </TouchableOpacity>
-            </View>
+            {/* Terms and Conditions */}
+            <TouchableOpacity
+              style={styles.termsRow}
+              onPress={() => setAgreeTerms(!agreeTerms)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
+                {agreeTerms && <CheckIcon color={C.onPrimary} size={16} />}
+              </View>
+              <Text style={styles.termsText}>
+                I agree to the <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
+                <Text style={styles.termsLink}>Facility Usage Guidelines</Text>.
+              </Text>
+            </TouchableOpacity>
 
+            {/* Create Account Button */}
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={handleRegister}
+              disabled={isLoading}
+              activeOpacity={0.85}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={C.onPrimary} size="small" />
+              ) : (
+                <>
+                  <Text style={styles.primaryButtonText}>Create Account</Text>
+                  <ArrowRightIcon color={C.onPrimary} size={20} />
+                </>
+              )}
+            </TouchableOpacity>
+
+            {/* Footer Link */}
+            <View style={styles.footerWrapper}>
+              <View style={styles.footerRow}>
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TouchableOpacity onPress={handleLogin}>
+                  <Text style={styles.footerLink}>Login</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -250,226 +251,175 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: C.background,
   },
   keyboardView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 20,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 24,
   },
 
-  // ===== HEADER =====
-  headerSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
-  },
-  headerLeft: {
+  // ===== TOP APP BAR =====
+  appBar: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    height: 56,
+    paddingHorizontal: 20,
+    backgroundColor: C.background,
   },
-  headerIcon: {
-    fontSize: 24,
-    color: '#AF101A',
-  },
-  headerTitle: {
-    fontSize: 18,
+  appBarTitle: {
+    fontSize: 22,
     fontWeight: '700',
-    color: '#AF101A',
-  },
-  headerRight: {
-    display: Platform.OS === 'ios' ? 'flex' : 'none',
-  },
-  headerBadge: {
-    fontSize: 12,
-    color: '#5B403D',
-    fontStyle: 'italic',
+    color: C.primary,
   },
 
-  // ===== WELCOME =====
-  welcomeSection: {
-    marginBottom: 28,
+  // ===== CARD =====
+  card: {
+    backgroundColor: C.card,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: C.outlineVariant,
+    padding: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  welcomeTitle: {
-    fontSize: 26,
+
+  // ===== HEADING =====
+  headingSection: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  heading: {
+    fontSize: 28,
     fontWeight: '700',
-    color: '#1A1C1C',
-    marginBottom: 4,
+    color: C.onSurface,
+    textAlign: 'center',
+    letterSpacing: -0.5,
   },
-  welcomeSubtitle: {
-    fontSize: 14,
-    color: '#5B403D',
-    lineHeight: 20,
+  subheading: {
+    fontSize: 15,
+    color: C.onSurfaceVariant,
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 22,
   },
 
   // ===== FORM =====
-  formSection: {
-    flex: 1,
-  },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   inputLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#5B403D',
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  input: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
     fontSize: 14,
-    color: '#1A1C1C',
-    height: 48,
+    fontWeight: '600',
+    color: C.onSurfaceVariant,
+    marginBottom: 8,
   },
-  passwordContainer: {
+  inputWrapper: {
     position: 'relative',
+    justifyContent: 'center',
   },
-  passwordIcon: {
+  leadingIcon: {
     position: 'absolute',
-    left: 14,
-    top: 12,
-    fontSize: 18,
+    left: 12,
     zIndex: 1,
   },
-  passwordInput: {
-    paddingLeft: 44,
+  input: {
+    height: 48,
+    backgroundColor: C.inputBg,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: C.outlineVariant,
+    paddingLeft: 40,
+    paddingRight: 16,
+    fontSize: 15,
+    color: C.onSurface,
+  },
+  inputWithTrailing: {
     paddingRight: 48,
   },
-  eyeButton: {
+  trailingIcon: {
     position: 'absolute',
-    right: 14,
-    top: 12,
-  },
-  eyeButtonText: {
-    fontSize: 20,
+    right: 12,
+    padding: 2,
   },
 
   // ===== TERMS =====
-  termsContainer: {
+  termsRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 24,
-    marginTop: 4,
   },
   checkbox: {
     width: 20,
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#E4BEBA',
+    borderColor: C.outline,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
     marginTop: 2,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: C.card,
     flexShrink: 0,
   },
   checkboxChecked: {
-    backgroundColor: '#AF101A',
-    borderColor: '#AF101A',
-  },
-  checkmark: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '700',
+    backgroundColor: C.primaryContainer,
+    borderColor: C.primaryContainer,
   },
   termsText: {
-    fontSize: 13,
-    color: '#5B403D',
-    lineHeight: 18,
     flex: 1,
+    fontSize: 14,
+    color: C.onSurfaceVariant,
+    lineHeight: 20,
   },
   termsLink: {
-    color: '#AF101A',
-    fontWeight: '600',
+    color: C.primary,
+    fontWeight: '700',
   },
 
-  // ===== CREATE BUTTON =====
-  createButton: {
+  // ===== PRIMARY BUTTON =====
+  primaryButton: {
+    height: 48,
+    backgroundColor: C.primaryContainer,
     borderRadius: 10,
-    overflow: 'hidden',
-    marginBottom: 16,
-    shadowColor: '#AF101A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  createGradient: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    alignItems: 'center',
     gap: 8,
   },
-  createButtonText: {
-    fontSize: 14,
+  primaryButtonText: {
+    fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  createButtonArrow: {
-    fontSize: 18,
-    color: '#FFFFFF',
+    color: C.onPrimary,
   },
 
-  // ===== LOGIN =====
-  loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 4,
-  },
-  loginText: {
-    fontSize: 14,
-    color: '#5B403D',
-  },
-  loginLink: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#AF101A',
-  },
-
-  // ===== BOTTOM NAV =====
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  // ===== FOOTER =====
+  footerWrapper: {
     marginTop: 24,
-    gap: 16,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: C.outlineVariant,
   },
-  navItem: {
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    borderRadius: 20,
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  navItemActive: {
-    backgroundColor: '#AF101A',
+  footerText: {
+    fontSize: 15,
+    color: C.onSurfaceVariant,
   },
-  navLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-  },
-  navLabelActive: {
-    color: '#FFFFFF',
+  footerLink: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: C.primary,
   },
 });

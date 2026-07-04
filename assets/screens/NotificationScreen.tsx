@@ -15,6 +15,17 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
+import { getNotifications, markNotificationRead, clearNotifications } from '../utils/notifications';
+import { processDueResolutions } from '../utils/reports';
+import {
+  WarningIcon,
+  WrenchIcon,
+  CheckCircleIcon,
+  SecurityIcon,
+  BellIcon,
+  ArrowLeftIcon,
+  IconProps,
+} from '../components/Icons';
 
 interface Notification {
   id: string;
@@ -23,7 +34,7 @@ interface Notification {
   message: string;
   time: string;
   isRead: boolean;
-  icon: string;
+  icon: React.FC<IconProps>;
   isNew?: boolean;
   action?: string;
   actionLabel?: string;
@@ -52,7 +63,7 @@ export default function NotificationScreen({ navigation }) {
       time: '1 hour ago',
       isRead: false,
       isNew: true,
-      icon: '⚠️',
+      icon: WarningIcon,
     },
     {
       id: '2',
@@ -61,7 +72,7 @@ export default function NotificationScreen({ navigation }) {
       message: 'Technician assigned: John Miller. ETA: Today, 3:30 PM.',
       time: '2 mins ago',
       isRead: false,
-      icon: '🔧',
+      icon: WrenchIcon,
       action: 'View Details',
       actionLabel: 'Mark as Read',
       technician: {
@@ -80,7 +91,7 @@ export default function NotificationScreen({ navigation }) {
       message: 'The lighting issue in Lab 402 has been resolved. Thank you for your patience.',
       time: 'Yesterday',
       isRead: true,
-      icon: '✅',
+      icon: CheckCircleIcon,
       technician: {
         name: 'Sarah Johnson',
         role: 'Electrical Specialist',
@@ -97,7 +108,7 @@ export default function NotificationScreen({ navigation }) {
       message: 'Your account was logged into from a new device: Chrome on MacOS (192.168.1.45).',
       time: 'Yesterday',
       isRead: true,
-      icon: '🛡️',
+      icon: SecurityIcon,
     },
   ]);
 
@@ -194,6 +205,7 @@ export default function NotificationScreen({ navigation }) {
   const renderNotificationCard = (item: Notification) => {
     const isUnread = !item.isRead;
     const isAlert = item.type === 'alert';
+    const Icon = item.icon;
 
     return (
       <TouchableOpacity
@@ -217,7 +229,7 @@ export default function NotificationScreen({ navigation }) {
       >
         <View style={styles.notificationContent}>
           <View style={[styles.notificationIconContainer, { backgroundColor: theme.accent }]}>
-            <Text style={styles.notificationIcon}>{item.icon}</Text>
+            <Icon color={theme.primary} size={22} />
           </View>
           <View style={styles.notificationBody}>
             <View style={styles.notificationHeader}>
@@ -295,7 +307,7 @@ export default function NotificationScreen({ navigation }) {
         borderBottomColor: theme.border,
       }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={[styles.backButtonText, { color: theme.primary }]}>←</Text>
+          <ArrowLeftIcon color={theme.primary} size={24} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Notification Center</Text>
         <View style={styles.headerSpacer} />
@@ -341,7 +353,9 @@ export default function NotificationScreen({ navigation }) {
 
           {notifications.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>🔔</Text>
+              <View style={styles.emptyIcon}>
+                <BellIcon color={theme.textSecondary} size={48} />
+              </View>
               <Text style={[styles.emptyTitle, { color: theme.text }]}>All caught up!</Text>
               <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
                 You have no new notifications.
@@ -403,9 +417,6 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 24,
   },
   headerTitle: {
     fontSize: 18,
@@ -507,9 +518,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexShrink: 0,
   },
-  notificationIcon: {
-    fontSize: 22,
-  },
   notificationBody: {
     flex: 1,
   },
@@ -587,7 +595,6 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyIcon: {
-    fontSize: 48,
     marginBottom: 12,
   },
   emptyTitle: {

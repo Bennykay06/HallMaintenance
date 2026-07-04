@@ -1,7 +1,7 @@
 // src/navigation/TabNavigator.tsx (Animated Version)
 import React, { useRef } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 // Import Screens
@@ -84,15 +84,25 @@ const TabIcon = ({ focused, Icon, label, theme }: TabIconProps & { theme: any })
 };
 
 import { useTheme } from '../context/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabNavigator() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: [styles.tabBar, { backgroundColor: theme.surface, borderTopColor: theme.border }],
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            backgroundColor: theme.surface,
+            borderTopColor: theme.border,
+            height: 64 + insets.bottom,
+            paddingBottom: insets.bottom,
+          },
+        ],
         tabBarActiveTintColor: theme.primaryText,
         tabBarInactiveTintColor: theme.textSecondary,
         tabBarShowLabel: false,
@@ -151,13 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0d0d0d',
     borderTopWidth: 1,
     borderTopColor: '#0e0e0e',
-    height: Platform.OS === 'ios' ? 90 : 72,
-    paddingBottom: Platform.OS === 'ios' ? 4 : 2,
     paddingTop: 10,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     shadowColor: '#000',

@@ -194,3 +194,67 @@ export const MailIcon = ({ color = '#000', size = 24 }: IconProps) =>
 // 📍 location
 export const LocationIcon = ({ color = '#000', size = 24 }: IconProps) =>
   base(color, size, 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z');
+
+// ✎ edit / pencil
+export const EditIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z');
+
+// ✅ check circle
+export const CheckCircleIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z');
+
+// ❓ help
+export const HelpIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z');
+
+// 🚪 logout
+export const LogoutIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z');
+
+// ⋯ more (horizontal)
+export const MoreIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z');
+
+// 📄 document / description
+export const DescriptionIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z');
+
+// › chevron right
+export const ChevronRightIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z');
+
+// ⤴ share
+export const ShareIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z');
+
+// ⚠️ warning
+export const WarningIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z');
+
+// ✓ check (no circle)
+export const CheckIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z');
+
+// ⏰ clock / schedule
+export const ClockIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z');
+
+// 👁️ eye / visibility
+export const EyeIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z');
+
+// 🙈 eye off / visibility_off
+export const EyeOffIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z');
+
+// 🏛️ account_balance / bank / institution
+export const BankIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z');
+
+// 🔑 login / arrow into door
+export const LoginIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z');
+
+// 👤➕ person_add
+export const PersonAddIcon = ({ color = '#000', size = 24 }: IconProps) =>
+  base(color, size, 'M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z');

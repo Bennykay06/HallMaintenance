@@ -119,8 +119,8 @@ export default function EmergencyScreen({ navigation }) {
             <View style={styles.primaryIconContainer}>
               <SecurityIcon color={theme.primary} size={32} />
             </View>
-            <View>
-              <Text style={styles.primaryName}>{primaryContact.name}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.primaryName} numberOfLines={1}>{primaryContact.name}</Text>
               <Text style={styles.primaryDescription}>{primaryContact.description}</Text>
               <Text style={styles.primaryPhone}>{primaryContact.phone}</Text>
             </View>
@@ -129,7 +129,10 @@ export default function EmergencyScreen({ navigation }) {
             style={styles.primaryCallButton}
             onPress={() => makePhoneCall(primaryContact.phone)}
           >
-            <View style={{flexDirection: "row", alignItems: "center"}}><PersonIcon color="#FFFFFF" size={20} /><Text style={styles.primaryCallButtonText}> Call Now</Text></View>
+            <View style={{flexDirection: "row", alignItems: "center", gap: 6}}>
+              <PersonIcon color="#FFFFFF" size={20} />
+              <Text style={styles.primaryCallButtonText}>Call Now</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -152,7 +155,7 @@ export default function EmergencyScreen({ navigation }) {
           <View style={styles.contactIconContainer}>
             <View style={styles.contactIconContainer}>{item.icon}</View>
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.contactName}>{item.name}</Text>
             <Text style={styles.contactDescription}>{item.description}</Text>
             <Text style={styles.contactPhone}>{item.phone}</Text>
@@ -172,16 +175,6 @@ export default function EmergencyScreen({ navigation }) {
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <SchoolIcon color="#FFFFFF" size={80} />
-          <Text style={styles.headerTitle}>Crimson Campus</Text>
-        </View>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{getInitials()}</Text>
-        </View>
-      </View>
-
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
@@ -310,7 +303,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     gap: 12,
   },
   primaryLeft: {

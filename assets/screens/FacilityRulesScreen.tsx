@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 interface AccordionItem {
   id: string;
@@ -195,7 +196,11 @@ export default function FacilityRulesScreen({ navigation }) {
             {item.content.map((content, index) => (
               <View key={index} style={styles.accordionContentItem}>
                 <View style={styles.accordionContentIconContainer}>
-                  <Text style={styles.accordionContentIcon}>{content.icon}</Text>
+                  <MaterialIcons
+                    name={content.icon.replace(/_/g, '-') as any}
+                    size={18}
+                    color={theme.primary}
+                  />
                 </View>
                 <View style={styles.accordionContentText}>
                   <Text style={styles.accordionContentTitle}>{content.title}</Text>
@@ -253,7 +258,7 @@ export default function FacilityRulesScreen({ navigation }) {
           {/* ===== FEATURED BANNER ===== */}
           <TouchableOpacity style={styles.featuredBanner} activeOpacity={0.9}>
             <LinearGradient
-              colors={['rgba(175, 16, 26, 0.9)', 'rgba(175, 16, 26, 0.7)']}
+              colors={[theme.gradientStart, theme.gradientEnd]}
               style={styles.featuredOverlay}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -416,7 +421,8 @@ const getStyles = (theme: any) => StyleSheet.create({
   featuredLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: 'rgba(255,255,255,0.8)',
+    color: theme.primaryText,
+    opacity: 0.8,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 4,
@@ -424,12 +430,13 @@ const getStyles = (theme: any) => StyleSheet.create({
   featuredTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: theme.surface,
+    color: theme.primaryText,
     marginBottom: 4,
   },
   featuredSubtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.9)',
+    color: theme.primaryText,
+    opacity: 0.9,
   },
 
   // ===== ACCORDION =====
@@ -500,9 +507,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 2,
-  },
-  accordionContentIcon: {
-    fontSize: 16,
   },
   accordionContentText: {
     flex: 1,

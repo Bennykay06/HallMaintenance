@@ -13,11 +13,12 @@ import {
   Platform,
   TextInput,
   Alert,
-  Switch,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function EditProfileScreen({ navigation }) {
@@ -29,10 +30,9 @@ export default function EditProfileScreen({ navigation }) {
   const [hall, setHall] = useState('Unity Hall');
   const [floor, setFloor] = useState('Floor 2');
   const [room, setRoom] = useState('Room 204');
-  const [emergencyAlerts, setEmergencyAlerts] = useState(true);
-  const [maintenanceUpdates, setMaintenanceUpdates] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   useEffect(() => {
     loadUserData();
@@ -44,11 +44,13 @@ export default function EditProfileScreen({ navigation }) {
       const hallData = await AsyncStorage.getItem('userHall');
       const floorData = await AsyncStorage.getItem('userFloor');
       const roomData = await AsyncStorage.getItem('userRoom');
-      
+      const photo = await AsyncStorage.getItem('userPhoto');
+
       if (name) setUserName(name);
       if (hallData) setHall(hallData);
       if (floorData) setFloor(floorData);
       if (roomData) setRoom(roomData);
+      if (photo) setProfileImage(photo);
     } catch (error) {
       console.log('Error loading user data:', error);
     }
@@ -109,11 +111,68 @@ export default function EditProfileScreen({ navigation }) {
     }
   };
 
+  const savePhoto = async (uri: string) => {
+    setProfileImage(uri);
+    setIsEditing(true);
+    try {
+      await AsyncStorage.setItem('userPhoto', uri);
+    } catch (error) {
+      console.log('Error saving photo:', error);
+    }
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Needed', 'Camera permission is required to take a photo.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      savePhoto(result.assets[0].uri);
+    }
+  };
+
+  const pickFromGallery = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Needed', 'Media library permission is required to choose a photo.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (!result.canceled) {
+      savePhoto(result.assets[0].uri);
+    }
+  };
+
+  const removePhoto = async () => {
+    setProfileImage(null);
+    setIsEditing(true);
+    try {
+      await AsyncStorage.removeItem('userPhoto');
+    } catch (error) {
+      console.log('Error removing photo:', error);
+    }
+  };
+
   const handleUpdatePhoto = () => {
     Alert.alert('Update Photo', 'Choose an option:', [
-      { text: 'Take Photo', onPress: () => Alert.alert('Camera', 'Camera would open here') },
-      { text: 'Choose from Gallery', onPress: () => Alert.alert('Gallery', 'Gallery would open here') },
-      { text: 'Cancel', style: 'cancel' },
+      { text: 'Take Photo', onPress: takePhoto },
+      { text: 'Choose from Gallery', onPress: pickFromGallery },
+      ...(profileImage
+        ? [{ text: 'Remove Photo', style: 'destructive' as const, onPress: removePhoto }]
+        : []),
+      { text: 'Cancel', style: 'cancel' as const },
     ]);
   };
 
@@ -139,7 +198,7 @@ export default function EditProfileScreen({ navigation }) {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -148,12 +207,16 @@ export default function EditProfileScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.content}>
-          
+
           {/* ===== PROFILE PHOTO ===== */}
           <View style={styles.photoSection}>
             <View style={styles.avatarContainer}>
               <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{getInitials()}</Text>
+                {profileImage ? (
+                  <Image source={{ uri: profileImage }} style={styles.avatarImage} />
+                ) : (
+                  <Text style={styles.avatarText}>{getInitials()}</Text>
+                )}
               </View>
               <TouchableOpacity style={styles.editPhotoButton} onPress={handleUpdatePhoto}>
                 <CameraIcon color="#FFFFFF" size={16} />
@@ -229,57 +292,40 @@ export default function EditProfileScreen({ navigation }) {
               />
             </View>
 
-            {/* Hall of Residence */}
+            {/* Hall of Residence (read-only) */}
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Hall of Residence</Text>
               <TextInput
-                style={styles.formInput}
+                style={[styles.formInput, styles.formInputDisabled]}
                 value={hall}
-                onChangeText={(text) => {
-                  setHall(text);
-                  setIsEditing(true);
-                }}
-                placeholder="Enter hall name"
-                placeholderTextColor="#999"
+                editable={false}
               />
             </View>
 
-            {/* Floor Number */}
+            {/* Floor Number (read-only) */}
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Floor Number</Text>
               <TextInput
-                style={styles.formInput}
+                style={[styles.formInput, styles.formInputDisabled]}
                 value={floor}
-                onChangeText={(text) => {
-                  setFloor(text);
-                  setIsEditing(true);
-                }}
-                placeholder="Enter floor number"
-                placeholderTextColor="#999"
+                editable={false}
               />
             </View>
 
-            {/* Room Number */}
+            {/* Room Number (read-only) */}
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Room Number</Text>
               <View style={styles.roomContainer}>
                 <TextInput
-                  style={[styles.formInput, styles.roomInput]}
+                  style={[styles.formInput, styles.roomInput, styles.formInputDisabled]}
                   value={room}
-                  onChangeText={(text) => {
-                    setRoom(text);
-                    setIsEditing(true);
-                  }}
-                  placeholder="Enter room number"
-                  placeholderTextColor="#999"
+                  editable={false}
                 />
                 <View style={styles.verifiedBadge}>
                   <Text style={styles.verifiedText}>✓ Verified</Text>
                 </View>
               </View>
-              <Text style={styles.roomHelper}>
-                Contact residence life to update your room assignment.
-              </Text>
+      
             </View>
           </View>
 
@@ -299,47 +345,6 @@ export default function EditProfileScreen({ navigation }) {
             <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Cancel Changes</Text>
             </TouchableOpacity>
-          </View>
-
-          {/* ===== NOTIFICATION PREFERENCES ===== */}
-          <View style={styles.notificationSection}>
-            <Text style={styles.notificationTitle}>Notification Preferences</Text>
-            
-            <View style={styles.notificationItem}>
-              <View>
-                <Text style={styles.notificationLabel}>Emergency Alerts</Text>
-                <Text style={styles.notificationDescription}>
-                  Immediate campus safety notifications
-                </Text>
-              </View>
-              <Switch
-                value={emergencyAlerts}
-                onValueChange={(value) => {
-                  setEmergencyAlerts(value);
-                  setIsEditing(true);
-                }}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={emergencyAlerts ? '#FFFFFF' : '#FFFFFF'}
-              />
-            </View>
-
-            <View style={styles.notificationItem}>
-              <View>
-                <Text style={styles.notificationLabel}>Maintenance Updates</Text>
-                <Text style={styles.notificationDescription}>
-                  Status changes on your work orders
-                </Text>
-              </View>
-              <Switch
-                value={maintenanceUpdates}
-                onValueChange={(value) => {
-                  setMaintenanceUpdates(value);
-                  setIsEditing(true);
-                }}
-                trackColor={{ false: '#E4BEBA', true: theme.primary }}
-                thumbColor={maintenanceUpdates ? '#FFFFFF' : '#FFFFFF'}
-              />
-            </View>
           </View>
 
           <View style={styles.bottomSpacer} />
@@ -425,6 +430,11 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 36,
     color: '#FFFFFF',
     fontWeight: '700',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
   },
   editPhotoButton: {
     position: 'absolute',
@@ -552,44 +562,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: theme.primary,
-  },
-
-  // ===== NOTIFICATIONS =====
-  notificationSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 0,
-    borderColor: '#E4BEBA',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  notificationTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1A1C1C',
-    marginBottom: 12,
-  },
-  notificationItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#F0F0F0',
-  },
-  notificationLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1A1C1C',
-  },
-  notificationDescription: {
-    fontSize: 12,
-    color: '#5B403D',
-    marginTop: 1,
   },
 
   // ===== BOTTOM SPACER =====

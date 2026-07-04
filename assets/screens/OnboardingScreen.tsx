@@ -20,14 +20,45 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
 
+type Hall = {
+  id: string;
+  name: string;
+  campus: string;
+  colors: string[];
+  textColor: string;
+  icon: string;
+};
+
+// Neutral default palette shown until the user selects a hall.
+const DEFAULT_THEME = {
+  primary: '#1A237E',
+  primaryContainer: '#3949AB',
+  secondary: '#455A64',
+  background: '#F8F9FA',
+  surface: '#FFFFFF',
+  surfaceContainer: '#F3F3F3',
+  text: '#191C1D',
+  textSecondary: '#454652',
+  border: '#C6C5D4',
+  gradientStart: '#1A237E',
+  gradientEnd: '#3949AB',
+  accent: '#E0E0FF',
+  primaryText: '#FFFFFF',
+  name: 'Default',
+  icon: '🏛️',
+};
+
 export default function OnboardingScreen({ navigation }) {
-  const { theme, setHall } = useTheme();
-  const styles = getStyles(theme);
+  const { theme: hallTheme, setHall } = useTheme();
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
   const [roomNumber, setRoomNumber] = useState('');
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Use the neutral default palette until a hall is chosen, then that hall's theme.
+  const theme = selectedHall ? hallTheme : DEFAULT_THEME;
+  const styles = getStyles(theme);
 
   const halls: Hall[] = [
     { 
@@ -38,12 +69,12 @@ export default function OnboardingScreen({ navigation }) {
       textColor: '#FFFFFF',
       icon: '🏛️'
     },
-    { 
-      id: '2', 
-      name: 'University Hall (Katanga)', 
-      campus: 'Main Campus', 
-      colors: ['#FFCB05', '#E5B700'],
-      textColor: '#000000',
+    {
+      id: '2',
+      name: 'University Hall (Katanga)',
+      campus: 'Main Campus',
+      colors: ['#F5C518', '#FFD700'],
+      textColor: '#1A1C1C',
       icon: '🦁'
     },
     { 
@@ -238,30 +269,11 @@ export default function OnboardingScreen({ navigation }) {
     );
   };
 
-  const renderStepIndicator = () => {
-    return (
-      <View style={styles.stepIndicator}>
-        <View style={[styles.stepDot, step >= 1 && { backgroundColor: theme.primary, width: 12, height: 12, borderRadius: 6 }]} />
-        <View style={[styles.stepLine, step >= 2 && { backgroundColor: theme.primary }]} />
-        <View style={[styles.stepDot, step >= 2 && { backgroundColor: theme.primary, width: 12, height: 12, borderRadius: 6 }]} />
-        <View style={[styles.stepLine, step >= 3 && { backgroundColor: theme.primary }]} />
-        <View style={[styles.stepDot, step >= 3 && { backgroundColor: theme.primary, width: 12, height: 12, borderRadius: 6 }]} />
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#F9F9F9" />
-      
-      {/* ===== HEADER ===== */}
-      <View style={styles.header}>
-        <View style={styles.headerSpacer} />
-        <Text style={[styles.headerTitle, { color: theme.primary }]}>Onboarding</Text>
-        <Text style={styles.stepBadge}>Step {step} of 3</Text>
-      </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -277,9 +289,6 @@ export default function OnboardingScreen({ navigation }) {
               To personalize your maintenance dashboard and provide relevant campus alerts, please select your primary residence hall.
             </Text>
           </View>
-
-          {/* ===== STEP INDICATOR ===== */}
-          {renderStepIndicator()}
 
           {/* ===== STEP CONTENT ===== */}
           <View style={styles.cardContainer}>
@@ -339,31 +348,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: '#F9F9F9',
   },
 
-  // ===== HEADER =====
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#AF101A',
-  },
-  stepBadge: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#5B403D',
-  },
-
   // ===== SCROLL VIEW =====
   scrollView: {
     flex: 1,
@@ -395,36 +379,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 14,
     color: '#5B403D',
     lineHeight: 20,
-  },
-
-  // ===== STEP INDICATOR =====
-  stepIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-    paddingHorizontal: 20,
-  },
-  stepDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#E4BEBA',
-  },
-  stepDotActive: {
-    backgroundColor: '#AF101A',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  stepLine: {
-    flex: 1,
-    height: 2,
-    backgroundColor: '#E4BEBA',
-    marginHorizontal: 4,
-  },
-  stepLineActive: {
-    backgroundColor: '#AF101A',
   },
 
   // ===== CARD CONTAINER =====

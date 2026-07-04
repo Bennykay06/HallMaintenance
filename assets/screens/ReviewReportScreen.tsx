@@ -12,12 +12,12 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
-  TextInput,
   Alert,
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RESOLVE_DELAY_MS } from '../utils/reports';
 
 export default function ReviewReportScreen({ navigation, route }) {
   const { theme } = useTheme();
@@ -31,7 +31,6 @@ export default function ReviewReportScreen({ navigation, route }) {
   } = route.params || {};
 
   const [location, setLocation] = useState('North Hall, Room 402');
-  const [additionalNotes, setAdditionalNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userName, setUserName] = useState('User');
 
@@ -52,65 +51,6 @@ export default function ReviewReportScreen({ navigation, route }) {
     } catch (error) {
       console.log('Error loading user data:', error);
     }
-  };
-
-  const handleEdit = (field) => {
-    if (field === 'location') {
-      Alert.alert(
-        'Edit Location',
-        'Enter your location:',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Save',
-            onPress: () => {
-              Alert.alert('Location updated', 'Location would be updated here');
-            },
-          },
-        ]
-      );
-    } else if (field === 'category') {
-      Alert.alert('Edit Category', 'Change the issue category?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Change', onPress: () => navigation.navigate('ServiceIssues') },
-      ]);
-    } else if (field === 'issue') {
-      Alert.alert('Edit Issue', 'Change the specific issue?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Change', onPress: () => navigation.goBack() },
-      ]);
-    }
-  };
-
-  const handleManageMedia = () => {
-    Alert.alert(
-      'Manage Media',
-      `Photos: ${photos.length}\nVideo: ${video ? '1' : '0'}`,
-      [
-        { text: 'Close', style: 'cancel' },
-        { 
-          text: 'Add More', 
-          onPress: () => navigation.navigate('PhotosUpload', {
-            serviceType,
-            selectedIssue,
-            photos,
-            video,
-            writtenDetails,
-          })
-        },
-        { 
-          text: 'Remove All', 
-          style: 'destructive',
-          onPress: () => Alert.alert('Remove All', 'Remove all media?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Remove', style: 'destructive' },
-          ])
-        },
-      ]
-    );
   };
 
   const handleBack = () => {
@@ -147,10 +87,12 @@ export default function ReviewReportScreen({ navigation, route }) {
         photos: photos.map(p => p.uri || p),
         video: video ? (video.uri || video) : null,
         writtenDetails: writtenDetails || '',
-        additionalNotes,
         timestamp: new Date().toISOString(),
         status: 'pending',
         submittedBy: userName,
+        // When the simulated technician will resolve this request (see
+        // utils/reports.ts -> processDueResolutions).
+        resolveDueAt: Date.now() + RESOLVE_DELAY_MS,
       };
 
       // Save to AsyncStorage
@@ -216,45 +158,25 @@ export default function ReviewReportScreen({ navigation, route }) {
           
           {/* Location */}
           <View style={styles.reviewItem}>
-            <View style={styles.reviewItemHeader}>
-              <Text style={styles.reviewItemLabel}>Location</Text>
-              <TouchableOpacity onPress={() => handleEdit('location')}>
-                <Text style={styles.editButton}>Edit</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.reviewItemLabel}>Location</Text>
             <Text style={styles.reviewItemValue}>{location}</Text>
           </View>
 
           {/* Issue Category */}
           <View style={styles.reviewItem}>
-            <View style={styles.reviewItemHeader}>
-              <Text style={styles.reviewItemLabel}>Issue Category</Text>
-              <TouchableOpacity onPress={() => handleEdit('category')}>
-                <Text style={styles.editButton}>Edit</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.reviewItemLabel}>Issue Category</Text>
             <Text style={styles.reviewItemValue}>{serviceType}</Text>
           </View>
 
           {/* Specific Problem */}
           <View style={styles.reviewItem}>
-            <View style={styles.reviewItemHeader}>
-              <Text style={styles.reviewItemLabel}>Specific Problem</Text>
-              <TouchableOpacity onPress={() => handleEdit('issue')}>
-                <Text style={styles.editButton}>Edit</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.reviewItemLabel}>Specific Problem</Text>
             <Text style={styles.reviewItemValue}>{selectedIssue}</Text>
           </View>
 
           {/* Uploaded Media */}
-          <View style={styles.reviewItem}>
-            <View style={styles.reviewItemHeader}>
-              <Text style={styles.reviewItemLabel}>Uploaded Media</Text>
-              <TouchableOpacity onPress={handleManageMedia}>
-                <Text style={styles.editButton}>Manage</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={[styles.reviewItem, !writtenDetails && styles.lastReviewItem]}>
+            <Text style={styles.reviewItemLabel}>Uploaded Media</Text>
             <View style={styles.mediaPreview}>
               <Text style={styles.mediaCount}>{getPhotoDisplay()}</Text>
               {video && (
@@ -268,26 +190,11 @@ export default function ReviewReportScreen({ navigation, route }) {
 
           {/* Written Details (if provided) */}
           {writtenDetails && (
-            <View style={styles.reviewItem}>
+            <View style={[styles.reviewItem, styles.lastReviewItem]}>
               <Text style={styles.reviewItemLabel}>Written Details</Text>
               <Text style={styles.reviewItemValue}>{writtenDetails}</Text>
             </View>
           )}
-
-          {/* Additional Notes */}
-          <View style={[styles.reviewItem, styles.lastReviewItem]}>
-            <Text style={styles.reviewItemLabel}>Additional Notes (Optional)</Text>
-            <TextInput
-              style={styles.notesInput}
-              placeholder="Tell us more about when this happened or how to access the room..."
-              placeholderTextColor="#999"
-              value={additionalNotes}
-              onChangeText={setAdditionalNotes}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-          </View>
         </View>
 
         {/* ===== INFO NOTE ===== */}
@@ -439,23 +346,13 @@ const getStyles = (theme: any) => StyleSheet.create({
   lastReviewItem: {
     borderBottomWidth: 0,
   },
-  reviewItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
   reviewItemLabel: {
+    marginBottom: 4,
     fontSize: 12,
     fontWeight: '600',
     color: '#8F6F6C',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  editButton: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: theme.primary,
   },
   reviewItemValue: {
     fontSize: 16,
@@ -477,20 +374,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 14,
     color: '#8F6F6C',
     fontStyle: 'italic',
-  },
-
-  // ===== NOTES INPUT =====
-  notesInput: {
-    backgroundColor: theme.background,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E4BEBA',
-    padding: 12,
-    fontSize: 14,
-    color: '#1A1C1C',
-    minHeight: 80,
-    marginTop: 8,
-    textAlignVertical: 'top',
   },
 
   // ===== INFO =====

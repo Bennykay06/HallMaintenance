@@ -78,15 +78,15 @@ export default function HelpSupportScreen({ navigation }) {
   };
 
   const handleCreateTicket = () => {
-    Alert.alert('Create Ticket', 'Technical issue reporting form coming soon.');
+    navigation.navigate('ReportIssue');
   };
 
   const handleLiveChat = () => {
-    Alert.alert('Live Chat', 'Live chat support coming soon.');
+    navigation.navigate('SupportChat');
   };
 
   const handleViewFAQs = () => {
-    Alert.alert('FAQs', 'View all frequently asked questions.');
+    navigation.navigate('FAQ');
   };
 
   const handleEmailSupport = () => {
@@ -102,11 +102,7 @@ export default function HelpSupportScreen({ navigation }) {
   };
 
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      Alert.alert('Search', `Searching for: "${searchQuery}"`);
-    } else {
-      Alert.alert('Search', 'Please enter a search term.');
-    }
+    navigation.navigate('FAQ', { initialQuery: searchQuery.trim() });
   };
 
   return (

@@ -1,7 +1,7 @@
 // src/context/ThemeContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { HallTheme, getHallTheme } from '../config/hallThemes';
+import { HallTheme, getHallTheme } from '../config/HallThemes';
 
 interface ThemeContextType {
   theme: HallTheme;
