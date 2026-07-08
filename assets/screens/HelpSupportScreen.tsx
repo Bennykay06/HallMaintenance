@@ -244,7 +244,7 @@ export default function HelpSupportScreen({ navigation }) {
                 <Text style={styles.contactItemIcon}>✉️</Text>
                 <View>
                   <Text style={styles.contactItemTitle}>Email Support</Text>
-                  <Text style={styles.contactItemValue}>maintenance@crimson.edu</Text>
+                  <Text style={styles.contactItemValue}>maintenance@knust.edu.gh</Text>
                 </View>
               </View>
             </TouchableOpacity>

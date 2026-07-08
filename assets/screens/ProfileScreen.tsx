@@ -27,6 +27,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { formatLocation } from '../utils/location';
 
 export default function ProfileScreen({ navigation }) {
   const { theme } = useTheme();
@@ -117,13 +118,14 @@ export default function ProfileScreen({ navigation }) {
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
       
-      {/* ===== HEADER ===== */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color={theme.primary} size={24} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <ArrowLeftIcon color={theme.primary} size={22} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Profile</Text>
-        <View style={styles.moreButton} />
       </View>
 
       <ScrollView 
@@ -150,7 +152,7 @@ export default function ProfileScreen({ navigation }) {
               <Text style={styles.profileName}>{userName}</Text>
               <View style={styles.locationBadge}>
                 <PersonIcon color={theme.primary} size={24} />
-                <Text style={styles.locationText}>{fullAddress}</Text>
+                <Text style={styles.locationText}>{formatLocation(fullAddress)}</Text>
               </View>
             </View>
           </View>
@@ -247,32 +249,14 @@ const getStyles = (theme: any) => StyleSheet.create({
   // ===== HEADER =====
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: theme.surface,
-    borderBottomWidth: 0.5,
-    borderBottomColor: theme.border,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: theme.background,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: theme.primary,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.primary,
-  },
-  moreButton: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
   },

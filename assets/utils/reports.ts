@@ -14,7 +14,9 @@ import { addNotification } from './notifications';
 const STORAGE_KEY = 'reports';
 
 // How long after submission the simulated technician resolves the request.
-export const RESOLVE_DELAY_MS = 10000;
+// Kept long (24h) so submitted requests stay in the Active tab during use
+// instead of resolving into History moments after submission.
+export const RESOLVE_DELAY_MS = 24 * 60 * 60 * 1000;
 
 const TECHNICIANS = [
   { name: 'John Miller', role: 'Lead Facilities Specialist', online: true },
@@ -69,6 +71,16 @@ export const deleteReport = async (id: string): Promise<any[]> => {
 export const clearHistory = async (): Promise<any[]> => {
   const reports = await getReports();
   const remaining = reports.filter(r => !isDoneStatus(r.status));
+  await saveReports(remaining);
+  return remaining;
+};
+
+// Clears the Active list: removes every request that is not yet resolved or
+// completed, leaving History (done requests) untouched. Returns the remaining
+// reports.
+export const clearActive = async (): Promise<any[]> => {
+  const reports = await getReports();
+  const remaining = reports.filter(r => isDoneStatus(r.status));
   await saveReports(remaining);
   return remaining;
 };

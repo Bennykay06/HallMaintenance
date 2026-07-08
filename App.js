@@ -12,6 +12,7 @@ import TabNavigator from './assets/navigation/TabNavigator.tsx';
 import ServiceIssuesScreen from './assets/screens/ServiceIssuesScreen.tsx';
 import PhotosUploadScreen from './assets/screens/PhotosUploadScreen.tsx';
 import ReviewReportScreen from './assets/screens/ReviewReportScreen.tsx';
+import RequestDetailScreen from './assets/screens/RequestDetailScreen.tsx';
 import SuccessScreen from './assets/screens/SuccessScreen.tsx';
 import ArticleDetailScreen from './assets/screens/ArticleDetailScreen.tsx';
 import ProfileScreen from './assets/screens/ProfileScreen.tsx';
@@ -71,6 +72,7 @@ export default function App() {
             <Stack.Screen name="ServiceIssues" component={ServiceIssuesScreen} />
             <Stack.Screen name="PhotosUpload" component={PhotosUploadScreen} />
             <Stack.Screen name="ReviewReport" component={ReviewReportScreen} />
+            <Stack.Screen name="RequestDetail" component={RequestDetailScreen} />
             <Stack.Screen name="Success" component={SuccessScreen} />
             <Stack.Screen name="ArticleDetail" component={ArticleDetailScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />

@@ -20,37 +20,26 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export default function PhotosUploadScreen({ navigation, route }) {
+
+type MediaAsset = { id: string; uri: string };
+
+export default function PhotosUploadScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { serviceType = 'Electrical', selectedIssue = 'Bulb flickering or not lighting up' } = route.params || {};
   
-  const [photos, setPhotos] = useState([]);
-  const [video, setVideo] = useState(null);
+  const [photos, setPhotos] = useState<MediaAsset[]>([]);
+  const [video, setVideo] = useState<MediaAsset | null>(null);
   const [showWrittenDetails, setShowWrittenDetails] = useState(false);
   const [writtenDetails, setWrittenDetails] = useState('');
-  const [userName, setUserName] = useState('User');
-  const [userLocation, setUserLocation] = useState('North Hall, RM 402');
   const [loading, setLoading] = useState(false);
 
   const maxPhotos = 3;
   const maxVideos = 1;
 
   useEffect(() => {
-    loadUserData();
     requestPermissions();
   }, []);
-
-  const loadUserData = async () => {
-    try {
-      const name = await AsyncStorage.getItem('userName');
-      const location = await AsyncStorage.getItem('userLocation');
-      if (name) setUserName(name);
-      if (location) setUserLocation(location);
-    } catch (error) {
-      console.log('Error loading user data:', error);
-    }
-  };
 
   const requestPermissions = async () => {
     const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
@@ -178,7 +167,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
     }
   };
 
-  const removePhoto = (id) => {
+  const removePhoto = (id: string) => {
     setPhotos(photos.filter(photo => photo.id !== id));
   };
 
@@ -227,29 +216,18 @@ export default function PhotosUploadScreen({ navigation, route }) {
     }
   };
 
-  const getUserInitials = () => {
-    return userName
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+      <StatusBar style="dark" backgroundColor={theme.background} />
       
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeftIcon color={theme.primary} size={24} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <ArrowLeftIcon color={theme.primary} size={22} />
         </TouchableOpacity>
-        <View>
-          <Text style={styles.headerTitle}>{userLocation}</Text>
-        </View>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{getUserInitials()}</Text>
-        </View>
       </View>
 
       {loading && (
@@ -282,38 +260,40 @@ export default function PhotosUploadScreen({ navigation, route }) {
         </View>
 
         <View style={styles.instructionContainer}>
-          <Text style={styles.instructionTitle}>Evidence & Photos</Text>
+          <Text style={styles.instructionTitle}> Photo evidence</Text>
           <Text style={styles.instructionText}>
             Please provide clear media of the issue. You can upload up to 3 photos and 1 video.
           </Text>
         </View>
 
-        <View style={styles.photoGrid}>
-          {photos.map((photo) => (
-            <View key={photo.id} style={styles.photoItem}>
-              <Image source={{ uri: photo.uri }} style={styles.photoImage} />
-              <TouchableOpacity
-                style={styles.removePhotoBtn}
-                onPress={() => removePhoto(photo.id)}
-              >
-                <CloseIcon color="#FFFFFF" size={12} />
-              </TouchableOpacity>
-            </View>
-          ))}
-          
-          {photos.length < maxPhotos && (
-            <View style={styles.addPhotoContainer}>
-              <TouchableOpacity style={styles.addPhotoBtn} onPress={takePhoto}>
-                <CameraIcon color={theme.primary} size={24} />
-                <Text style={styles.addPhotoText}>Take Photo</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.addPhotoBtn} onPress={pickPhoto}>
-                <ImageIcon color={theme.primary} size={24} />
-                <Text style={styles.addPhotoText}>Choose from Gallery</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+        {photos.length > 0 && (
+          <View style={styles.photoGrid}>
+            {photos.map((photo) => (
+              <View key={photo.id} style={styles.photoItem}>
+                <Image source={{ uri: photo.uri }} style={styles.photoImage} />
+                <TouchableOpacity
+                  style={styles.removePhotoBtn}
+                  onPress={() => removePhoto(photo.id)}
+                >
+                  <CloseIcon color="#FFFFFF" size={12} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {photos.length < maxPhotos && (
+          <View style={styles.addPhotoRow}>
+            <TouchableOpacity style={styles.addPhotoBtn} onPress={takePhoto}>
+              <CameraIcon color={theme.primary} size={24} />
+              <Text style={styles.addPhotoText}>Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.addPhotoBtn} onPress={pickPhoto}>
+              <ImageIcon color={theme.primary} size={24} />
+              <Text style={styles.addPhotoText}>Choose from Gallery</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <View style={styles.videoSection}>
           <Text style={styles.videoTitle}>Video Evidence</Text>
@@ -350,7 +330,7 @@ export default function PhotosUploadScreen({ navigation, route }) {
             onPress={() => setShowWrittenDetails(!showWrittenDetails)}
           >
             <Text style={styles.writtenDetailsToggleText}>
-              {showWrittenDetails ? 'Hide' : 'Add'} written details instead
+              {showWrittenDetails ? 'Hide' : 'Add'} written details
             </Text>
           </TouchableOpacity>
           
@@ -413,42 +393,16 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: theme.background,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.primary,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.primaryContainer,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: theme.primaryContainer,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  avatarText: {
-    color: theme.primaryText,
-    fontSize: 14,
-    fontWeight: '700',
   },
   loadingOverlay: {
     position: 'absolute',
@@ -471,7 +425,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   progressContainer: {
     paddingHorizontal: 16,
-    paddingTop: 24,
+    paddingTop: 8,
     paddingBottom: 16,
   },
   progressHeader: {
@@ -585,13 +539,15 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  addPhotoContainer: {
-    width: '30%',
-    gap: 8,
+  addPhotoRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    gap: 12,
+    marginBottom: 20,
   },
   addPhotoBtn: {
-    width: '100%',
-    aspectRatio: 1,
+    flex: 1,
+    paddingVertical: 20,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#E4BEBA',
@@ -601,11 +557,11 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: 'transparent',
   },
   addPhotoText: {
-    fontSize: 8,
+    fontSize: 11,
     fontWeight: '600',
     color: '#5B403D',
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: 6,
   },
   videoSection: {
     paddingHorizontal: 16,

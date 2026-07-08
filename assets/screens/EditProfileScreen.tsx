@@ -292,7 +292,7 @@ export default function EditProfileScreen({ navigation }) {
               />
             </View>
 
-            {/* Hall of Residence (read-only) */}
+            {/* Hall of Residence (read-only — chosen at registration) */}
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Hall of Residence</Text>
               <TextInput
@@ -300,6 +300,9 @@ export default function EditProfileScreen({ navigation }) {
                 value={hall}
                 editable={false}
               />
+              <Text style={styles.roomHelper}>
+                Your assigned hall is set at registration and cannot be changed.
+              </Text>
             </View>
 
             {/* Floor Number (read-only) */}

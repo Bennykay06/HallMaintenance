@@ -1,6 +1,5 @@
 // src/screens/ReviewReportScreen.js
 import { useTheme } from '../context/ThemeContext';
-import { ArrowLeftIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -18,6 +17,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RESOLVE_DELAY_MS } from '../utils/reports';
+import { formatLocation, getHall } from '../utils/location';
 
 export default function ReviewReportScreen({ navigation, route }) {
   const { theme } = useTheme();
@@ -77,11 +77,16 @@ export default function ReviewReportScreen({ navigation, route }) {
 
     try {
       const referenceId = generateReferenceId();
-      
+
+      // Tag the report with the resident's hall so My Requests can reliably
+      // show it (and hide other halls') regardless of location formatting.
+      const userHall = (await AsyncStorage.getItem('userHall')) || getHall(location);
+
       const reportData = {
         id: Date.now().toString(),
         referenceId,
-        location,
+        hall: userHall,
+        location: formatLocation(location),
         serviceType,
         selectedIssue,
         photos: photos.map(p => p.uri || p),
@@ -119,18 +124,13 @@ export default function ReviewReportScreen({ navigation, route }) {
     return `📷 ${photos.length} photo${photos.length > 1 ? 's' : ''}`;
   };
 
+  // Show the evidence note only when the user actually attached media.
+  // If they chose to write details instead of uploading evidence, skip it.
+  const hasEvidence = photos.length > 0 || !!video;
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
-      
-      {/* ===== HEADER ===== */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <ArrowLeftIcon color={theme.primary} size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Review Report</Text>
-        <View style={{ width: 40 }} />
-      </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         
@@ -159,7 +159,7 @@ export default function ReviewReportScreen({ navigation, route }) {
           {/* Location */}
           <View style={styles.reviewItem}>
             <Text style={styles.reviewItemLabel}>Location</Text>
-            <Text style={styles.reviewItemValue}>{location}</Text>
+            <Text style={styles.reviewItemValue}>{formatLocation(location)}</Text>
           </View>
 
           {/* Issue Category */}
@@ -196,6 +196,15 @@ export default function ReviewReportScreen({ navigation, route }) {
             </View>
           )}
         </View>
+
+        {/* ===== EVIDENCE NOTE (only when media was attached) ===== */}
+        {hasEvidence && (
+          <View style={styles.evidenceNote}>
+            <Text style={styles.evidenceNoteText}>
+              📎 Thanks for adding evidence. Clear photos and video help our technician diagnose and resolve the issue faster.
+            </Text>
+          </View>
+        )}
 
         {/* ===== INFO NOTE ===== */}
         <View style={styles.infoContainer}>
@@ -242,33 +251,6 @@ const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
-  },
-
-  // ===== HEADER =====
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4BEBA',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: theme.primary,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1C1C',
   },
 
   // ===== SCROLL VIEW =====
@@ -374,6 +356,22 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 14,
     color: '#8F6F6C',
     fontStyle: 'italic',
+  },
+
+  // ===== EVIDENCE NOTE =====
+  evidenceNote: {
+    backgroundColor: theme.surfaceContainer,
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 14,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: theme.primary,
+  },
+  evidenceNoteText: {
+    fontSize: 12,
+    color: theme.textSecondary,
+    lineHeight: 18,
   },
 
   // ===== INFO =====

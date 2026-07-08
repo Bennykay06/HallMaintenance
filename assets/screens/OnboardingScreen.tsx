@@ -161,12 +161,17 @@ export default function OnboardingScreen({ navigation }) {
 
     try {
       const selectedHallData = halls.find(h => h.id === selectedHall);
-      
+
+      // Store the room as "Room <n>" so it reads consistently everywhere
+      // (the input only captures the bare number, e.g. "204B").
+      const trimmedRoom = roomNumber.trim();
+      const roomLabel = /^room\b/i.test(trimmedRoom) ? trimmedRoom : `Room ${trimmedRoom}`;
+
       // Save all data to AsyncStorage
       await AsyncStorage.setItem('userHall', selectedHallData?.name || '');
       await AsyncStorage.setItem('userFloor', selectedFloor || '');
-      await AsyncStorage.setItem('userRoom', roomNumber);
-      await AsyncStorage.setItem('userLocation', `${selectedHallData?.name}, ${selectedFloor}, ${roomNumber}`);
+      await AsyncStorage.setItem('userRoom', roomLabel);
+      await AsyncStorage.setItem('userLocation', `${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`);
       await AsyncStorage.setItem('onboardingComplete', 'true');
 
       setIsLoading(false);
@@ -329,7 +334,7 @@ export default function OnboardingScreen({ navigation }) {
 
           {/* ===== FOOTER ===== */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>© 2024 Crimson University Facilities Management</Text>
+            <Text style={styles.footerText}>© 2024 knust Facilities Management</Text>
             <View style={styles.footerLinks}>
               <Text style={styles.footerLink}>Privacy Policy</Text>
               <Text style={styles.footerLink}>Support</Text>

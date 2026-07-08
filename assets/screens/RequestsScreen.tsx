@@ -1,6 +1,6 @@
 // src/screens/RequestsScreen.tsx
 import { useTheme } from '../context/ThemeContext';
-import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon } from '../components/Icons';
+import { PersonIcon, ClipboardIcon, WrenchIcon, BellIcon, ArrowLeftIcon, ChevronRightIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -17,15 +17,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getReports, isDoneStatus, processDueResolutions, deleteReport, clearHistory } from '../utils/reports';
+import { getReports, isDoneStatus, processDueResolutions, deleteReport, clearHistory, clearActive } from '../utils/reports';
+import { getHall } from '../utils/location';
 
-export default function RequestsScreen({ navigation, route }) {
+export default function RequestsScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [activeTab, setActiveTab] = useState(route?.params?.activeTab || 'Active');
-  const [drafts, setDrafts] = useState([]);
-  const [activeRequests, setActiveRequests] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [drafts, setDrafts] = useState<any[]>([]);
+  const [activeRequests, setActiveRequests] = useState<any[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [userName, setUserName] = useState('User');
 
@@ -69,9 +70,21 @@ export default function RequestsScreen({ navigation, route }) {
   const loadData = async () => {
     try {
       const reports = await getReports();
+      const userHall = (await AsyncStorage.getItem('userHall')) || '';
 
-      const active = reports.filter(r => !isDoneStatus(r.status));
-      const completed = reports.filter(r => isDoneStatus(r.status));
+      // Residents only see requests from their own hall. Prefer the explicit
+      // hall tag on the report; fall back to parsing the location for older
+      // reports saved before the tag existed.
+      const target = userHall.trim().toLowerCase();
+      const hallReports = userHall
+        ? reports.filter(r => {
+            const reportHall = (r.hall || getHall(r.location) || '').toLowerCase();
+            return reportHall === target;
+          })
+        : reports;
+
+      const active = hallReports.filter(r => !isDoneStatus(r.status));
+      const completed = hallReports.filter(r => isDoneStatus(r.status));
 
       setActiveRequests(active);
       setHistory(completed);
@@ -91,7 +104,7 @@ export default function RequestsScreen({ navigation, route }) {
     setRefreshing(false);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'in progress':
         return theme.primary;
@@ -104,7 +117,7 @@ export default function RequestsScreen({ navigation, route }) {
     }
   };
 
-  const getStatusBgColor = (status) => {
+  const getStatusBgColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'in progress':
         return 'rgba(175, 16, 26, 0.1)';
@@ -121,7 +134,7 @@ export default function RequestsScreen({ navigation, route }) {
     navigation.navigate('Home');
   };
 
-  const handleClearReport = (request) => {
+  const handleClearReport = (request: any) => {
     Alert.alert(
       'Clear Report',
       'Remove this report from your history? This cannot be undone.',
@@ -134,6 +147,25 @@ export default function RequestsScreen({ navigation, route }) {
             const id = request.id || request.timestamp;
             const remaining = await deleteReport(id);
             setHistory(remaining.filter(r => isDoneStatus(r.status)));
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClearActive = () => {
+    if (activeRequests.length === 0) return;
+    Alert.alert(
+      'Clear Active Requests',
+      'Remove all active requests? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: async () => {
+            await clearActive();
+            setActiveRequests([]);
           },
         },
       ]
@@ -159,7 +191,7 @@ export default function RequestsScreen({ navigation, route }) {
     );
   };
 
-  const handleResumeDraft = (draft) => {
+  const handleResumeDraft = (draft: any) => {
     Alert.alert(
       'Resume Draft',
       `Resume draft for "${draft.serviceType}"?`,
@@ -177,6 +209,25 @@ export default function RequestsScreen({ navigation, route }) {
             });
           }
         }
+      ]
+    );
+  };
+
+  const handleDeleteDraft = (index: number) => {
+    Alert.alert(
+      'Delete Draft',
+      'Delete this draft? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const updated = drafts.filter((_, i) => i !== index);
+            setDrafts(updated);
+            await AsyncStorage.setItem('drafts', JSON.stringify(updated));
+          },
+        },
       ]
     );
   };
@@ -203,19 +254,27 @@ export default function RequestsScreen({ navigation, route }) {
 
     return drafts.map((draft, index) => (
       <View key={index} style={styles.requestCard}>
-        <View style={styles.requestLeft}>
+        <View style={styles.requestList}>
           <Text style={styles.requestTitle}>{draft.serviceType || 'Draft'}</Text>
           <Text style={styles.requestLocation}>{draft.location || 'No location'}</Text>
           <Text style={styles.requestDate}>
             Drafted {draft.timestamp ? new Date(draft.timestamp).toLocaleDateString() : 'recently'}
           </Text>
         </View>
-        <TouchableOpacity 
-          style={styles.resumeButton}
-          onPress={() => handleResumeDraft(draft)}
-        >
-          <Text style={styles.resumeButtonText}>RESUME</Text>
-        </TouchableOpacity>
+        <View style={styles.draftActions}>
+          <TouchableOpacity
+            style={styles.draftDeleteButton}
+            onPress={() => handleDeleteDraft(index)}
+          >
+            <Text style={styles.draftDeleteText}>Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.resumeButton}
+            onPress={() => handleResumeDraft(draft)}
+          >
+            <Text style={styles.resumeButtonText}>RESUME</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     ));
   };
@@ -232,7 +291,12 @@ export default function RequestsScreen({ navigation, route }) {
     }
 
     return activeRequests.map((request) => (
-      <View key={request.id || request.timestamp} style={styles.requestCard}>
+      <TouchableOpacity
+        key={request.id || request.timestamp}
+        style={styles.requestCard}
+        onPress={() => navigation.navigate('RequestDetail', { request })}
+        activeOpacity={0.7}
+      >
         <View style={styles.requestHeader}>
           <Text style={styles.requestTitle}>{request.serviceType || 'Request'}</Text>
           <View style={[
@@ -252,7 +316,11 @@ export default function RequestsScreen({ navigation, route }) {
           ID: {request.referenceId || 'Pending'} • Submitted {request.timestamp ? new Date(request.timestamp).toLocaleDateString() : 'recently'}
         </Text>
         <Text style={styles.awaitingText}>A technician will update you when this is resolved.</Text>
-      </View>
+        <View style={styles.viewDetailsRow}>
+          <Text style={styles.viewDetailsText}>View Details</Text>
+          <ChevronRightIcon color={theme.primary} size={16} />
+        </View>
+      </TouchableOpacity>
     ));
   };
 
@@ -304,7 +372,14 @@ export default function RequestsScreen({ navigation, route }) {
       case 'Active':
         return (
           <>
-            <Text style={styles.sectionTitle}>Active Requests</Text>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Active Requests</Text>
+              {activeRequests.length > 0 && (
+                <TouchableOpacity onPress={handleClearActive}>
+                  <Text style={styles.clearAllText}>Clear All</Text>
+                </TouchableOpacity>
+              )}
+            </View>
             {renderActiveRequests()}
           </>
         );
@@ -590,6 +665,39 @@ const getStyles = (theme: any) => StyleSheet.create({
     color: theme.textSecondary,
     fontStyle: 'italic',
     marginTop: 10,
+  },
+  viewDetailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginTop: 10,
+    gap: 2,
+  },
+  viewDetailsText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: theme.primary,
+    textTransform: 'uppercase',
+  },
+  draftActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 10,
+    marginTop: 12,
+  },
+  draftDeleteButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  draftDeleteText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: theme.primary,
+    textTransform: 'uppercase',
   },
   resumeButton: {
     backgroundColor: theme.primaryContainer,

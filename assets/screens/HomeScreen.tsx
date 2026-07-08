@@ -115,6 +115,15 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       .slice(0, 2);
   };
 
+  // Current residence on a single line, in order: hall, floor, room.
+  // Onboarding stores the room as a bare number (e.g. "12"), so prefix
+  // "Room " unless the value already starts with it.
+  const roomLabel = /^\s*room\b/i.test(room) ? room.trim() : `Room ${room.trim()}`;
+  const residenceLine = `${hall}, ${floor}, ${roomLabel}`.replace(
+    'University Hall (Katanga)',
+    'Katanga Hall',
+  );
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
       <StatusBar style="dark" backgroundColor={theme.background} />
@@ -159,8 +168,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 <LocationIcon color={theme.primaryText} size={20} />
                 <View style={styles.heroBadgeTextContainer}>
                   <Text style={[styles.heroBadgeLabel, { color: theme.primaryText }]}>CURRENT RESIDENCE</Text>
-                  <Text style={[styles.heroBadgeValue, { color: theme.primaryText }]} numberOfLines={1}>
-                    {fullAddress.replace('University Hall (Katanga)', 'Katanga Hall')}
+                  <Text
+                    style={[styles.heroBadgeValue, { color: theme.primaryText }]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {residenceLine}
                   </Text>
                 </View>
               </View>
