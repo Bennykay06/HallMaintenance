@@ -27,7 +27,7 @@ interface AccordionItem {
   content: { icon: string; title: string; description: string }[];
 }
 
-export default function FacilityRulesScreen({ navigation }) {
+export default function FacilityRulesScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);

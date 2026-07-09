@@ -18,7 +18,7 @@ import { ArrowLeftIcon, DescriptionIcon } from '../components/Icons';
 
 const CATEGORIES = ['App Glitch', 'Login Error', 'Incorrect Data', 'Other'];
 
-export default function ReportIssueScreen({ navigation }) {
+export default function ReportIssueScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [category, setCategory] = useState<string>(CATEGORIES[0]);

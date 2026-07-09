@@ -1,6 +1,6 @@
 // src/utils/dynamicStyles.ts
 import { StyleSheet } from 'react-native';
-import { HallTheme } from '../config/hallThemes';
+import { HallTheme } from '../config/HallThemes';
 
 export const createDynamicStyles = (theme: HallTheme) => {
   return StyleSheet.create({

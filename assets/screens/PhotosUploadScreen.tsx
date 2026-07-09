@@ -1,6 +1,6 @@
 // src/screens/PhotosUploadScreen.tsx
 import { useTheme } from '../context/ThemeContext';
-import { BoltIcon, CameraIcon, ImageIcon, VideoIcon, FolderIcon, CloseIcon, PlayIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
+import { BoltIcon, DropIcon, HammerIcon, BrickIcon, WrenchIcon, CameraIcon, ImageIcon, VideoIcon, FolderIcon, CloseIcon, PlayIcon, ArrowLeftIcon, ArrowRightIcon } from '../components/Icons';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -28,6 +28,39 @@ export default function PhotosUploadScreen({ navigation, route }: any) {
   const styles = getStyles(theme);
   const { serviceType = 'Electrical', selectedIssue = 'Bulb flickering or not lighting up' } = route.params || {};
   
+  // Dynamically determine the icon and title based on serviceType
+  const getServiceHeader = () => {
+    switch (serviceType) {
+      case 'Electrical':
+        return {
+          title: 'Electrical Issue',
+          Icon: BoltIcon,
+        };
+      case 'Plumbing':
+        return {
+          title: 'Plumbing Issue',
+          Icon: DropIcon,
+        };
+      case 'Carpentry':
+        return {
+          title: 'Carpentry Issue',
+          Icon: HammerIcon,
+        };
+      case 'Masonry':
+        return {
+          title: 'Masonry Issue',
+          Icon: BrickIcon,
+        };
+      default:
+        return {
+          title: `${serviceType} Issue`,
+          Icon: WrenchIcon,
+        };
+    }
+  };
+
+  const { title: serviceTitle, Icon: ServiceIcon } = getServiceHeader();
+
   const [photos, setPhotos] = useState<MediaAsset[]>([]);
   const [video, setVideo] = useState<MediaAsset | null>(null);
   const [showWrittenDetails, setShowWrittenDetails] = useState(false);
@@ -251,10 +284,10 @@ export default function PhotosUploadScreen({ navigation, route }: any) {
 
         <View style={styles.summaryCard}>
           <View style={styles.summaryIcon}>
-            <BoltIcon color={theme.primary} size={28} />
+            <ServiceIcon color={theme.primary} size={28} />
           </View>
           <View>
-            <Text style={styles.summaryTitle}>Electrical Issue</Text>
+            <Text style={styles.summaryTitle}>{serviceTitle}</Text>
             <Text style={styles.summaryDescription}>{selectedIssue}</Text>
           </View>
         </View>

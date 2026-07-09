@@ -29,7 +29,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatLocation } from '../utils/location';
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);

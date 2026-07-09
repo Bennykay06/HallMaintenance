@@ -16,7 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export default function SuccessScreen({ navigation, route }) {
+export default function SuccessScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { referenceId = 'MT-82941', location = 'North Hall, Room 402' } = route.params || {};

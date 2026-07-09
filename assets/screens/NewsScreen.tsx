@@ -23,7 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
-export default function NewsScreen({ navigation }) {
+export default function NewsScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [activeFilter, setActiveFilter] = useState('All');
@@ -167,7 +167,7 @@ export default function NewsScreen({ navigation }) {
       .slice(0, 2);
   };
 
-  const handleNewsPress = (item) => {
+  const handleNewsPress = (item: any) => {
     navigation.navigate('ArticleDetail', { 
       article: {
         id: item.id,
@@ -241,7 +241,7 @@ export default function NewsScreen({ navigation }) {
     );
   };
 
-  const renderNewsCard = (item) => {
+  const renderNewsCard = (item: any) => {
     const isUrgent = item.urgent || item.type === 'Emergency';
     
     return (

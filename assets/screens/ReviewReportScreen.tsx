@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RESOLVE_DELAY_MS } from '../utils/reports';
 import { formatLocation, getHall } from '../utils/location';
 
-export default function ReviewReportScreen({ navigation, route }) {
+export default function ReviewReportScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { 

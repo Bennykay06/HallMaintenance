@@ -40,7 +40,7 @@ const QUICK_PROMPTS = [
   'Report a problem',
 ];
 
-export default function SupportChatScreen({ navigation }) {
+export default function SupportChatScreen({ navigation }: any) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const styles = getStyles(theme);

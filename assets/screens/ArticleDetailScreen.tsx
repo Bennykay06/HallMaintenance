@@ -25,7 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width, height } = Dimensions.get('window');
 
 // Sample images for articles
-const ARTICLE_IMAGES = {
+const ARTICLE_IMAGES: Record<string, { hero: string }> = {
   '1': {
     hero: 'https://images.unsplash.com/photo-1581092335873-2c2d9b8c8c7b?w=800&h=400&fit=crop',
   },
@@ -37,10 +37,10 @@ const ARTICLE_IMAGES = {
   },
 };
 
-export default function ArticleDetailScreen({ navigation, route }) {
+export default function ArticleDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
-  const { article } = route.params || {
+  const article = route?.params?.article || {
     id: '1',
     title: 'Elevator B Modernization Complete',
     date: 'Oct 17, 2023',
@@ -65,7 +65,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   // Get article images (prefer the image passed in from the news list)
@@ -96,7 +96,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
     }
   };
 
-  const handleImagePress = (imageUri) => {
+  const handleImagePress = (imageUri: string) => {
     setSelectedImage(imageUri);
     setModalVisible(true);
   };
@@ -113,7 +113,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
   // Parse content with paragraphs
   const renderContent = () => {
     const paragraphs = article.content.split('\n\n');
-    return paragraphs.map((paragraph, index) => {
+    return paragraphs.map((paragraph: string, index: number) => {
       const isHeading = paragraph.length < 50 && !paragraph.endsWith('.') && !paragraph.endsWith('?') && !paragraph.endsWith('!');
       
       if (isHeading) {
@@ -256,7 +256,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
           style={styles.navItem}
           onPress={() => navigation.navigate('MainTabs', { screen: 'Home' })}
         >
-          <PersonIcon color={styles.navIcon.color || "#666"} size={24} />
+          <PersonIcon color="#666" size={24} />
           <Text style={styles.navLabel}>Home</Text>
         </TouchableOpacity>
 
@@ -264,7 +264,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
           style={styles.navItem}
           onPress={() => navigation.navigate('MainTabs', { screen: 'Requests' })}
         >
-          <WrenchIcon color={styles.navIcon.color || "#666"} size={24} />
+          <WrenchIcon color="#666" size={24} />
           <Text style={styles.navLabel}>Requests</Text>
         </TouchableOpacity>
 
@@ -272,7 +272,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
           style={[styles.navItem, styles.navItemActive]}
           onPress={() => navigation.navigate('MainTabs', { screen: 'News' })}
         >
-          <ClipboardIcon color={styles.navIcon.color || "#666"} size={24} />
+          <ClipboardIcon color="#FFFFFF" size={24} />
           <Text style={[styles.navLabel, styles.navLabelActive]}>News</Text>
         </TouchableOpacity>
 
@@ -280,7 +280,7 @@ Elevator B has been returned to regular service as of this morning. We thank you
           style={styles.navItem}
           onPress={() => navigation.navigate('MainTabs', { screen: 'Emergency' })}
         >
-          <BellIcon color={styles.navIcon.color || "#666"} size={24} />
+          <BellIcon color="#666" size={24} />
           <Text style={styles.navLabel}>Emergency</Text>
         </TouchableOpacity>
       </View>

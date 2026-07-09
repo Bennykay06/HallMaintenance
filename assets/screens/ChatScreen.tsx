@@ -54,7 +54,12 @@ const buildSuggestedSlot = (): ScheduleSlot => buildSlot(1, '2:00 PM – 3:00 PM
 // Format a slot to match the Home "Maintenance Schedule" date style,
 // e.g. "Jul 3 • 2:00 PM – 3:00 PM".
 const formatSlotForSchedule = (slot: ScheduleSlot): string => {
-  const [mon, day] = slot.date.split(' ');
+  const parts = slot.date.split(' ');
+  if (parts.length < 2) {
+    return `${slot.date} • ${slot.time}`;
+  }
+  const mon = parts[0];
+  const day = parts[1];
   const monTitle = mon.charAt(0) + mon.slice(1).toLowerCase();
   return `${monTitle} ${day} • ${slot.time}`;
 };
@@ -99,7 +104,7 @@ const fetchTechnicianReply = async (userText: string): Promise<string | null> =>
   return TECHNICIAN_REPLIES[index];
 };
 
-export default function ChatScreen({ navigation, route }) {
+export default function ChatScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [userName, setUserName] = useState('User');
@@ -112,6 +117,7 @@ export default function ChatScreen({ navigation, route }) {
   // After declining the suggested slot, the chat unlocks so the student can
   // negotiate a new time before setting (and booking) the new appointment.
   const [declined, setDeclined] = useState(false);
+  const [appointmentStatus, setAppointmentStatus] = useState<string | null>(null);
   const [iosPickerVisible, setIosPickerVisible] = useState(false);
   const [pickerDate, setPickerDate] = useState<Date>(new Date());
   const scrollViewRef = useRef<ScrollView>(null);
@@ -128,7 +134,7 @@ export default function ChatScreen({ navigation, route }) {
   const storageKey = `chat:${requestId}`;
 
   // Suggested appointment slot: from route params, otherwise the next day
-  const [suggestedSlot] = useState<ScheduleSlot>(
+  const [suggestedSlot, setSuggestedSlot] = useState<ScheduleSlot>(
     () => route?.params?.proposedSlot || buildSuggestedSlot()
   );
 
@@ -154,14 +160,34 @@ export default function ChatScreen({ navigation, route }) {
 
   const loadConversation = async () => {
     try {
-      const [name, raw] = await Promise.all([
+      const [name, raw, rawReports] = await Promise.all([
         AsyncStorage.getItem('userName'),
         AsyncStorage.getItem(storageKey),
+        AsyncStorage.getItem('reports'),
       ]);
       if (name) setUserName(name);
       if (raw) {
         const saved = JSON.parse(raw);
         setMessages(Array.isArray(saved.messages) ? saved.messages : []);
+      }
+      if (rawReports) {
+        const reports = JSON.parse(rawReports);
+        const report = reports.find((r: any) => (r.id || r.timestamp) === requestId);
+        if (report) {
+          if (report.appointmentStatus) {
+            setAppointmentStatus(report.appointmentStatus);
+            if (report.appointmentStatus === 'declined') {
+              setDeclined(true);
+            }
+          }
+          if (report.appointmentDate && report.appointmentTime) {
+            setSuggestedSlot({
+              date: report.appointmentDate,
+              day: report.appointmentDate,
+              time: report.appointmentTime,
+            });
+          }
+        }
       }
     } catch (error) {
       console.log('Error loading chat:', error);
@@ -239,6 +265,31 @@ export default function ChatScreen({ navigation, route }) {
       title: `Appointment with ${technician.name}`,
       date: dateLabel,
     });
+
+    // Sync appointment status and report status to local AsyncStorage reports
+    try {
+      const rawReports = await AsyncStorage.getItem('reports');
+      if (rawReports) {
+        const reports = JSON.parse(rawReports);
+        const updated = reports.map((r: any) => {
+          if (r.id === requestId) {
+            return {
+              ...r,
+              status: 'scheduled',
+              appointmentStatus: 'confirmed',
+              appointmentDate: dateLabel.split(' at ')[0] || dateLabel,
+              appointmentTime: dateLabel.split(' at ')[1] || '',
+            };
+          }
+          return r;
+        });
+        await AsyncStorage.setItem('reports', JSON.stringify(updated));
+        setAppointmentStatus('confirmed');
+      }
+    } catch (e) {
+      console.log('Error updating report status in chat:', e);
+    }
+
     navigation.navigate('MainTabs', { screen: 'Home' });
   };
 
@@ -255,7 +306,7 @@ export default function ChatScreen({ navigation, route }) {
 
   // Declining does NOT book anything — it unlocks the chat so the student can
   // negotiate a new time with the technician first.
-  const handleDeclineSchedule = () => {
+  const handleDeclineSchedule = async () => {
     setDeclined(true);
     setMessages(prev => [
       ...prev,
@@ -268,6 +319,27 @@ export default function ChatScreen({ navigation, route }) {
       },
     ]);
     scrollToBottom();
+
+    // Sync appointmentStatus 'declined' to local AsyncStorage reports
+    try {
+      const rawReports = await AsyncStorage.getItem('reports');
+      if (rawReports) {
+        const reports = JSON.parse(rawReports);
+        const updated = reports.map((r: any) => {
+          if (r.id === requestId) {
+            return {
+              ...r,
+              appointmentStatus: 'declined',
+            };
+          }
+          return r;
+        });
+        await AsyncStorage.setItem('reports', JSON.stringify(updated));
+        setAppointmentStatus('declined');
+      }
+    } catch (e) {
+      console.log('Error declining appointment in chat:', e);
+    }
   };
 
   // Finalize the negotiated appointment: confirm and book the picked date/time.
@@ -389,6 +461,49 @@ export default function ChatScreen({ navigation, route }) {
   };
 
   const renderScheduleCard = () => {
+    if (appointmentStatus === 'confirmed') {
+      return (
+        <View style={[styles.scheduleCard, {
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+        }]}>
+          <View style={[styles.scheduleHeader, {
+            backgroundColor: theme.surfaceContainer,
+            borderBottomColor: theme.border,
+          }]}>
+            <View style={styles.scheduleHeaderLeft}>
+              <Text style={styles.scheduleIcon}>✅</Text>
+              <Text style={[styles.scheduleTitle, { color: theme.text }]}>Appointment Confirmed</Text>
+            </View>
+            <View style={[styles.scheduleBadge, { backgroundColor: '#ECFDF5' }]}>
+              <Text style={[styles.scheduleBadgeText, { color: '#10B981' }]}>CONFIRMED</Text>
+            </View>
+          </View>
+
+          <View style={styles.scheduleBody}>
+            <View style={[styles.slotCard, {
+              backgroundColor: theme.background,
+              borderColor: theme.border,
+            }]}>
+              <View style={styles.slotDate}>
+                <Text style={[styles.slotMonth, { color: '#10B981' }]}>{suggestedSlot.date.split(' ')[0]}</Text>
+                {suggestedSlot.date.split(' ')[1] ? (
+                  <Text style={[styles.slotDay, { color: theme.text }]}>{suggestedSlot.date.split(' ')[1]}</Text>
+                ) : null}
+              </View>
+              <View>
+                <Text style={[styles.slotDayName, { color: theme.text }]}>{suggestedSlot.day}</Text>
+                <Text style={[styles.slotTime, { color: theme.textSecondary }]}>{suggestedSlot.time}</Text>
+              </View>
+            </View>
+            <Text style={{ fontSize: 13, color: theme.textSecondary, textAlign: 'center', marginTop: 4 }}>
+              This appointment has been scheduled on your calendar.
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
     // After declining: negotiation mode — student agrees a time in chat, then sets it.
     if (declined) {
       return (
@@ -451,7 +566,9 @@ export default function ChatScreen({ navigation, route }) {
           }]}>
             <View style={styles.slotDate}>
               <Text style={[styles.slotMonth, { color: theme.primary }]}>{suggestedSlot.date.split(' ')[0]}</Text>
-              <Text style={[styles.slotDay, { color: theme.text }]}>{suggestedSlot.date.split(' ')[1]}</Text>
+              {suggestedSlot.date.split(' ')[1] ? (
+                <Text style={[styles.slotDay, { color: theme.text }]}>{suggestedSlot.date.split(' ')[1]}</Text>
+              ) : null}
             </View>
             <View>
               <Text style={[styles.slotDayName, { color: theme.text }]}>{suggestedSlot.day}</Text>

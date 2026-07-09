@@ -107,6 +107,14 @@ export default function TabNavigator() {
         tabBarInactiveTintColor: theme.textSecondary,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
+        tabBarIconStyle: {
+          width: '100%',
+          height: '100%',
+        },
+        tabBarItemStyle: {
+          margin: 0,
+          padding: 0,
+        },
       }}
     >
       <Tab.Screen
@@ -174,9 +182,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     borderRadius: 24,
-    minWidth: 72,
+    minWidth: 64,
     position: 'relative',
   },
   tabItemActive: {
@@ -196,12 +204,12 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
     color: '#AAAAAA',
     marginTop: 2,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.2,
   },
   tabLabelActive: {
     color: '#121212',

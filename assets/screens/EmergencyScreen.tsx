@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EmergencyScreen({ navigation }) {
+export default function EmergencyScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);

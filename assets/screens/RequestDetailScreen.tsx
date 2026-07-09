@@ -26,7 +26,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
-export default function RequestDetailScreen({ navigation, route }) {
+export default function RequestDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { request = {} } = route.params || {};

@@ -48,7 +48,7 @@ interface Notification {
   status?: string;
 }
 
-export default function NotificationScreen({ navigation }) {
+export default function NotificationScreen({ navigation }: any) {
   const { theme } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);

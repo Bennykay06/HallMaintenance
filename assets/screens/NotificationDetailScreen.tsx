@@ -29,7 +29,7 @@ interface NotificationDetail {
   };
 }
 
-export default function NotificationDetailScreen({ navigation, route }) {
+export default function NotificationDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const [userName, setUserName] = useState('User');
 

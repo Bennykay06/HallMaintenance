@@ -421,6 +421,24 @@ export default function RequestsScreen({ navigation, route }: any) {
         <View style={{ width: 40 }} />
       </View>
 
+      <View style={styles.tabContainer}>
+        {['Active', 'History', 'Drafts'].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={styles.tab}
+            onPress={() => setActiveTab(tab)}
+          >
+            <Text style={[
+              styles.tabText,
+              activeTab === tab && styles.activeTabText,
+            ]}>
+              {tab}
+            </Text>
+            {activeTab === tab && <View style={styles.tabIndicator} />}
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <ScrollView 
         style={styles.scrollView}
         refreshControl={
@@ -430,27 +448,6 @@ export default function RequestsScreen({ navigation, route }: any) {
       >
         <View style={styles.content}>
           
-          <View style={styles.tabContainer}>
-            {['Active', 'History', 'Drafts'].map((tab) => (
-              <TouchableOpacity
-                key={tab}
-                style={[
-                  styles.tab,
-                  activeTab === tab && styles.activeTab,
-                ]}
-                onPress={() => setActiveTab(tab)}
-              >
-                <Text style={[
-                  styles.tabText,
-                  activeTab === tab && styles.activeTabText,
-                ]}>
-                  {tab}
-                </Text>
-                {activeTab === tab && <View style={styles.tabIndicator} />}
-              </TouchableOpacity>
-            ))}
-          </View>
-
           <TouchableOpacity style={styles.newRequestButton} onPress={handleNewRequest}>
             <LinearGradient
               colors={[theme.primary, theme.primaryContainer]}
@@ -533,7 +530,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: theme.border,
-    marginBottom: 16,
+    backgroundColor: theme.surface,
   },
   tab: {
     flex: 1,

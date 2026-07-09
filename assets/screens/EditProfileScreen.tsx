@@ -21,7 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditProfileScreen({ navigation }) {
+export default function EditProfileScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [userName, setUserName] = useState('Alex Johnson');

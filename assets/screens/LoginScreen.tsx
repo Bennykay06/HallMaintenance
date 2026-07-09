@@ -42,7 +42,7 @@ const C = {
   outlineVariant: '#C6C5D4',
 };
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);

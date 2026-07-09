@@ -41,7 +41,7 @@ const C = {
   outlineVariant: '#C6C5D4',
 };
 
-export default function RegisterScreen({ navigation }) {
+export default function RegisterScreen({ navigation }: any) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

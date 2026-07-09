@@ -67,7 +67,7 @@ const SERVICE_DATA = {
   },
 };
 
-export default function ServiceIssuesScreen({ navigation, route }) {
+export default function ServiceIssuesScreen({ navigation, route }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { serviceType = 'Electrical' } = route.params || {};

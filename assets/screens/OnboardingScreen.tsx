@@ -48,7 +48,7 @@ const DEFAULT_THEME = {
   icon: '🏛️',
 };
 
-export default function OnboardingScreen({ navigation }) {
+export default function OnboardingScreen({ navigation }: any) {
   const { theme: hallTheme, setHall } = useTheme();
   const [selectedHall, setSelectedHall] = useState<string | null>(null);
   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
