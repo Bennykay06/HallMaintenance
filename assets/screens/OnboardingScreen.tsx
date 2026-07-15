@@ -1,25 +1,23 @@
 // src/screens/OnboardingScreen.tsx
 import { PersonIcon } from '../components/Icons';
 
-import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
   ScrollView,
   StatusBar,
-  Platform,
+  StyleSheet,
+  Text,
   TextInput,
-  Alert,
-  ActivityIndicator,
-  Image,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import supabase from '../../config';
 import { useTheme } from '../context/ThemeContext';
-
 type Hall = {
   id: string;
   name: string;
@@ -158,7 +156,29 @@ export default function OnboardingScreen({ navigation }: any) {
     }
 
     setIsLoading(true);
+    const selectedHallData = halls.find(h => h.id === selectedHall);
+     const trimmedRoom = roomNumber.trim();
+      const roomLabel = /^room\b/i.test(trimmedRoom) ? trimmedRoom : `Room ${trimmedRoom}`;
+const location =`${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`;
 
+
+// Insert into Supabase
+const { data, error } = await supabase
+.from('profiles')
+.insert([
+  {
+    hall: selectedHallData?.name,
+    floor: selectedFloor,
+    room: roomLabel,
+    location: location
+  }
+]);
+
+
+if (error) {
+  console.log(error);
+  throw error;
+}
     try {
       const selectedHallData = halls.find(h => h.id === selectedHall);
 

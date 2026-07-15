@@ -1,31 +1,31 @@
 // src/screens/RegisterScreen.tsx
-import {
-  BankIcon,
-  PersonIcon,
-  MailIcon,
-  LockIcon,
-  EyeIcon,
-  EyeOffIcon,
-  ArrowRightIcon,
-  CheckIcon,
-} from '../components/Icons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  StatusBar,
-  Platform,
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
-  ActivityIndicator,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import supabase from '../../config';
+import {
+  ArrowRightIcon,
+  BankIcon,
+  CheckIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  PersonIcon,
+} from '../components/Icons';
 
 // ===== Crimson Campus palette (from design mockups) =====
 const C = {
@@ -67,41 +67,64 @@ export default function RegisterScreen({ navigation }: any) {
 
     setIsLoading(true);
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+     try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    });
 
-      // Save user data
-      await AsyncStorage.setItem('userName', fullName);
-      await AsyncStorage.setItem('userEmail', email);
-      await AsyncStorage.setItem('userHall', 'Unity Hall');
-      await AsyncStorage.setItem('userFloor', 'Floor 2');
-      await AsyncStorage.setItem('userRoom', 'Room 204');
-      await AsyncStorage.setItem('userLocation', 'Unity Hall, Floor 2, Room 204');
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-
-      setIsLoading(false);
-      Alert.alert(
-        'Success',
-        'Account created successfully!',
-        [
-          {
-            text: 'Continue',
-            onPress: () => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Onboarding' }],
-              });
-            },
-          },
-        ]
-      );
-    } catch (error) {
-      setIsLoading(false);
-      Alert.alert('Error', 'Registration failed. Please try again.');
+    if (error) {
+      throw error;
     }
-  };
 
+    const user = data.user;
+
+    if (!user) {
+      throw new Error('User registration failed');
+    }
+
+    await AsyncStorage.setItem('userName', fullName);
+    await AsyncStorage.setItem('userEmail', user.email ?? email);
+    await AsyncStorage.setItem('userHall', 'Unity Hall');
+    await AsyncStorage.setItem('userFloor', 'Floor 2');
+    await AsyncStorage.setItem('userRoom', 'Room 204');
+    await AsyncStorage.setItem(
+      'userLocation',
+      'Unity Hall, Floor 2, Room 204'
+    );
+    await AsyncStorage.setItem('isLoggedIn', 'true');
+
+    setIsLoading(false);
+
+    Alert.alert(
+      'Success',
+      'Account created successfully!',
+      [
+        {
+          text: 'Continue',
+          onPress: () => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Onboarding' }],
+            });
+          },
+        },
+      ]
+    );
+
+  } catch (error: any) {
+    setIsLoading(false);
+    Alert.alert(
+      'Registration Failed',
+      error.message
+    );
+  }
+}; 
   const handleLogin = () => {
     navigation.navigate('Login');
   };

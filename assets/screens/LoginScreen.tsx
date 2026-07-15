@@ -1,32 +1,32 @@
 // src/screens/LoginScreen.tsx
 import {
+  ArrowRightIcon,
   BankIcon,
-  SchoolIcon,
-  MailIcon,
-  LockIcon,
+  CheckIcon,
   EyeIcon,
   EyeOffIcon,
-  ArrowRightIcon,
-  CheckIcon,
+  LockIcon,
+  MailIcon,
+  SchoolIcon,
 } from '../components/Icons';
 
-import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  StatusBar,
-  Platform,
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
-  ActivityIndicator,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import supabase from '../../config';
 // ===== Crimson Campus palette (from design mockups) =====
 const C = {
   background: '#F8F9FA',
@@ -75,47 +75,45 @@ export default function LoginScreen({ navigation }: any) {
       return;
     }
 
-    if (!email.trim().toLowerCase().endsWith('@st.knust.edu.gh')) {
-      Alert.alert('Invalid Format', 'Please use your student email (e.g. bnkwofie@st.knust.edu.gh)');
-      return;
-    }
-
+   
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      // Save user data
-      await AsyncStorage.setItem('userName', 'Alex Johnson');
-      await AsyncStorage.setItem('userEmail', email);
-      await AsyncStorage.setItem('userHall', 'Unity Hall');
-      await AsyncStorage.setItem('userFloor', 'Floor 2');
-      await AsyncStorage.setItem('userRoom', 'Room 204');
-      await AsyncStorage.setItem('userLocation', 'Unity Hall, Floor 2, Room 204');
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-
-      // Save credentials if remember me is checked
-      if (rememberMe) {
-        await AsyncStorage.setItem('savedEmail', email);
-        await AsyncStorage.setItem('savedPassword', password);
-        await AsyncStorage.setItem('rememberMe', 'true');
-      } else {
-        await AsyncStorage.removeItem('savedEmail');
-        await AsyncStorage.removeItem('savedPassword');
-        await AsyncStorage.setItem('rememberMe', 'false');
-      }
-
-      setIsLoading(false);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Onboarding' }],
-      });
-    } catch (error) {
-      setIsLoading(false);
-      Alert.alert('Error', 'Login failed. Please try again.');
+    if (error) {
+      throw error;
     }
-  };
+    
+console.log(data)
+    await AsyncStorage.setItem('userEmail', email);
+    await AsyncStorage.setItem('isLoggedIn', 'true');
+
+    if (rememberMe) {
+      await AsyncStorage.setItem('savedEmail', email);
+      await AsyncStorage.setItem('savedPassword', password);
+      await AsyncStorage.setItem('rememberMe', 'true');
+    } else {
+      await AsyncStorage.removeItem('savedEmail');
+      await AsyncStorage.removeItem('savedPassword');
+      await AsyncStorage.setItem('rememberMe', 'false');
+    }
+
+    setIsLoading(false);
+
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Onboarding' }],
+    });
+
+  } catch (error:any) {
+    setIsLoading(false);
+    Alert.alert('Login Failed', error.message);
+  }
+};
 
   const handleSignUp = () => {
     navigation.navigate('Register');
@@ -165,7 +163,7 @@ export default function LoginScreen({ navigation }: any) {
                   style={styles.input}
                   value={email}
                   onChangeText={setEmail}
-                  placeholder="bnkwofie@st.knust.edu.gh"
+                  placeholder="bnkwofie@gmail.com"
                   placeholderTextColor={C.outline}
                   keyboardType="email-address"
                   autoCapitalize="none"
