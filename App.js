@@ -1,34 +1,34 @@
 // App.js
-import React, { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { registerForPushNotifications } from "./assets/utils/registerNotification";
 // Import Screens
 import { ThemeProvider } from './assets/context/ThemeContext.tsx';
 import TabNavigator from './assets/navigation/TabNavigator.tsx';
-import ServiceIssuesScreen from './assets/screens/ServiceIssuesScreen.tsx';
-import PhotosUploadScreen from './assets/screens/PhotosUploadScreen.tsx';
-import ReviewReportScreen from './assets/screens/ReviewReportScreen.tsx';
-import RequestDetailScreen from './assets/screens/RequestDetailScreen.tsx';
-import SuccessScreen from './assets/screens/SuccessScreen.tsx';
 import ArticleDetailScreen from './assets/screens/ArticleDetailScreen.tsx';
-import ProfileScreen from './assets/screens/ProfileScreen.tsx';
+import ChatScreen from './assets/screens/ChatScreen.tsx';
 import EditProfileScreen from './assets/screens/EditProfileScreen.tsx';
 import FacilityRulesScreen from './assets/screens/FacilityRulesScreen.tsx';
-import NotificationSettingsScreen from './assets/screens/NotificationSettingsScreen.tsx';
-import HelpSupportScreen from './assets/screens/HelpSupportScreen.tsx';
 import FAQScreen from './assets/screens/FAQScreen.tsx';
-import ReportIssueScreen from './assets/screens/ReportIssueScreen.tsx';
-import SupportChatScreen from './assets/screens/SupportChatScreen.tsx';
+import HelpSupportScreen from './assets/screens/HelpSupportScreen.tsx';
 import LoginScreen from './assets/screens/LoginScreen.tsx';
-import RegisterScreen from './assets/screens/RegisterScreen.tsx';
-import OnboardingScreen from './assets/screens/OnboardingScreen.tsx';
-import NotificationScreen from './assets/screens/NotificationScreen.tsx';
 import NotificationDetailScreen from './assets/screens/NotificationDetailScreen.tsx';
-import ChatScreen from './assets/screens/ChatScreen.tsx';
+import NotificationScreen from './assets/screens/NotificationScreen.tsx';
+import NotificationSettingsScreen from './assets/screens/NotificationSettingsScreen.tsx';
+import OnboardingScreen from './assets/screens/OnboardingScreen.tsx';
+import PhotosUploadScreen from './assets/screens/PhotosUploadScreen.tsx';
+import ProfileScreen from './assets/screens/ProfileScreen.tsx';
+import RegisterScreen from './assets/screens/RegisterScreen.tsx';
+import ReportIssueScreen from './assets/screens/ReportIssueScreen.tsx';
+import RequestDetailScreen from './assets/screens/RequestDetailScreen.tsx';
+import ReviewReportScreen from './assets/screens/ReviewReportScreen.tsx';
+import ServiceIssuesScreen from './assets/screens/ServiceIssuesScreen.tsx';
+import SuccessScreen from './assets/screens/SuccessScreen.tsx';
+import SupportChatScreen from './assets/screens/SupportChatScreen.tsx';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +47,21 @@ export default function App() {
     };
     initUserData();
   }, []);
+  useEffect(()=>{
+
+async function setup(){
+
+const token =
+await registerForPushNotifications();
+
+console.log(token);
+
+}
+
+setup();
+
+},[]);
+
 
   return (
     <ThemeProvider>

@@ -162,11 +162,28 @@ export default function OnboardingScreen({ navigation }: any) {
 const location =`${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`;
 
 
+const user:any = (await supabase.auth.getUser()).data.user;
+
+const { data: profile } = await supabase
+  .from("profiles")
+  .select("id")
+  .eq("id", user.id)
+  .single();
+
+if (!profile) {
+  await supabase
+    .from("profiles")
+    .insert({
+      id: user.id,
+      full_name: name,
+    });
+}
 // Insert into Supabase
 const { data, error } = await supabase
 .from('profiles')
 .insert([
   {
+     id: user.id,
     hall: selectedHallData?.name,
     floor: selectedFloor,
     room: roomLabel,
@@ -174,11 +191,6 @@ const { data, error } = await supabase
   }
 ]);
 
-
-if (error) {
-  console.log(error);
-  throw error;
-}
     try {
       const selectedHallData = halls.find(h => h.id === selectedHall);
 

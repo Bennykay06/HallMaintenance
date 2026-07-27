@@ -1,22 +1,72 @@
 // src/screens/SuccessScreen.tsx
-import { useTheme } from '../context/ThemeContext';
-import { CheckIcon, ClockIcon, EyeIcon } from '../components/Icons';
-
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef } from 'react';
 import {
+  Animated,
+  Platform,
+  ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  StatusBar,
-  Platform,
-  Animated,
-  ScrollView,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import { CheckIcon, ClockIcon, EyeIcon } from '../components/Icons';
+import { useTheme } from '../context/ThemeContext';
 
 export default function SuccessScreen({ navigation, route }: any) {
+  interface RequestOptions {
+  method: string;
+  headers: any;
+  body: string;
+  redirect: "follow" | "manual" | "error";
+}
+ async function sendSMS(): Promise<void> {
+const myHeaders = new Headers();
+const AppMessage=process.env.app_message
+
+  myHeaders.append(
+    "Authorization",
+    //"App c1fa1fc27eb885252263f75a1deca7b0-2ff8b27e-fa3f-4a1f-956c-2293070cb927",
+    AppMessage
+  );
+
+ myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Accept", "application/json");
+
+  const raw = JSON.stringify({
+ "messages": [
+      {
+                   "destinations": [
+          
+                   {
+                    "to": "233537180922"
+                }
+                
+        ],
+        "sender": "447491163443",
+       "content": {
+                "text": `${location} has a problem and needs urgent attenttion`
+            }
+      },
+    ],
+  });
+const requestOptions: RequestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow"
+};
+  fetch("https://8vm9gr.api.infobip.com/sms/3/messages", requestOptions)
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
+}
+useEffect(()=>{
+sendSMS()
+},[])
+ 
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { referenceId = 'MT-82941', location = 'North Hall, Room 402' } = route.params || {};
@@ -170,7 +220,7 @@ export default function SuccessScreen({ navigation, route }: any) {
                 <ClockIcon color={theme.primary} size={20} />
               </View>
               <View style={styles.infoTextContainer}>
-                <Text style={styles.infoTitle}>Quick Response</Text>
+                <Text style={styles.infoTitle} >Quick Response</Text>
                 <Text style={styles.infoText}>
                   Expect a response within 24-48 business hours from the facility team.
                 </Text>
