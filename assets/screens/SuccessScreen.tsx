@@ -28,7 +28,7 @@ const AppMessage=process.env.app_message
 
   myHeaders.append(
     "Authorization",
-    //"App c1fa1fc27eb885252263f75a1deca7b0-2ff8b27e-fa3f-4a1f-956c-2293070cb927",
+ 
     AppMessage
   );
 
