@@ -20,13 +20,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import supabase from '../../config';
 
 export default function EditProfileScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
-  const [userName, setUserName] = useState('Alex Johnson');
-  const [email, setEmail] = useState('a.johnson@university.edu');
-  const [phone, setPhone] = useState('+1 (555) 123-4567');
+  const [userName, setUserName] = useState('Resident User');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [hall, setHall] = useState('Unity Hall');
   const [floor, setFloor] = useState('Floor 2');
   const [room, setRoom] = useState('Room 204');
@@ -41,12 +42,16 @@ export default function EditProfileScreen({ navigation }: any) {
   const loadUserData = async () => {
     try {
       const name = await AsyncStorage.getItem('userName');
+      const emailData = await AsyncStorage.getItem('userEmail');
+      const phoneData = await AsyncStorage.getItem('userPhone');
       const hallData = await AsyncStorage.getItem('userHall');
       const floorData = await AsyncStorage.getItem('userFloor');
       const roomData = await AsyncStorage.getItem('userRoom');
       const photo = await AsyncStorage.getItem('userPhoto');
 
       if (name) setUserName(name);
+      if (emailData) setEmail(emailData);
+      if (phoneData) setPhone(phoneData);
       if (hallData) setHall(hallData);
       if (floorData) setFloor(floorData);
       if (roomData) setRoom(roomData);
@@ -73,6 +78,8 @@ export default function EditProfileScreen({ navigation }: any) {
           onPress: async () => {
             try {
               await AsyncStorage.setItem('userName', userName);
+              await AsyncStorage.setItem('userEmail', email);
+              await AsyncStorage.setItem('userPhone', phone);
               await AsyncStorage.setItem('userHall', hall);
               await AsyncStorage.setItem('userFloor', floor);
               await AsyncStorage.setItem('userRoom', room);
@@ -80,6 +87,33 @@ export default function EditProfileScreen({ navigation }: any) {
               // Update full location for other screens
               const fullLocation = `${hall}, ${floor}, ${room}`;
               await AsyncStorage.setItem('userLocation', fullLocation);
+
+              // Sync to Supabase if logged in
+              try {
+                const userResponse = await supabase.auth.getUser();
+                const user = userResponse?.data?.user;
+                if (user) {
+                  const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                      full_name: userName,
+                      phone: phone,
+                    })
+                    .eq('id', user.id);
+                  
+                  if (updateError) {
+                    console.log('Update with phone failed, trying without phone...', updateError);
+                    await supabase
+                      .from('profiles')
+                      .update({
+                        full_name: userName,
+                      })
+                      .eq('id', user.id);
+                  }
+                }
+              } catch (supabaseError) {
+                console.log('Supabase profile sync skipped/failed:', supabaseError);
+              }
               
               Alert.alert('Success', 'Profile updated successfully!');
               setIsEditing(false);
@@ -255,7 +289,21 @@ export default function EditProfileScreen({ navigation }: any) {
                   borderColor: '#E4BEBA',
                   alignItems: 'center'
                 }}
-                onPress={() => Alert.alert('Reset Password', 'Instructions to reset your password have been sent to your email.')}
+                onPress={async () => {
+                  if (!email) {
+                    Alert.alert('Error', 'Please enter your email address first.');
+                    return;
+                  }
+                  try {
+                    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                      redirectTo: 'hallmaintenance://reset-password',
+                    });
+                    if (error) throw error;
+                    Alert.alert('Reset Password', `Instructions to reset your password have been sent to ${email.trim()}.`);
+                  } catch (err: any) {
+                    Alert.alert('Error', err.message || 'Failed to send reset link.');
+                  }
+                }}
               >
                 <Text style={{ color: theme.primary, fontWeight: '600' }}>Reset Password</Text>
               </TouchableOpacity>

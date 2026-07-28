@@ -10,8 +10,30 @@
 // request.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addNotification } from './notifications';
+import { Platform } from 'react-native';
 
 const STORAGE_KEY = 'reports';
+
+export const getApiUrl = () => {
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:3001/api';
+  }
+  return 'http://localhost:3001/api';
+};
+
+export const checkServerRunning = async (): Promise<boolean> => {
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 800);
+    const res = await fetch(`${getApiUrl()}/ping`, { signal: controller.signal });
+    clearTimeout(id);
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+};
+
+// How long after submission the simulated technician resolves the request.
 
 // How long after submission the simulated technician resolves the request.
 // Kept long (24h) so submitted requests stay in the Active tab during use
@@ -40,6 +62,20 @@ const pickTechnician = (seed: string) => {
 
 export const getReports = async (): Promise<any[]> => {
   try {
+    const serverRunning = await checkServerRunning();
+    if (serverRunning) {
+      const res = await fetch(`${getApiUrl()}/reports`);
+      if (res.ok) {
+        const reports = await res.json();
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+        return reports;
+      }
+    }
+  } catch (error) {
+    console.log('Error fetching reports from server, falling back to local:', error);
+  }
+
+  try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed) ? parsed : [];
@@ -54,6 +90,19 @@ export const saveReports = async (reports: any[]): Promise<void> => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   } catch (error) {
     console.log('Error saving reports:', error);
+  }
+
+  try {
+    const serverRunning = await checkServerRunning();
+    if (serverRunning) {
+      await fetch(`${getApiUrl()}/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reports),
+      });
+    }
+  } catch (error) {
+    console.log('Error syncing reports to server:', error);
   }
 };
 

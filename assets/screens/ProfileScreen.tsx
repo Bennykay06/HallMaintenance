@@ -33,7 +33,7 @@ export default function ProfileScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
-  const [userName, setUserName] = useState('Alex Johnson');
+  const [userName, setUserName] = useState('Resident User');
   const [hall, setHall] = useState('Unity Hall');
   const [floor, setFloor] = useState('Floor 2');
   const [room, setRoom] = useState('Room 204');

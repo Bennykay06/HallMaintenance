@@ -150,60 +150,73 @@ export default function OnboardingScreen({ navigation }: any) {
   };
 
   const handleComplete = async () => {
-    if (!roomNumber.trim()) {
+    const trimmedRoom = roomNumber.trim();
+    if (!trimmedRoom) {
       Alert.alert('Room Required', 'Please enter your room number.');
       return;
     }
 
+    // Room number must follow the example (e.g. 204 or 204B), start with a number, and cannot be words
+    const roomRegex = /^\d+[a-zA-Z]?$/;
+    if (!roomRegex.test(trimmedRoom)) {
+      Alert.alert(
+        'Invalid Room Number',
+        'Please enter a valid room number (e.g. 204 or 204B). It must start with a number, can end with an optional letter, and cannot contain words.'
+      );
+      return;
+    }
+
     setIsLoading(true);
-    const selectedHallData = halls.find(h => h.id === selectedHall);
-     const trimmedRoom = roomNumber.trim();
-      const roomLabel = /^room\b/i.test(trimmedRoom) ? trimmedRoom : `Room ${trimmedRoom}`;
-const location =`${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`;
-
-
-const user:any = (await supabase.auth.getUser()).data.user;
-
-const { data: profile } = await supabase
-  .from("profiles")
-  .select("id")
-  .eq("id", user.id)
-  .single();
-
-if (!profile) {
-  await supabase
-    .from("profiles")
-    .insert({
-      id: user.id,
-      full_name: name,
-    });
-}
-// Insert into Supabase
-const { data, error } = await supabase
-.from('profiles')
-.insert([
-  {
-     id: user.id,
-    hall: selectedHallData?.name,
-    floor: selectedFloor,
-    room: roomLabel,
-    location: location
-  }
-]);
 
     try {
       const selectedHallData = halls.find(h => h.id === selectedHall);
-
-      // Store the room as "Room <n>" so it reads consistently everywhere
-      // (the input only captures the bare number, e.g. "204B").
       const trimmedRoom = roomNumber.trim();
       const roomLabel = /^room\b/i.test(trimmedRoom) ? trimmedRoom : `Room ${trimmedRoom}`;
+      const location = `${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`;
 
-      // Save all data to AsyncStorage
+      // Supabase syncing block (wrapped to fail gracefully)
+      try {
+        const userName = (await AsyncStorage.getItem('userName')) || 'Student User';
+        const userResponse = await supabase.auth.getUser();
+        const user = userResponse?.data?.user;
+
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("id", user.id)
+            .single();
+
+          if (!profile) {
+            await supabase
+              .from("profiles")
+              .insert({
+                id: user.id,
+                full_name: userName,
+              });
+          }
+
+          await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: user.id,
+                hall: selectedHallData?.name,
+                floor: selectedFloor,
+                room: roomLabel,
+                location: location
+              }
+            ]);
+        }
+      } catch (supabaseError) {
+        console.log('Supabase sync skipped/failed:', supabaseError);
+      }
+
+      // Save all data to AsyncStorage (local fallback always runs)
       await AsyncStorage.setItem('userHall', selectedHallData?.name || '');
       await AsyncStorage.setItem('userFloor', selectedFloor || '');
       await AsyncStorage.setItem('userRoom', roomLabel);
-      await AsyncStorage.setItem('userLocation', `${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`);
+      await AsyncStorage.setItem('userLocation', location);
       await AsyncStorage.setItem('onboardingComplete', 'true');
 
       setIsLoading(false);

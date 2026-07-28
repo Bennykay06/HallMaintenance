@@ -133,6 +133,12 @@ export default function RequestDetailScreen({ navigation, route }: any) {
             <Row Icon={PersonIcon} label="Submitted By" value={request.submittedBy || '—'} />
             <View style={styles.divider} />
             <Row Icon={ClockIcon} label="Submitted" value={formatDateTime(request.timestamp)} />
+            {!!request.priority && (
+              <>
+                <View style={styles.divider} />
+                <Row Icon={WrenchIcon} label="Priority Level" value={request.priority.toUpperCase()} />
+              </>
+            )}
           </View>
 
           {/* ===== WRITTEN DETAILS ===== */}
@@ -206,6 +212,50 @@ export default function RequestDetailScreen({ navigation, route }: any) {
                   label={request.technician.name || 'Technician'}
                   value={request.technician.role || 'Facilities'}
                 />
+                {!!request.technicianNotes && (
+                  <>
+                    <View style={styles.divider} />
+                    <Row
+                      Icon={DescriptionIcon}
+                      label="Technician Notes"
+                      value={request.technicianNotes}
+                    />
+                  </>
+                )}
+              </View>
+            </>
+          )}
+
+          {/* ===== APPOINTMENT SCHEDULE ===== */}
+          {(request.appointmentStatus || request.appointmentDate) && (
+            <>
+              <Text style={styles.sectionTitle}>Appointment Schedule</Text>
+              <View style={styles.card}>
+                <Row
+                  Icon={ClockIcon}
+                  label="Proposed/Scheduled Time"
+                  value={`${request.appointmentDate || '—'} at ${request.appointmentTime || '—'}`}
+                />
+                <View style={styles.divider} />
+                <Row
+                  Icon={ClipboardIcon}
+                  label="Appointment Status"
+                  value={(request.appointmentStatus || 'pending_confirmation').toUpperCase().replace('_', ' ')}
+                />
+                
+                {/* If proposed/negotiating or declined, show action to open Chat to negotiate/confirm/decline */}
+                {request.appointmentStatus !== 'confirmed' && (
+                  <TouchableOpacity
+                    style={[styles.chatButton, { backgroundColor: theme.primary, marginTop: 12 }]}
+                    onPress={() => navigation.navigate('Chat', {
+                      requestId: request.id,
+                      requestTitle: request.selectedIssue || request.issue || 'Conversation',
+                      technician: request.technician || { name: 'Technician', role: 'Facilities Specialist' }
+                    })}
+                  >
+                    <Text style={styles.chatButtonText}>💬 Open Chat to Confirm/Decline</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </>
           )}
@@ -213,7 +263,9 @@ export default function RequestDetailScreen({ navigation, route }: any) {
           {/* ===== STATUS NOTE ===== */}
           <View style={styles.noteBox}>
             <Text style={styles.noteText}>
-              A technician will update you when this request is resolved.
+              {request.status === 'resolved' || request.status === 'completed'
+                ? 'This maintenance request has been successfully resolved.'
+                : 'A technician will update you when this request is resolved.'}
             </Text>
           </View>
 
@@ -468,5 +520,17 @@ const getStyles = (theme: any) => StyleSheet.create({
   fullImage: {
     width: '100%',
     height: '80%',
+  },
+  chatButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chatButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 14,
   },
 });

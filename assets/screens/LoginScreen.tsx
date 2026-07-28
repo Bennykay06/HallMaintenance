@@ -119,8 +119,35 @@ console.log(data)
     navigation.navigate('Register');
   };
 
-  const handleForgotPassword = () => {
-    Alert.alert('Forgot Password', 'Password reset functionality coming soon.');
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert(
+        'Email Required',
+        'Please enter your email address in the email field first, then tap Forgot Password.'
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: 'hallmaintenance://reset-password',
+      });
+
+      setIsLoading(false);
+
+      if (error) {
+        throw error;
+      }
+
+      Alert.alert(
+        'Reset Email Sent',
+        `A password reset link has been sent to ${email.trim()}. Please check your inbox.`
+      );
+    } catch (error: any) {
+      setIsLoading(false);
+      Alert.alert('Password Reset Failed', error.message);
+    }
   };
 
   return (

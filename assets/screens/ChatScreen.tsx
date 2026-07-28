@@ -18,6 +18,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
 import { addAppointment } from '../utils/appointments';
+import { checkServerRunning, getApiUrl } from '../utils/reports';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 interface Message {
@@ -143,9 +144,12 @@ export default function ChatScreen({ navigation, route }: any) {
     loadConversation();
     return () => {
       isMountedRef.current = false;
-      // Clear the conversation when leaving the chat (back navigation, hardware
-      // back, or swipe-back), so reopening the chat starts fresh.
-      AsyncStorage.removeItem(storageKey).catch(() => {});
+      // Only clear conversation locally if mock server is not running
+      checkServerRunning().then(running => {
+        if (!running) {
+          AsyncStorage.removeItem(storageKey).catch(() => {});
+        }
+      });
     };
   }, []);
 
@@ -158,6 +162,32 @@ export default function ChatScreen({ navigation, route }: any) {
     ).catch(error => console.log('Error saving chat:', error));
   }, [messages, hydrated]);
 
+  // Poll chat messages in real time when focused
+  useEffect(() => {
+    let active = true;
+    const pollInterval = setInterval(async () => {
+      const serverRunning = await checkServerRunning();
+      if (serverRunning && active) {
+        try {
+          const res = await fetch(`${getApiUrl()}/chats/${requestId}`);
+          if (res.ok) {
+            const data = await res.json();
+            const serverMsgs = data.messages || [];
+            if (active && JSON.stringify(serverMsgs) !== JSON.stringify(messages)) {
+              setMessages(serverMsgs);
+              await AsyncStorage.setItem(storageKey, JSON.stringify({ messages: serverMsgs }));
+            }
+          }
+        } catch (e) {}
+      }
+    }, 2000);
+
+    return () => {
+      active = false;
+      clearInterval(pollInterval);
+    };
+  }, [requestId, messages]);
+
   const loadConversation = async () => {
     try {
       const [name, raw, rawReports] = await Promise.all([
@@ -166,10 +196,28 @@ export default function ChatScreen({ navigation, route }: any) {
         AsyncStorage.getItem('reports'),
       ]);
       if (name) setUserName(name);
-      if (raw) {
+
+      let loadedMessages = null;
+      const serverRunning = await checkServerRunning();
+      if (serverRunning) {
+        try {
+          const res = await fetch(`${getApiUrl()}/chats/${requestId}`);
+          if (res.ok) {
+            const data = await res.json();
+            loadedMessages = data.messages || [];
+            setMessages(loadedMessages);
+            await AsyncStorage.setItem(storageKey, JSON.stringify({ messages: loadedMessages }));
+          }
+        } catch (e) {
+          console.log('Error fetching chat from server:', e);
+        }
+      }
+
+      if (loadedMessages === null && raw) {
         const saved = JSON.parse(raw);
         setMessages(Array.isArray(saved.messages) ? saved.messages : []);
       }
+
       if (rawReports) {
         const reports = JSON.parse(rawReports);
         const report = reports.find((r: any) => (r.id || r.timestamp) === requestId);
@@ -229,31 +277,45 @@ export default function ChatScreen({ navigation, route }: any) {
       isTechnician: false,
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const updated = [...messages, userMessage];
+    setMessages(updated);
     setMessage('');
     scrollToBottom();
 
-    // Ask the technician side for a reply. This is a local mock today;
-    // swap fetchTechnicianReply's body for a real backend later.
-    setIsTyping(true);
-    scrollToBottom();
-    try {
-      const replyText = await fetchTechnicianReply(trimmed);
-      if (!isMountedRef.current) return;
-      if (replyText) {
-        const reply: Message = {
-          id: `${Date.now()}-tech`,
-          text: replyText,
-          time: nowTime(),
-          isTechnician: true,
-        };
-        setMessages(prev => [...prev, reply]);
+    // Check if the mock server is running for live technician chat
+    const serverRunning = await checkServerRunning();
+    if (serverRunning) {
+      try {
+        await fetch(`${getApiUrl()}/chats/${requestId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: updated }),
+        });
+      } catch (e) {
+        console.log('Error sending message to server:', e);
       }
-    } catch (error) {
-      console.log('Error fetching technician reply:', error);
-    } finally {
-      if (isMountedRef.current) setIsTyping(false);
+    } else {
+      // Standalone mode: simulated technician reply after a short delay
+      setIsTyping(true);
       scrollToBottom();
+      try {
+        const replyText = await fetchTechnicianReply(trimmed);
+        if (!isMountedRef.current) return;
+        if (replyText) {
+          const reply: Message = {
+            id: `${Date.now()}-tech`,
+            text: replyText,
+            time: nowTime(),
+            isTechnician: true,
+          };
+          setMessages(prev => [...prev, reply]);
+        }
+      } catch (error) {
+        console.log('Error fetching technician reply:', error);
+      } finally {
+        if (isMountedRef.current) setIsTyping(false);
+        scrollToBottom();
+      }
     }
   };
 
