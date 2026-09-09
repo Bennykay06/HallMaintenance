@@ -40,7 +40,7 @@ const AppMessage=process.env.app_message
                    "destinations": [
           
                    {
-                    "to": "233537180922"
+                    "to": "233201350642"
                 }
                 
         ],

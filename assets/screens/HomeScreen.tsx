@@ -15,7 +15,13 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
-import { getAppointments, Appointment } from '../utils/appointments';
+import {
+  getAppointments,
+  Appointment,
+  faultLabel,
+  formatAppointmentDate,
+  formatAppointmentTime,
+} from '../utils/appointments';
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const { theme } = useTheme();
@@ -99,6 +105,20 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       Icon: BrickIcon,
     },
   ];
+
+  // Real appointments carry a status; the two hard-coded hall-wide items
+  // below don't, so they keep the plain "i" icon instead of a badge.
+  const getStatusMeta = (status?: string) => {
+    if (!status) return null;
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return { label: 'Completed', color: '#27AE60', bg: 'rgba(39, 174, 96, 0.1)' };
+      case 'cancelled':
+        return { label: 'Cancelled', color: '#8F6F6C', bg: 'rgba(143, 111, 108, 0.12)' };
+      default:
+        return { label: 'Scheduled', color: '#F39C12', bg: 'rgba(243, 156, 18, 0.1)' };
+    }
+  };
 
   const handleServicePress = (service: { title: string }) => {
     navigation.navigate('ServiceIssues', {
@@ -207,31 +227,66 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
           {/* ===== MAINTENANCE SCHEDULE ===== */}
           <View style={styles.scheduleSection}>
-            <View style={[styles.sectionHeader, styles.titleRow]}>
-              <CalendarIcon color={theme.primary} size={24} />
-              <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Schedule</Text>
+            <View style={styles.scheduleSectionHeader}>
+              <View style={styles.titleRow}>
+                <CalendarIcon color={theme.primary} size={24} />
+                <Text style={[styles.sectionTitle, { color: theme.primary }]}>Maintenance Schedule</Text>
+              </View>
+              {appointments.length > 0 && (
+                <TouchableOpacity onPress={() => navigation.navigate('Appointments')}>
+                  <Text style={[styles.viewAllText, { color: theme.primary }]}>View All</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             <View style={styles.scheduleGrid}>
               {[
-                ...appointments.map((a) => ({ id: a.id, title: a.title, date: a.date, Icon: WrenchIcon })),
+                // A booked visit shows the fault the hall admin recorded, plus
+                // the date and time they set — nothing else.
+                ...appointments.map((a) => ({
+                  id: a.id,
+                  title: faultLabel(a),
+                  date: formatAppointmentDate(a.scheduledFor) || a.date || 'Date to be confirmed',
+                  time: formatAppointmentTime(a.scheduledFor),
+                  Icon: WrenchIcon,
+                  status: a.status,
+                })),
                 ...scheduleItems,
-              ].map((item) => (
-                <View key={item.id} style={[styles.scheduleCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                  <View style={styles.scheduleLeft}>
-                    <View style={[styles.scheduleIcon, { backgroundColor: theme.surfaceContainer }]}>
-                      <item.Icon color={theme.primary} size={20} />
+              ].map((item: any) => {
+                const meta = getStatusMeta(item.status);
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={[styles.scheduleCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                    activeOpacity={item.status ? 0.7 : 1}
+                    disabled={!item.status}
+                    onPress={() => navigation.navigate('Appointments')}
+                  >
+                    <View style={styles.scheduleLeft}>
+                      <View style={[styles.scheduleIcon, { backgroundColor: theme.surfaceContainer }]}>
+                        <item.Icon color={theme.primary} size={20} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.scheduleTitle, { color: theme.text }]} numberOfLines={2}>
+                          {item.title}
+                        </Text>
+                        <Text style={[styles.scheduleDate, { color: theme.textSecondary }]}>
+                          {item.time ? `${item.date} • ${item.time}` : item.date}
+                        </Text>
+                      </View>
                     </View>
-                    <View>
-                      <Text style={[styles.scheduleTitle, { color: theme.text }]}>{item.title}</Text>
-                      <Text style={[styles.scheduleDate, { color: theme.textSecondary }]}>{item.date}</Text>
-                    </View>
-                  </View>
-                  <View style={[styles.infoIcon, { borderColor: theme.primary }]}>
-                    <Text style={{ color: theme.primary, fontSize: 12, fontWeight: 'bold' }}>i</Text>
-                  </View>
-                </View>
-              ))}
+                    {meta ? (
+                      <View style={[styles.statusBadge, { backgroundColor: meta.bg }]}>
+                        <Text style={[styles.statusBadgeText, { color: meta.color }]}>{meta.label}</Text>
+                      </View>
+                    ) : (
+                      <View style={[styles.infoIcon, { borderColor: theme.primary }]}>
+                        <Text style={{ color: theme.primary, fontSize: 12, fontWeight: 'bold' }}>i</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
@@ -377,10 +432,30 @@ const getStyles = (theme: any) => StyleSheet.create({
   sectionHeader: {
     marginBottom: 12,
   },
+  scheduleSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  viewAllText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   sectionTitle: {
     fontSize: 18,

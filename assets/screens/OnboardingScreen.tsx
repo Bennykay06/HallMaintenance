@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import supabase from '../../config';
+import { updateMyProfile } from '../../lib/api';
 import { useTheme } from '../context/ThemeContext';
 type Hall = {
   id: string;
@@ -174,42 +175,28 @@ export default function OnboardingScreen({ navigation }: any) {
       const roomLabel = /^room\b/i.test(trimmedRoom) ? trimmedRoom : `Room ${trimmedRoom}`;
       const location = `${selectedHallData?.name}, ${selectedFloor}, ${roomLabel}`;
 
-      // Supabase syncing block (wrapped to fail gracefully)
-      try {
-        const userName = (await AsyncStorage.getItem('userName')) || 'Student User';
-        const userResponse = await supabase.auth.getUser();
-        const user = userResponse?.data?.user;
+      // Attach the resident to their hall on the server. This is what lets
+      // the hall's admins and technicians see reports filed from this
+      // account — without a hall_id the RLS policies scope them to nobody.
+      const { data: hallRow } = await supabase
+        .from('halls')
+        .select('id')
+        .eq('name', selectedHallData?.name ?? '')
+        .maybeSingle();
 
-        if (user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("id", user.id)
-            .single();
+      const { error: profileError } = await updateMyProfile({
+        room: roomLabel,
+        hallId: hallRow?.id ?? null,
+      });
 
-          if (!profile) {
-            await supabase
-              .from("profiles")
-              .insert({
-                id: user.id,
-                full_name: userName,
-              });
-          }
-
-          await supabase
-            .from('profiles')
-            .insert([
-              {
-                id: user.id,
-                hall: selectedHallData?.name,
-                floor: selectedFloor,
-                room: roomLabel,
-                location: location
-              }
-            ]);
-        }
-      } catch (supabaseError) {
-        console.log('Supabase sync skipped/failed:', supabaseError);
+      if (profileError) {
+        // Don't strand the user on this screen, but don't pretend it worked
+        // either — an unassigned resident's reports go nowhere useful.
+        console.log('Failed to save hall to profile:', profileError);
+        Alert.alert(
+          'Saved locally only',
+          'We could not reach the server to save your hall. Please check your connection and update it from your profile.'
+        );
       }
 
       // Save all data to AsyncStorage (local fallback always runs)

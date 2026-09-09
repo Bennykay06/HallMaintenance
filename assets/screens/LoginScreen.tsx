@@ -11,6 +11,7 @@ import {
 } from '../components/Icons';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { registerForPushNotifications } from '../utils/registerNotification';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -27,6 +28,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import supabase from '../../config';
+import { registerPushToken } from '../../lib/api';
 // ===== Crimson Campus palette (from design mockups) =====
 const C = {
   background: '#F8F9FA',
@@ -87,10 +89,21 @@ export default function LoginScreen({ navigation }: any) {
     if (error) {
       throw error;
     }
-    
+
 console.log(data)
     await AsyncStorage.setItem('userEmail', email);
     await AsyncStorage.setItem('isLoggedIn', 'true');
+
+    // Register this device against the signed-in account, so the database
+    // knows where to push when their report changes status.
+    try {
+      const token = await registerForPushNotifications();
+      if (token) {
+        await registerPushToken(token);
+      }
+    } catch (e) {
+      console.log('Error registering token on login:', e);
+    }
 
     if (rememberMe) {
       await AsyncStorage.setItem('savedEmail', email);

@@ -1,5 +1,6 @@
 // src/screens/RegisterScreen.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { registerForPushNotifications } from '../utils/registerNotification';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import supabase from '../../config';
+import { registerPushToken } from '../../lib/api';
 import {
   ArrowRightIcon,
   BankIcon,
@@ -75,6 +77,11 @@ export default function RegisterScreen({ navigation }: any) {
         data: {
           full_name: fullName,
         },
+        // Points the emailed confirmation link at this app's own URL scheme
+        // (registered in app.json, handled in App.js) instead of falling
+        // back to the project's Site URL — which was the staff web
+        // dashboard, so tapping the link used to land students there.
+        emailRedirectTo: 'hallmaintenance://confirm-email',
       },
     });
 
@@ -90,14 +97,34 @@ export default function RegisterScreen({ navigation }: any) {
 
     await AsyncStorage.setItem('userName', fullName);
     await AsyncStorage.setItem('userEmail', user.email ?? email);
-    await AsyncStorage.setItem('userHall', 'Unity Hall');
-    await AsyncStorage.setItem('userFloor', 'Floor 2');
-    await AsyncStorage.setItem('userRoom', 'Room 204');
-    await AsyncStorage.setItem(
-      'userLocation',
-      'Unity Hall, Floor 2, Room 204'
-    );
+
+    // With "Confirm email" enabled on the Supabase project, signUp creates
+    // the account but no session yet. Tapping the emailed link opens this
+    // app directly (via the hallmaintenance:// scheme + App.js's deep-link
+    // handler) and signs them in automatically.
+    if (!data.session) {
+      setIsLoading(false);
+      Alert.alert(
+        'Confirm your email',
+        `We sent a confirmation link to ${user.email ?? email}. Open it on this device to activate your account.`,
+        [{ text: 'OK', onPress: () => navigation.replace('Login') }]
+      );
+      return;
+    }
+
     await AsyncStorage.setItem('isLoggedIn', 'true');
+
+    // Register this device for push notifications. The row is keyed to the
+    // signed-in user, so the database knows who to alert when their report
+    // changes status.
+    try {
+      const token = await registerForPushNotifications();
+      if (token) {
+        await registerPushToken(token);
+      }
+    } catch (e) {
+      console.log('Error registering token on signup:', e);
+    }
 
     setIsLoading(false);
 
@@ -119,9 +146,13 @@ export default function RegisterScreen({ navigation }: any) {
 
   } catch (error: any) {
     setIsLoading(false);
+    let message = error?.message;
+    if (!message || message === '{}') {
+      message = 'Registration failed on server (Database or Auth configuration error). Please ensure the Supabase schema trigger is configured and try again.';
+    }
     Alert.alert(
       'Registration Failed',
-      error.message
+      message
     );
   }
 }; 

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-  Platform,
   Alert,
   Share,
 } from 'react-native';
@@ -82,15 +81,6 @@ export default function NotificationDetailScreen({ navigation, route }: any) {
       .slice(0, 2);
   };
 
-  const handleMessageTechnician = () => {
-    // Chat is registered as a sibling in the root stack (see App.js)
-    navigation.navigate('Chat', {
-      technician: technician,
-      requestId: notificationData.id,
-      requestTitle: notificationData.title,
-    });
-  };
-
   const handleShare = async () => {
     const specialistLabel = isResolved ? 'Resolved by' : 'Technician';
     const lines = [
@@ -144,10 +134,10 @@ export default function NotificationDetailScreen({ navigation, route }: any) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={isResolved ? styles.scrollContentResolved : styles.scrollContent}
+        contentContainerStyle={styles.scrollContentResolved}
       >
         <View style={styles.content}>
           
@@ -193,12 +183,12 @@ export default function NotificationDetailScreen({ navigation, route }: any) {
             </View>
           </View>
 
-          {/* ===== ASSIGNED / RESOLVING TECHNICIAN ===== */}
+          {/* ===== ASSIGNED / RESOLVING STAFF ===== */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionIcon}>{isResolved ? '✅' : '🔧'}</Text>
               <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-                {isResolved ? 'Resolved By' : 'Assigned Technician'}
+                {isResolved ? 'Resolved By' : 'Assigned Staff'}
               </Text>
             </View>
             <View style={[styles.technicianCard, {
@@ -212,9 +202,6 @@ export default function NotificationDetailScreen({ navigation, route }: any) {
                       {getInitials(technician.name)}
                     </Text>
                   </View>
-                  {!isResolved && technician.online && (
-                    <View style={[styles.onlineDot, { backgroundColor: '#22C55E' }]} />
-                  )}
                 </View>
                 <View style={styles.technicianText}>
                   <Text style={[styles.technicianName, { color: theme.text }]}>
@@ -230,43 +217,22 @@ export default function NotificationDetailScreen({ navigation, route }: any) {
                   )}
                 </View>
               </View>
-              {!isResolved && (
-                <TouchableOpacity
-                  style={[styles.messageButton, { backgroundColor: theme.primary }]}
-                  onPress={handleMessageTechnician}
-                >
-                  <Text style={styles.messageButtonText}>💬</Text>
-                </TouchableOpacity>
-              )}
             </View>
           </View>
+
+          {/* ===== BOOKING REMINDER ===== */}
+          {!isResolved && (
+            <View style={styles.noteBox}>
+              <Text style={styles.noteText}>
+                You've been booked to have this repaired. Your hall admin is coordinating the visit.
+              </Text>
+            </View>
+          )}
 
           <View style={styles.bottomSpacer} />
 
         </View>
       </ScrollView>
-
-      {/* ===== BOTTOM ACTION (hidden once resolved — read-only) ===== */}
-      {!isResolved && (
-        <View style={[styles.bottomContainer, {
-          backgroundColor: theme.surface,
-          borderTopColor: theme.border,
-        }]}>
-          <View style={styles.actionContainer}>
-            <TouchableOpacity
-              style={[styles.messageActionButton, {
-                borderColor: theme.primary,
-              }]}
-              onPress={handleMessageTechnician}
-            >
-              <Text style={[styles.messageActionText, { color: theme.primary }]}>
-                Message Technician
-              </Text>
-              <Text style={[styles.messageActionIcon, { color: theme.primary }]}>💬</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
 
     </SafeAreaView>
   );
@@ -474,46 +440,17 @@ const styles = StyleSheet.create({
   technicianRole: {
     fontSize: 13,
   },
-  messageButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+  // ===== BOOKING REMINDER NOTE =====
+  noteBox: {
+    backgroundColor: 'rgba(143, 111, 108, 0.08)',
+    borderRadius: 12,
+    padding: 14,
   },
-  messageButtonText: {
-    fontSize: 20,
-  },
-
-  // ===== BOTTOM ACTION =====
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopWidth: 1,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 8,
-  },
-  actionContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  messageActionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    paddingVertical: 14,
-    borderRadius: 10,
-  },
-  messageActionText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  messageActionIcon: {
-    fontSize: 20,
+  noteText: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: '#5B403D',
+    lineHeight: 18,
   },
 
   // ===== BOTTOM SPACER =====

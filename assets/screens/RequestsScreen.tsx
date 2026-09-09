@@ -315,7 +315,7 @@ export default function RequestsScreen({ navigation, route }: any) {
         <Text style={styles.requestId}>
           ID: {request.referenceId || 'Pending'} • Submitted {request.timestamp ? new Date(request.timestamp).toLocaleDateString() : 'recently'}
         </Text>
-        <Text style={styles.awaitingText}>A technician will update you when this is resolved.</Text>
+        <Text style={styles.awaitingText}>Your hall admin will update you here once this is scheduled and resolved.</Text>
         <View style={styles.viewDetailsRow}>
           <Text style={styles.viewDetailsText}>View Details</Text>
           <ChevronRightIcon color={theme.primary} size={16} />

@@ -13,7 +13,20 @@
 
 ---
 
+# Abstract
+
+Residential infrastructure maintenance at Kwame Nkrumah University of Science and Technology (KNUST) has historically relied on physical paper logbooks located at hall porters' lodges. This traditional approach introduces significant operational bottlenecks, including high reporting friction, ambiguous defect descriptions, absence of real-time ticket tracking, and poor communication between student residents and maintenance personnel. 
+
+To resolve these challenges, this project presents **HallMaintenance**, a cross-platform mobile application developed using React Native and Expo SDK (v54). The application digitizes the student maintenance reporting workflow through an intuitive step-by-step reporting wizard, allowing residential students to submit maintenance requests with visual evidence (photos and videos captured via native device APIs), categorize issues (Electrical, Plumbing, Carpentry, Masonry), track repair statuses in real-time, and engage in direct two-way messaging with assigned maintenance specialists. 
+
+The software architecture leverages `@react-navigation` (combining Stack and Bottom Tab navigators), a custom `ThemeContext` for dynamic dark/light mode toggling, `@react-native-async-storage/async-storage` for local state persistence and offline read capabilities, and integration with an HTTP API backend server for push notification registration and report synchronization. Developed following an Agile Scrum methodology across four sprints, system verification demonstrated seamless media attachment, robust state synchronization, and significantly reduced diagnostic lead time for technicians. The proposed mobile solution modernizes campus facility administration, enhances student living conditions, and provides a scalable framework adaptable to higher education residential management.
+
+**Keywords:** React Native, Expo SDK v54, Campus Facility Management, Mobile Defect Reporting, Real-time Ticket Tracking, KNUST Hall Maintenance.
+
+---
+
 # Table of Contents
+0. [Abstract](#abstract)
 1. [Chapter 1: Introduction](#chapter-1-introduction)
 2. [Chapter 2: Review of Related Works / Similar Systems](#chapter-2-review-of-related-works--review-of-similar-systems)
 3. [Chapter 3: Methodology](#chapter-3-methodology)
@@ -32,8 +45,6 @@ From a student's perspective at Kwame Nkrumah University of Science and Technolo
 - **Lack of Tracking:** Once reported, students have no way to know if their request was received, assigned to a technician, or scheduled for repair.
 - **Lack of Direct Communication:** Students cannot talk directly to assigned technicians to coordinate meeting times or clarify issues, leading to missed appointments.
 
-### Aim of the Project
-The primary aim is to design and develop a user-friendly mobile application (**HallMaintenance**) built with React Native and Expo, which allows residential students to submit maintenance reports with photo and video attachments, track the repair status in real-time, view facility rules, and chat directly with assigned maintenance specialists.
 
 ### Specific Objectives of the Project
 1. **Defect Categorization Flow:** Implement an intuitive, step-by-step reporting wizard dividing issues into key categories (Electrical, Plumbing, Carpentry, Masonry) with common pre-defined issues and text options.

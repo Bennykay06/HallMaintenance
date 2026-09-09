@@ -1,10 +1,83 @@
 // mock-server.js
+//
+// DEPRECATED — nothing runs this any more.
+//
+// The app now talks to Supabase (see lib/supabase.ts and lib/api.ts), which
+// is the same backend the admin dashboard uses. This file and db.json are
+// left here only so the old demo data is still readable; you can delete both.
+//
+// Note the shape of the API below if you are comparing: POST /api/<resource>
+// replaced an entire collection, which is why the phone and the dashboard
+// could never safely share data through it.
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
 const PORT = 3001;
 const DB_FILE = path.join(__dirname, 'db.json');
+
+// Helper to make a POST request (for Expo push notification API)
+const postRequest = (url, body) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const parsedUrl = new URL(url);
+      const options = {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || 443,
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        }
+      };
+
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => { data += chunk; });
+        res.on('end', () => resolve({ status: res.statusCode, body: data }));
+      });
+
+      req.on('error', err => reject(err));
+      req.write(JSON.stringify(body));
+      req.end();
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// Send Expo Push Notification to all registered Admin tokens
+const sendPushToAdmins = async (db, report) => {
+  const tokens = db.pushTokens || [];
+  const adminTokens = tokens.filter(t => t.role === 'admin').map(t => t.token);
+
+  if (adminTokens.length === 0) {
+    console.log('[Push Notifications] No admin push tokens registered.');
+    return;
+  }
+
+  console.log(`[Push Notifications] Sending alert to ${adminTokens.length} admin(s) for report #${report.referenceId || report.id}`);
+
+  for (const token of adminTokens) {
+    const message = {
+      to: token,
+      sound: 'default',
+      title: 'New Maintenance Issue Reported',
+      body: `${report.submittedBy || 'A student'} reported: "${report.selectedIssue || report.issue}" at ${report.location}`,
+      data: { reportId: report.id },
+    };
+
+    try {
+      const res = await postRequest('https://exp.host/--/api/v2/push/send', message);
+      console.log(`[Push Notifications] Sent to ${token}, status: ${res.status}`);
+    } catch (e) {
+      console.log(`[Push Notifications] Failed to send to ${token}:`, e.message);
+    }
+  }
+};
 
 // Helper to write JSON response
 const sendJSON = (res, statusCode, data) => {
@@ -200,6 +273,17 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST') {
       const body = await getRequestBody(req);
       if (body) {
+        // Send push notification to admin if a new report is added
+        if (resource === 'reports' && Array.isArray(body)) {
+          const oldReports = db.reports || [];
+          if (body.length > oldReports.length) {
+            const addedReports = body.filter(nr => !oldReports.some(or => or.id === nr.id));
+            for (const report of addedReports) {
+              sendPushToAdmins(db, report);
+            }
+          }
+        }
+
         db[resource] = body;
         writeDB(db);
         sendJSON(res, 200, { success: true, count: db[resource].length });
@@ -208,6 +292,27 @@ const server = http.createServer(async (req, res) => {
       }
       return;
     }
+  }
+
+  // POST /api/register-push-token
+  if (resource === 'register-push-token' && req.method === 'POST') {
+    const body = await getRequestBody(req);
+    if (body && body.token) {
+      db.pushTokens = db.pushTokens || [];
+      // Remove duplicate token registrations
+      db.pushTokens = db.pushTokens.filter(t => t.token !== body.token);
+      db.pushTokens.push({
+        token: body.token,
+        email: body.email || '',
+        role: body.role || 'student',
+        timestamp: new Date().toISOString()
+      });
+      writeDB(db);
+      sendJSON(res, 200, { success: true });
+    } else {
+      sendJSON(res, 400, { error: 'Invalid body, token required' });
+    }
+    return;
   }
 
   // Chats endpoints:

@@ -33,7 +33,7 @@ const FAQS: Faq[] = [
     category: 'Maintenance',
     question: 'Do I need to be present when a technician visits?',
     answer:
-      'No. By submitting a request you grant 48-hour access for university personnel to enter your unit between 9:00 AM and 5:00 PM. If you prefer to be present, you can arrange a specific time slot with the technician in the request chat.',
+      'No. By submitting a request you grant 48-hour access for university personnel to enter your unit between 9:00 AM and 5:00 PM. If you prefer to be present, contact your hall admin to arrange a specific time slot — once it\'s booked, you\'ll see it under Maintenance Schedule on the Home tab.',
   },
   {
     id: '3',

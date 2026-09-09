@@ -10,9 +10,10 @@ import {
   ImageIcon,
   CloseIcon,
   ClipboardIcon,
+  CalendarIcon,
 } from '../components/Icons';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -25,6 +26,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import {
+  getAppointments,
+  Appointment,
+  faultLabel,
+  formatAppointmentDate,
+  formatAppointmentTime,
+} from '../utils/appointments';
 
 export default function RequestDetailScreen({ navigation, route }: any) {
   const { theme } = useTheme();
@@ -36,6 +44,18 @@ export default function RequestDetailScreen({ navigation, route }: any) {
 
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const player = useVideoPlayer(video);
+
+  // Booking reminder — this is a read-only heads-up that the hall admin has
+  // scheduled a repair visit. There's no in-app negotiation: the admin books
+  // the time and coordinates with the technician by phone.
+  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  useEffect(() => {
+    if (!request.id) return;
+    getAppointments().then((list) => {
+      const match = list.find((a) => a.reportId === request.id && a.status !== 'cancelled');
+      setAppointment(match || null);
+    });
+  }, [request.id]);
 
   const getStatusColor = (status?: string) => {
     switch ((status || '').toLowerCase()) {
@@ -202,60 +222,34 @@ export default function RequestDetailScreen({ navigation, route }: any) {
             )}
           </View>
 
-          {/* ===== TECHNICIAN (if assigned) ===== */}
-          {request.technician && (
+          {/* ===== BOOKING REMINDER (if an appointment is on the books) ===== */}
+          {appointment && (
             <>
-              <Text style={styles.sectionTitle}>Assigned Technician</Text>
+              <Text style={styles.sectionTitle}>Maintenance Schedule</Text>
               <View style={styles.card}>
                 <Row
-                  Icon={PersonIcon}
-                  label={request.technician.name || 'Technician'}
-                  value={request.technician.role || 'Facilities'}
+                  Icon={WrenchIcon}
+                  label="Fault"
+                  value={faultLabel(appointment)}
                 />
-                {!!request.technicianNotes && (
-                  <>
-                    <View style={styles.divider} />
-                    <Row
-                      Icon={DescriptionIcon}
-                      label="Technician Notes"
-                      value={request.technicianNotes}
-                    />
-                  </>
-                )}
-              </View>
-            </>
-          )}
-
-          {/* ===== APPOINTMENT SCHEDULE ===== */}
-          {(request.appointmentStatus || request.appointmentDate) && (
-            <>
-              <Text style={styles.sectionTitle}>Appointment Schedule</Text>
-              <View style={styles.card}>
+                <View style={styles.divider} />
+                <Row
+                  Icon={CalendarIcon}
+                  label="Date"
+                  value={formatAppointmentDate(appointment.scheduledFor) || appointment.date || 'To be confirmed'}
+                />
+                <View style={styles.divider} />
                 <Row
                   Icon={ClockIcon}
-                  label="Proposed/Scheduled Time"
-                  value={`${request.appointmentDate || '—'} at ${request.appointmentTime || '—'}`}
+                  label="Time"
+                  value={formatAppointmentTime(appointment.scheduledFor) || 'To be confirmed'}
                 />
                 <View style={styles.divider} />
                 <Row
                   Icon={ClipboardIcon}
-                  label="Appointment Status"
-                  value={(request.appointmentStatus || 'pending_confirmation').toUpperCase().replace('_', ' ')}
+                  label="Status"
+                  value={(appointment.status || 'scheduled').toUpperCase()}
                 />
-                
-                {/* If proposed/negotiating or declined, show action to open Chat to negotiate/confirm/decline */}
-                {request.appointmentStatus !== 'confirmed' && (
-                  <TouchableOpacity
-                    style={[styles.chatButton, { backgroundColor: theme.primary, marginTop: 12 }]}
-                    onPress={() => navigation.navigate('Chat', {
-                      requestId: request.id,
-                      requestTitle: request.selectedIssue || request.issue || 'Conversation',
-                      technician: request.technician || { name: 'Technician', role: 'Facilities Specialist' }
-                    })}
-                  >
-                    <Text style={styles.chatButtonText}>💬 Open Chat to Confirm/Decline</Text>
-                  </TouchableOpacity>
-                )}
               </View>
             </>
           )}
@@ -265,7 +259,9 @@ export default function RequestDetailScreen({ navigation, route }: any) {
             <Text style={styles.noteText}>
               {request.status === 'resolved' || request.status === 'completed'
                 ? 'This maintenance request has been successfully resolved.'
-                : 'A technician will update you when this request is resolved.'}
+                : appointment
+                ? 'You have been booked to have this issue repaired. Your hall admin will keep this updated.'
+                : 'Your hall admin will update you here once this is scheduled and resolved.'}
             </Text>
           </View>
 
