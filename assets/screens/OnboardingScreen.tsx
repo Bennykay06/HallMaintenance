@@ -184,7 +184,8 @@ export default function OnboardingScreen({ navigation }: any) {
         .eq('name', selectedHallData?.name ?? '')
         .maybeSingle();
 
-      const { error: profileError } = await updateMyProfile({
+      const { error: profileError, code: profileErrorCode } = await updateMyProfile({
+        floor: selectedFloor ?? undefined,
         room: roomLabel,
         hallId: hallRow?.id ?? null,
       });
@@ -193,10 +194,21 @@ export default function OnboardingScreen({ navigation }: any) {
         // Don't strand the user on this screen, but don't pretend it worked
         // either — an unassigned resident's reports go nowhere useful.
         console.log('Failed to save hall to profile:', profileError);
-        Alert.alert(
-          'Saved locally only',
-          'We could not reach the server to save your hall. Please check your connection and update it from your profile.'
-        );
+
+        if (profileErrorCode === '42501') {
+          // Not a connectivity problem: the address is write-once, and this
+          // account already has one. Saying "we couldn't reach the server"
+          // here sent us hunting for a network fault that did not exist.
+          Alert.alert(
+            'Address already registered',
+            'Your hall, floor and room were set when you first signed up and cannot be changed from here. Ask a hall administrator if you have moved room.'
+          );
+        } else {
+          Alert.alert(
+            'Saved locally only',
+            'We could not reach the server to save your hall. Please check your connection and update it from your profile.'
+          );
+        }
       }
 
       // Save all data to AsyncStorage (local fallback always runs)

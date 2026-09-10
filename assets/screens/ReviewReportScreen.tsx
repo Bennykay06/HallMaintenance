@@ -16,7 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createReport } from '../../lib/api';
+import { createReport, findOpenReportForMyRoom, OpenRoomReport } from '../../lib/api';
 import { formatLocation, getHall } from '../utils/location';
 
 export default function ReviewReportScreen({ navigation, route }: any) {
@@ -57,6 +57,40 @@ export default function ReviewReportScreen({ navigation, route }: any) {
     navigation.goBack();
   };
 
+  // Alert.alert has no promise form, so wrap it in one: resolve(true) to send
+  // the report anyway, resolve(false) to cancel.
+  const confirmDuplicate = (existing: OpenRoomReport[]): Promise<boolean> =>
+    new Promise((resolve) => {
+      const top = existing[0];
+      const when = new Date(top.createdAt).toLocaleDateString(undefined, {
+        day: 'numeric',
+        month: 'short',
+      });
+
+      const who = top.isMine
+        ? 'You already reported this'
+        : `${top.reportedBy || 'Someone in your room'} already reported this`;
+
+      const status =
+        top.status === 'scheduled'
+          ? 'A repair is already scheduled.'
+          : top.status === 'in-progress'
+          ? 'A technician is already working on it.'
+          : 'It is waiting to be scheduled.';
+
+      Alert.alert(
+        'Already reported',
+        `${who} on ${when} — reference ${top.referenceId}.\n\n${status}\n\n` +
+          'Sending another report for the same fault will not make it faster. ' +
+          'Report it anyway only if this is a different problem.',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+          { text: 'Report anyway', style: 'destructive', onPress: () => resolve(true) },
+        ],
+        { cancelable: true, onDismiss: () => resolve(false) }
+      );
+    });
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
@@ -64,6 +98,18 @@ export default function ReviewReportScreen({ navigation, route }: any) {
       Alert.alert('Missing Location', 'Please add your location');
       setIsSubmitting(false);
       return;
+    }
+
+    // A room is shared, so the same fault can already be on its way to a
+    // technician. Warn, but never block — the student may genuinely be
+    // reporting a second, similar fault.
+    const existing = await findOpenReportForMyRoom(serviceType, selectedIssue);
+    if (existing.length > 0) {
+      const proceed = await confirmDuplicate(existing);
+      if (!proceed) {
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {

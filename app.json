@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "HallMaintenance",
-    "slug": "HallMaintenance",
+    "name": "ResiFix KNUST",
+    "slug": "resifix-knust",
     "version": "1.0.0",
-    "scheme": "hallmaintenance",
+    "scheme": "resifix",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.resifixknust"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,8 +30,7 @@
     "plugins": [
       "expo-video",
       "@react-native-community/datetimepicker",
-       "expo-notifications"
-        
+      "expo-notifications"
     ]
   }
 }

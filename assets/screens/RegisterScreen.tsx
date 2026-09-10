@@ -81,7 +81,7 @@ export default function RegisterScreen({ navigation }: any) {
         // (registered in app.json, handled in App.js) instead of falling
         // back to the project's Site URL — which was the staff web
         // dashboard, so tapping the link used to land students there.
-        emailRedirectTo: 'hallmaintenance://confirm-email',
+        emailRedirectTo: 'resifix://confirm-email',
       },
     });
 
@@ -100,7 +100,7 @@ export default function RegisterScreen({ navigation }: any) {
 
     // With "Confirm email" enabled on the Supabase project, signUp creates
     // the account but no session yet. Tapping the emailed link opens this
-    // app directly (via the hallmaintenance:// scheme + App.js's deep-link
+    // app directly (via the resifix:// scheme + App.js's deep-link
     // handler) and signs them in automatically.
     if (!data.session) {
       setIsLoading(false);

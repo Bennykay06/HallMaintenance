@@ -1,11 +1,11 @@
-# KNUST Hall Maintenance System - Mobile Student Client
+# ResiFix KNUST - Mobile Student Client
 ## Technical Project Documentation
 *Structured according to the KNUST College of Engineering Project Documentation Guidelines*
 
 ---
 
 ## Document Metadata
-- **Project Title:** KNUST Hall Maintenance System (Mobile Student Client)
+- **Project Title:** ResiFix KNUST (Mobile Student Client)
 - **Target Platform:** Mobile Operating Systems (Android, iOS)
 - **Development Stack:** React Native, Expo SDK (v54), React Navigation, AsyncStorage Caching
 - **Integration Partner:** Admin-Dashboard Web Portal (React 19)
@@ -17,11 +17,11 @@
 
 Residential infrastructure maintenance at Kwame Nkrumah University of Science and Technology (KNUST) has historically relied on physical paper logbooks located at hall porters' lodges. This traditional approach introduces significant operational bottlenecks, including high reporting friction, ambiguous defect descriptions, absence of real-time ticket tracking, and poor communication between student residents and maintenance personnel. 
 
-To resolve these challenges, this project presents **HallMaintenance**, a cross-platform mobile application developed using React Native and Expo SDK (v54). The application digitizes the student maintenance reporting workflow through an intuitive step-by-step reporting wizard, allowing residential students to submit maintenance requests with visual evidence (photos and videos captured via native device APIs), categorize issues (Electrical, Plumbing, Carpentry, Masonry), track repair statuses in real-time, and engage in direct two-way messaging with assigned maintenance specialists. 
+To resolve these challenges, this project presents **ResiFix KNUST**, a cross-platform mobile application developed using React Native and Expo SDK (v54). The application digitizes the student maintenance reporting workflow through an intuitive step-by-step reporting wizard, allowing residential students to submit maintenance requests with visual evidence (photos and videos captured via native device APIs), categorize issues (Electrical, Plumbing, Carpentry, Masonry), track repair statuses in real-time, and engage in direct two-way messaging with assigned maintenance specialists. 
 
 The software architecture leverages `@react-navigation` (combining Stack and Bottom Tab navigators), a custom `ThemeContext` for dynamic dark/light mode toggling, `@react-native-async-storage/async-storage` for local state persistence and offline read capabilities, and integration with an HTTP API backend server for push notification registration and report synchronization. Developed following an Agile Scrum methodology across four sprints, system verification demonstrated seamless media attachment, robust state synchronization, and significantly reduced diagnostic lead time for technicians. The proposed mobile solution modernizes campus facility administration, enhances student living conditions, and provides a scalable framework adaptable to higher education residential management.
 
-**Keywords:** React Native, Expo SDK v54, Campus Facility Management, Mobile Defect Reporting, Real-time Ticket Tracking, KNUST Hall Maintenance.
+**Keywords:** React Native, Expo SDK v54, Campus Facility Management, Mobile Defect Reporting, Real-time Ticket Tracking, ResiFix KNUST.
 
 ---
 
@@ -198,7 +198,7 @@ Requirements were gathered by surveying KNUST students about common room issues 
 leftToRightDirection
 actor Student as "Residential Student"
 
-rectangle "HallMaintenance Mobile System" {
+rectangle "ResiFix KNUST Mobile System" {
     usecase UC1 as "Register Room & Profile"
     usecase UC2 as "Select Defect Category"
     usecase UC3 as "Capture Photo / Video Evidence"
@@ -224,7 +224,7 @@ Student --> UC8
 sequenceDiagram
     autonumber
     actor Student as Student (Mobile)
-    participant App as HallMaintenance App
+    participant App as ResiFix KNUST App
     participant Storage as AsyncStorage
     participant API as Mock API Server
 

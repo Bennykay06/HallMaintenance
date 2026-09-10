@@ -27,17 +27,20 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getMyProfile } from '../../lib/api';
 import { formatLocation } from '../utils/location';
 
 export default function ProfileScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const [refreshing, setRefreshing] = useState(false);
-  const [userName, setUserName] = useState('Resident User');
-  const [hall, setHall] = useState('Unity Hall');
-  const [floor, setFloor] = useState('Floor 2');
-  const [room, setRoom] = useState('Room 204');
-  const [fullAddress, setFullAddress] = useState('Unity Hall, Floor 2, Room 204');
+  // Empty rather than a placeholder, so "Resident User" is never shown and
+  // then corrected to the real name a moment later.
+  const [userName, setUserName] = useState('');
+  const [hall, setHall] = useState('');
+  const [floor, setFloor] = useState('');
+  const [room, setRoom] = useState('');
+  const [fullAddress, setFullAddress] = useState('');
   const [joinDate, setJoinDate] = useState("Fall '23");
   const [status, setStatus] = useState('Active');
 
@@ -47,17 +50,33 @@ export default function ProfileScreen({ navigation }: any) {
 
   const loadUserData = async () => {
     try {
+      // Account first; the device cache only fills what the account lacks.
+      let profile = null;
+      try {
+        profile = await getMyProfile();
+      } catch (e: any) {
+        console.log('[profile] getMyProfile threw:', e?.message ?? e);
+      }
+
       const name = await AsyncStorage.getItem('userName');
       const hallData = await AsyncStorage.getItem('userHall');
       const floorData = await AsyncStorage.getItem('userFloor');
       const roomData = await AsyncStorage.getItem('userRoom');
       const location = await AsyncStorage.getItem('userLocation');
-      
-      if (name) setUserName(name);
-      if (hallData) setHall(hallData);
+
+      // The Profile screen shows the whole name, unlike Home's greeting.
+      const resolvedName = profile?.fullName?.trim() || name?.trim() || '';
+      const resolvedHall = profile?.hallName || hallData || '';
+      const resolvedRoom = profile?.room || roomData || '';
+
+      if (resolvedName) setUserName(resolvedName);
+      if (resolvedHall) setHall(resolvedHall);
       if (floorData) setFloor(floorData);
-      if (roomData) setRoom(roomData);
-      if (location) setFullAddress(location);
+      if (resolvedRoom) setRoom(resolvedRoom);
+
+      const parts = [resolvedHall, floorData, resolvedRoom].filter(Boolean);
+      if (parts.length) setFullAddress(parts.join(', '));
+      else if (location) setFullAddress(location);
     } catch (error) {
       console.log('Error loading user data:', error);
     }
@@ -91,8 +110,8 @@ export default function ProfileScreen({ navigation }: any) {
       'Are you sure you want to logout?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Logout', 
+        {
+          text: 'Logout',
           style: 'destructive',
           onPress: () => {
             navigation.reset({

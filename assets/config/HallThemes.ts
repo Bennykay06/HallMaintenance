@@ -122,6 +122,58 @@ export const HALL_THEMES: Record<string, HallTheme> = {
   },
 };
 
-export const getHallTheme = (hallName: string): HallTheme => {
-  return HALL_THEMES[hallName] || HALL_THEMES['Unity Hall'];
+/**
+ * The keys above are the names this app has always used. The database is not
+ * obliged to agree with them, and in one case it does not: `halls.name` for
+ * the blue hall is "Queen Elizabeth II Hall", while the app says "Queens
+ * Hall". Now that the theme is resolved from the signed-in account (see
+ * ThemeContext) rather than a device cache, an unmatched name is no longer a
+ * cosmetic slip - it silently hands the student Unity Hall's red UI.
+ *
+ * So resolution is tolerant: exact key, then a known alias, then a
+ * case-insensitive match. `halls.code` values are aliases too, so a code
+ * works wherever a display name does.
+ */
+const HALL_ALIASES: Record<string, string> = {
+  // Display-name variants
+  'queen elizabeth ii hall': 'Queens Hall',
+  "queen's hall": 'Queens Hall',
+  'queens hall': 'Queens Hall',
+  'katanga hall': 'University Hall (Katanga)',
+  katanga: 'University Hall (Katanga)',
+  'university hall': 'University Hall (Katanga)',
+  // halls.code values
+  unity: 'Unity Hall',
+  independence: 'Independence Hall',
+  university: 'University Hall (Katanga)',
+  republic: 'Republic Hall',
+  queenshall: 'Queens Hall',
+  africa: 'Africa Hall',
+};
+
+export const DEFAULT_HALL_NAME = 'Unity Hall';
+
+export const getHallTheme = (hallName?: string | null): HallTheme => {
+  const raw = String(hallName ?? '').trim();
+  if (!raw) return HALL_THEMES[DEFAULT_HALL_NAME];
+
+  // Exact match on a canonical key.
+  if (HALL_THEMES[raw]) return HALL_THEMES[raw];
+
+  const key = raw.toLowerCase().replace(/\s+/g, ' ');
+
+  const aliased = HALL_ALIASES[key];
+  if (aliased && HALL_THEMES[aliased]) return HALL_THEMES[aliased];
+
+  const caseInsensitive = Object.keys(HALL_THEMES).find(
+    (k) => k.toLowerCase() === key
+  );
+  if (caseInsensitive) return HALL_THEMES[caseInsensitive];
+
+  // Loud rather than silent: a hall added to the database without a theme
+  // here should show up in the logs, not just quietly render red.
+  console.log(
+    `[theme] no theme registered for hall "${raw}" - falling back to ${DEFAULT_HALL_NAME}`
+  );
+  return HALL_THEMES[DEFAULT_HALL_NAME];
 };

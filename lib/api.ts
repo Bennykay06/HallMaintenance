@@ -118,6 +118,7 @@ export interface Profile {
   hallId: string | null;
   hallName: string | null;
   phone: string | null;
+  floor: string | null;
   room: string | null;
   avatarUrl: string | null;
 }
@@ -132,7 +133,7 @@ export const getMyProfile = async (): Promise<Profile | null> => {
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, email, full_name, role, hall_id, phone, room, avatar_url, halls(name)')
+    .select('id, email, full_name, role, hall_id, phone, floor, room, avatar_url, halls(name)')
     .eq('id', user.id)
     .single();
 
@@ -148,6 +149,7 @@ export const getMyProfile = async (): Promise<Profile | null> => {
       hallId: null,
       hallName: null,
       phone: null,
+      floor: null,
       room: null,
       avatarUrl: null,
     };
@@ -161,6 +163,10 @@ export const getMyProfile = async (): Promise<Profile | null> => {
     hallId: data.hall_id,
     hallName: (data as any).halls?.name ?? null,
     phone: data.phone,
+    // Floor lives on the profile row. It used to be omitted here, which meant
+    // every screen had to fall back to the per-device AsyncStorage copy - and
+    // a fresh install simply had no floor to show.
+    floor: (data as any).floor ?? null,
     room: data.room,
     avatarUrl: data.avatar_url,
   };
@@ -169,22 +175,76 @@ export const getMyProfile = async (): Promise<Profile | null> => {
 export const updateMyProfile = async (changes: {
   fullName?: string;
   phone?: string;
+  floor?: string;
   room?: string;
   hallId?: string | null;
   avatarUrl?: string | null;
-}): Promise<{ error: string | null }> => {
+}): Promise<{ error: string | null; code?: string }> => {
   const userId = await getCurrentUserId();
   if (!userId) return { error: 'Not signed in' };
 
   const patch: Record<string, any> = {};
   if (changes.fullName !== undefined) patch.full_name = changes.fullName;
   if (changes.phone !== undefined) patch.phone = changes.phone;
+  if (changes.floor !== undefined) patch.floor = changes.floor;
   if (changes.room !== undefined) patch.room = changes.room;
   if (changes.hallId !== undefined) patch.hall_id = changes.hallId;
   if (changes.avatarUrl !== undefined) patch.avatar_url = changes.avatarUrl;
 
   const { error } = await supabase.from('profiles').update(patch).eq('id', userId);
-  return { error: error ? error.message : null };
+  // The error code matters as much as the message: 42501 is the database
+  // refusing to change an address that is already registered, which is a very
+  // different situation from being unable to reach the server at all.
+  return { error: error ? error.message : null, code: error?.code };
+};
+
+// ---------------------------------------------------------------------
+// Duplicate detection
+// ---------------------------------------------------------------------
+export interface OpenRoomReport {
+  referenceId: string;
+  issue: string;
+  status: string;
+  createdAt: string;
+  reportedBy: string;
+  isMine: boolean;
+}
+
+/**
+ * Is this fault already reported for the caller's own room?
+ *
+ * Rooms are shared, so four residents can file the same broken light. RLS
+ * hides a roommate's report from the app, so this goes through a database
+ * function that checks the caller's registered room and returns only a
+ * summary — reference, fault, status, date and the reporter's first name.
+ *
+ * The room comes from the caller's profile inside the function, so no student
+ * can use this to look into another room.
+ */
+export const findOpenReportForMyRoom = async (
+  category: string,
+  issue?: string
+): Promise<OpenRoomReport[]> => {
+  const { data, error } = await supabase.rpc('find_open_report_for_my_room', {
+    p_category: category,
+    p_issue: issue ?? null,
+  });
+
+  if (error) {
+    // Never block a submission because the check failed — a duplicate is a
+    // nuisance, an unreportable fault is a real problem.
+    console.log('[api] duplicate check failed:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row: any) => ({
+    referenceId: row.reference_id,
+    issue: row.issue ?? '',
+    status: row.status ?? 'pending',
+    createdAt: row.created_at,
+    reportedBy: row.reported_by ?? '',
+    isMine: row.is_mine === true,
+  }));
 };
 
 // ---------------------------------------------------------------------

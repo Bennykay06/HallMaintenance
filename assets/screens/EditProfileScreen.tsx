@@ -21,16 +21,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import supabase from '../../config';
+import { getMyProfile } from '../../lib/api';
 
 export default function EditProfileScreen({ navigation }: any) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
-  const [userName, setUserName] = useState('Resident User');
+  // No placeholder identities. These used to default to 'Resident User' /
+  // 'Unity Hall' / 'Floor 2' / 'Room 204', and because Save writes every field
+  // straight back to AsyncStorage, anyone who opened this screen on a fresh
+  // install and saved a phone number silently stamped Unity Hall over their
+  // real hall - which is exactly what the theme reads.
+  const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [hall, setHall] = useState('Unity Hall');
-  const [floor, setFloor] = useState('Floor 2');
-  const [room, setRoom] = useState('Room 204');
+  const [hall, setHall] = useState('');
+  const [floor, setFloor] = useState('');
+  const [room, setRoom] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -40,6 +46,16 @@ export default function EditProfileScreen({ navigation }: any) {
   }, []);
 
   const loadUserData = async () => {
+    // The account first, the device cache only to fill gaps. The cache is
+    // per-device: on a shared phone it is the previous student's details, and
+    // on a fresh install it is empty.
+    let profile = null;
+    try {
+      profile = await getMyProfile();
+    } catch (error: any) {
+      console.log('[edit-profile] getMyProfile failed:', error?.message ?? error);
+    }
+
     try {
       const name = await AsyncStorage.getItem('userName');
       const emailData = await AsyncStorage.getItem('userEmail');
@@ -49,12 +65,19 @@ export default function EditProfileScreen({ navigation }: any) {
       const roomData = await AsyncStorage.getItem('userRoom');
       const photo = await AsyncStorage.getItem('userPhoto');
 
-      if (name) setUserName(name);
-      if (emailData) setEmail(emailData);
-      if (phoneData) setPhone(phoneData);
-      if (hallData) setHall(hallData);
-      if (floorData) setFloor(floorData);
-      if (roomData) setRoom(roomData);
+      const resolvedName = profile?.fullName?.trim() || name;
+      const resolvedEmail = profile?.email?.trim() || emailData;
+      const resolvedPhone = profile?.phone?.trim() || phoneData;
+      const resolvedHall = profile?.hallName?.trim() || hallData;
+      const resolvedFloor = profile?.floor?.trim() || floorData;
+      const resolvedRoom = profile?.room?.trim() || roomData;
+
+      if (resolvedName) setUserName(resolvedName);
+      if (resolvedEmail) setEmail(resolvedEmail);
+      if (resolvedPhone) setPhone(resolvedPhone);
+      if (resolvedHall) setHall(resolvedHall);
+      if (resolvedFloor) setFloor(resolvedFloor);
+      if (resolvedRoom) setRoom(resolvedRoom);
       if (photo) setProfileImage(photo);
     } catch (error) {
       console.log('Error loading user data:', error);
@@ -296,7 +319,7 @@ export default function EditProfileScreen({ navigation }: any) {
                   }
                   try {
                     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-                      redirectTo: 'hallmaintenance://reset-password',
+                      redirectTo: 'resifix://reset-password',
                     });
                     if (error) throw error;
                     Alert.alert('Reset Password', `Instructions to reset your password have been sent to ${email.trim()}.`);

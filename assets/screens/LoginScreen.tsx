@@ -77,7 +77,7 @@ export default function LoginScreen({ navigation }: any) {
       return;
     }
 
-   
+
     setIsLoading(true);
 
     try {
@@ -115,11 +115,33 @@ console.log(data)
       await AsyncStorage.setItem('rememberMe', 'false');
     }
 
+    // A student chooses their hall, floor and room exactly once. profiles
+    // .is_setup_complete is a generated column — true once all three are set
+    // (and always true for staff, who have no room) — so reading it here is
+    // what sends a returning user straight into the app instead of re-asking
+    // for an address the database will refuse to change.
+    let setupComplete = false;
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_setup_complete')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+      setupComplete = profile?.is_setup_complete === true;
+    } catch (e: any) {
+      // Fall back to onboarding rather than locking anyone out. The worst case
+      // is re-confirming an address they already have, which the database
+      // treats as a no-op.
+      console.log('[login] could not read profile setup state:', e?.message);
+    }
+
     setIsLoading(false);
 
     navigation.reset({
       index: 0,
-      routes: [{ name: 'Onboarding' }],
+      routes: [{ name: setupComplete ? 'MainTabs' : 'Onboarding' }],
     });
 
   } catch (error:any) {
@@ -144,7 +166,7 @@ console.log(data)
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: 'hallmaintenance://reset-password',
+        redirectTo: 'resifix://reset-password',
       });
 
       setIsLoading(false);

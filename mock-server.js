@@ -185,7 +185,7 @@ const getInitialData = () => {
     admins: [
       {
         id: '7',
-        email: 'admin@snapfix.com',
+        email: 'admin@resifix.com',
         password: 'admin123',
         name: 'Super Admin',
         role: 'super_admin',

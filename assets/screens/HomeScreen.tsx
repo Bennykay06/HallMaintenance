@@ -22,15 +22,19 @@ import {
   formatAppointmentDate,
   formatAppointmentTime,
 } from '../utils/appointments';
+import { getMyProfile } from '../../lib/api';
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const { theme } = useTheme();
   const styles = getStyles(theme);
-  const [userName, setUserName] = useState('Resident');
-  const [hall, setHall] = useState('Unity Hall');
-  const [floor, setFloor] = useState('Floor 2');
-  const [room, setRoom] = useState('Room 204');
-  const [fullAddress, setFullAddress] = useState('Unity Hall, Floor 2, Room 204');
+  // Empty, not a placeholder. A name the student never chose ("Resident",
+  // "John Doe") is worse than a blank space for the moment it takes the
+  // account to load — it is wrong, and it looks deliberate.
+  const [userName, setUserName] = useState('');
+  const [hall, setHall] = useState('');
+  const [floor, setFloor] = useState('');
+  const [room, setRoom] = useState('');
+  const [fullAddress, setFullAddress] = useState('');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
@@ -47,18 +51,55 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   };
 
   const loadUserData = async () => {
+    // The account is asked first and wins outright. AsyncStorage is only a
+    // per-device cache — it holds whoever used this phone last — so it fills
+    // gaps rather than setting anything the account already knows.
+    let profile = null;
     try {
-      const name = await AsyncStorage.getItem('userName');
-      const hallData = await AsyncStorage.getItem('userHall');
-      const floorData = await AsyncStorage.getItem('userFloor');
-      const roomData = await AsyncStorage.getItem('userRoom');
-      const location = await AsyncStorage.getItem('userLocation');
-      
-      if (name) setUserName(name);
-      if (hallData) setHall(hallData);
+      profile = await getMyProfile();
+    } catch (error: any) {
+      console.log('[home] getMyProfile threw:', error?.message ?? error);
+    }
+
+    try {
+      // Account first, cache only as a fallback - same rule as the name and
+      // room below. getMyProfile now returns floor, so a fresh install no
+      // longer drops it out of the address line.
+      const cachedFloor = await AsyncStorage.getItem('userFloor');
+      const floorData = profile?.floor?.trim() || cachedFloor;
+
+      if (profile?.fullName) {
+        setUserName(profile.fullName.trim());
+      } else {
+        const name = await AsyncStorage.getItem('userName');
+        if (name) setUserName(name.trim());
+      }
+
+      if (profile?.hallName) setHall(profile.hallName);
+      else {
+        const hallData = await AsyncStorage.getItem('userHall');
+        if (hallData) setHall(hallData);
+      }
+
+      if (profile?.room) setRoom(profile.room);
+      else {
+        const roomData = await AsyncStorage.getItem('userRoom');
+        if (roomData) setRoom(roomData);
+      }
+
       if (floorData) setFloor(floorData);
-      if (roomData) setRoom(roomData);
-      if (location) setFullAddress(location);
+
+      const parts = [
+        profile?.hallName ?? (await AsyncStorage.getItem('userHall')),
+        floorData,
+        profile?.room ?? (await AsyncStorage.getItem('userRoom')),
+      ].filter(Boolean);
+
+      if (parts.length) setFullAddress(parts.join(', '));
+      else {
+        const location = await AsyncStorage.getItem('userLocation');
+        if (location) setFullAddress(location);
+      }
     } catch (error) {
       console.log('Error loading user data:', error);
     }
@@ -135,14 +176,19 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       .slice(0, 2);
   };
 
+  const firstName = userName.trim().split(/\s+/)[0] ?? '';
+
   // Current residence on a single line, in order: hall, floor, room.
   // Onboarding stores the room as a bare number (e.g. "12"), so prefix
-  // "Room " unless the value already starts with it.
-  const roomLabel = /^\s*room\b/i.test(room) ? room.trim() : `Room ${room.trim()}`;
-  const residenceLine = `${hall}, ${floor}, ${roomLabel}`.replace(
-    'University Hall (Katanga)',
-    'Katanga Hall',
-  );
+  // "Room " unless the value already starts with it. Empty parts are dropped
+  // rather than rendered as ", , Room " while the account loads.
+  const roomLabel = room.trim()
+    ? (/^\s*room\b/i.test(room) ? room.trim() : `Room ${room.trim()}`)
+    : '';
+  const residenceLine = [hall.trim(), floor.trim(), roomLabel]
+    .filter(Boolean)
+    .join(', ')
+    .replace('University Hall (Katanga)', 'Katanga Hall');
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
@@ -151,7 +197,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       {/* ===== HEADER ===== */}
       <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
         <View style={styles.headerLeft}>
-          <Text style={[styles.headerTitle, { color: theme.primary }]}>HallMaintenance</Text>
+          <Text style={[styles.headerTitle, { color: theme.primary }]}>ResiFix KNUST</Text>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Notification')}>
@@ -179,7 +225,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               <View style={styles.heroBackgroundIcon}>
                 <WrenchIcon color={theme.primaryText} size={150} />
               </View>
-              <Text style={[styles.heroTitle, { color: theme.primaryText }]}>Welcome, {userName.split(' ')[0]}.</Text>
+              {/* First name only here; the Profile screen shows the full name.
+                  While the account is still loading the name is simply absent —
+                  never a placeholder that has to be corrected a moment later. */}
+              <Text style={[styles.heroTitle, { color: theme.primaryText }]}>
+                {firstName ? `Welcome, ${firstName}.` : 'Welcome.'}
+              </Text>
               <Text style={[styles.heroSubtitle, { color: theme.primaryText }]}>
                 Your comfort is our priority. Report issues, check hall news, or access emergency support instantly.
               </Text>

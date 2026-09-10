@@ -3,8 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
-import { Linking, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Linking, Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { registerForPushNotifications } from "./assets/utils/registerNotification";
 import supabase from './lib/supabase';
@@ -42,7 +42,7 @@ const navigationRef = createNavigationContainerRef();
 
 /**
  * Supabase's "Confirm signup" / magic-link emails redirect to
- * hallmaintenance://confirm-email#access_token=...&refresh_token=...&type=signup
+ * resifix://confirm-email#access_token=...&refresh_token=...&type=signup
  * (the tokens are in the URL fragment — this is the implicit flow, same one
  * the web dashboard's Login.jsx parses out of window.location.hash).
  *
@@ -90,6 +90,51 @@ const handleAuthDeepLink = async (url) => {
 };
 
 export default function App() {
+  // --- Automatic sign-in -------------------------------------------------
+  // supabase-js persists the session to AsyncStorage (see lib/supabase.ts), so
+  // a returning student already has a valid one at launch. Choosing the first
+  // screen from that session — rather than always opening Login — is what
+  // makes the app resume where they left off.
+  //
+  // null means "still deciding": the navigator is not mounted until we know,
+  // because initialRouteName is only read once.
+  const [initialRoute, setInitialRoute] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const finish = (route) => {
+      if (!cancelled) setInitialRoute(route);
+    };
+
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) {
+          finish('Login');
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_setup_complete')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        // A missing profile row, or an address that is not yet complete, both
+        // mean onboarding still has to run. Only a finished profile goes
+        // straight through to the app.
+        finish(profile?.is_setup_complete === true ? 'MainTabs' : 'Onboarding');
+      } catch (err) {
+        console.log('[startup] could not restore session:', err?.message);
+        finish('Login');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Cold start (app opened by tapping the link) and warm start (app already
   // running, link tapped) arrive through two different APIs.
   useEffect(() => {
@@ -104,20 +149,11 @@ export default function App() {
     return () => subscription.remove();
   }, []);
 
-  useEffect(() => {
-    const initUserData = async () => {
-      try {
-        const name = await AsyncStorage.getItem('userName');
-        if (!name) {
-          await AsyncStorage.setItem('userName', 'John Doe');
-          await AsyncStorage.setItem('userLocation', 'North Hall, Room 402');
-        }
-      } catch (error) {
-        console.log('Error initializing user data:', error);
-      }
-    };
-    initUserData();
-  }, []);
+  // A placeholder identity used to be seeded here on first launch —
+  // "John Doe" / "North Hall, Room 402". The screens read that cached name,
+  // and nothing on the login path replaced it, so whoever signed in was
+  // greeted as John Doe. The signed-in account is the only source of the
+  // name now, so there is nothing to seed.
   // Re-register the device token whenever a session exists. Tokens are keyed
   // to the user, so this has to wait for sign-in rather than run once at
   // launch — at cold start there may be no session yet.
@@ -144,13 +180,35 @@ export default function App() {
   }, []);
 
 
+  // Held until the stored session has been checked, so the app never flashes
+  // the login screen at somebody who is already signed in.
+  if (!initialRoute) {
+    return (
+      <ThemeProvider>
+        <SafeAreaProvider>
+          <StatusBar style="dark" backgroundColor="#F9F9F9" />
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#F9F9F9',
+            }}
+          >
+            <ActivityIndicator size="large" color="#AF101A" />
+          </View>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider>
       <SafeAreaProvider>
         <StatusBar style="dark" backgroundColor="#F9F9F9" />
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator
-            initialRouteName="Login"
+            initialRouteName={initialRoute}
             screenOptions={{
               headerShown: false,
               animation: 'slide_from_right',

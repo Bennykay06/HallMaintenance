@@ -1,4 +1,4 @@
-# KNUST Hall Maintenance System — Unified End-to-End System Documentation
+# ResiFix KNUST — Unified End-to-End System Documentation
 ## Mobile Student Client & Web Admin / Technician Portal
 
 *Structured according to the KNUST College of Engineering Academic Project Guidelines*
@@ -6,7 +6,7 @@
 ---
 
 ## Executive Metadata
-- **Project Name:** KNUST Hall Maintenance System (Integrated Platform)
+- **Project Name:** ResiFix KNUST (Integrated Platform)
 - **Sub-Systems:**
   1. **Mobile Student Client:** React Native, Expo SDK (v54), `@react-navigation`, `@react-native-async-storage/async-storage`
   2. **Web Admin & Technician Dashboard:** React (v19), React Router DOM (v7), React Icons, LocalStorage Sync
@@ -19,7 +19,7 @@
 # Table of Contents
 1. [System Abstract](#system-abstract)
 2. [End-to-End Architecture & Data Flow](#end-to-end-architecture--data-flow)
-3. [Sub-System 1: Mobile Student Client (HallMaintenance)](#sub-system-1-mobile-student-client-hallmaintenance)
+3. [Sub-System 1: Mobile Student Client (ResiFix KNUST)](#sub-system-1-mobile-student-client-resifix-knust)
 4. [Sub-System 2: Web Admin & Technician Portal (Admin-Dashboard)](#sub-system-2-web-admin--technician-portal-admin-dashboard)
 5. [Unified Data Model (ERD) & Shared Schemas](#unified-data-model-erd--shared-schemas)
 6. [Integrated Workflow & Sequence Diagrams](#integrated-workflow--sequence-diagrams)
@@ -84,7 +84,7 @@ graph TB
 
 ---
 
-# 3. Sub-System 1: Mobile Student Client (HallMaintenance)
+# 3. Sub-System 1: Mobile Student Client (ResiFix KNUST)
 
 ### Key Responsibilities
 - **Defect Reporting Wizard:** Guides students through selecting service categories (Electrical, Plumbing, Carpentry, Masonry), checking standard issues, adding text details, and uploading media.
@@ -313,7 +313,7 @@ sequenceDiagram
 
 # 8. Conclusion & Future Recommendations
 
-The combined **KNUST Hall Maintenance System** establishes a robust, modern digital framework connecting residential students, hall administrators, and campus technicians.
+The combined **ResiFix KNUST** establishes a robust, modern digital framework connecting residential students, hall administrators, and campus technicians.
 
 ### Key Achievements
 - **100% Paperless Workflow:** Replaces manual lodge logbooks with instantaneous digital ticket creation.

@@ -1,4 +1,4 @@
--- Supabase Schema for HallMaintenance Mobile App & Dashboard
+-- Supabase Schema for ResiFix KNUST Mobile App & Dashboard
 -- Run this in your Supabase SQL Editor (Project -> SQL Editor -> New Query)
 
 -- 1. Create Enums
