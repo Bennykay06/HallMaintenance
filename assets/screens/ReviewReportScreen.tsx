@@ -16,8 +16,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createReport, findOpenReportForMyRoom, OpenRoomReport } from '../../lib/api';
-import { formatLocation, getHall } from '../utils/location';
+import { createReport, findOpenReportForMyRoom, getMyProfile, OpenRoomReport } from '../../lib/api';
+import { formatLocation, formatRoom, getHall } from '../utils/location';
 
 export default function ReviewReportScreen({ navigation, route }: any) {
   const { theme } = useTheme();
@@ -30,9 +30,18 @@ export default function ReviewReportScreen({ navigation, route }: any) {
     writtenDetails = '',
   } = route.params || {};
 
-  const [location, setLocation] = useState('North Hall, Room 402');
+  // The registered address is whatever the profile says — never a literal.
+  // This used to start as 'North Hall, Room 402' and was only replaced if
+  // AsyncStorage happened to hold a 'userLocation'. That key is written only
+  // by Onboarding and Edit Profile, and AsyncStorage is per-install, so any
+  // resident who signed in on a second device — or reinstalled, or was routed
+  // straight to MainTabs by App.js because their profile was already complete
+  // — filed every report against a room that was not theirs.
+  const [location, setLocation] = useState('');
+  const [hallName, setHallName] = useState('');
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userName, setUserName] = useState('User');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     loadUserData();
@@ -40,16 +49,38 @@ export default function ReviewReportScreen({ navigation, route }: any) {
 
   const loadUserData = async () => {
     try {
+      const profile = await getMyProfile();
+
+      if (profile) {
+        // profiles.location is assembled from these three columns on the
+        // dashboard side too, so build it the same way here.
+        const address = [profile.hallName, profile.floor, formatRoom(profile.room || '')]
+          .filter(Boolean)
+          .join(', ');
+
+        setLocation(address);
+        setHallName(profile.hallName || '');
+        setUserName(profile.fullName || '');
+
+        // Keep the per-device cache in step for the screens that still read
+        // it, so this fix propagates without touching all of them at once.
+        if (address) await AsyncStorage.setItem('userLocation', address);
+        if (profile.hallName) await AsyncStorage.setItem('userHall', profile.hallName);
+        return;
+      }
+
+      // No profile means the network call failed, not that the resident has
+      // no address — fall back to the cached copy rather than showing nothing.
       const savedLocation = await AsyncStorage.getItem('userLocation');
+      const savedHall = await AsyncStorage.getItem('userHall');
       const name = await AsyncStorage.getItem('userName');
-      if (savedLocation) {
-        setLocation(savedLocation);
-      }
-      if (name) {
-        setUserName(name);
-      }
+      if (savedLocation) setLocation(savedLocation);
+      if (savedHall) setHallName(savedHall);
+      if (name) setUserName(name);
     } catch (error) {
       console.log('Error loading user data:', error);
+    } finally {
+      setIsLoadingProfile(false);
     }
   };
 
@@ -59,17 +90,25 @@ export default function ReviewReportScreen({ navigation, route }: any) {
 
   // Alert.alert has no promise form, so wrap it in one: resolve(true) to send
   // the report anyway, resolve(false) to cancel.
+  //
+  // `settled` matters on Android: the dismiss listener fires alongside the
+  // button press, and if it won the race it resolved false even though the
+  // resident had tapped "Report anyway" — the submission vanished with no
+  // error, which read as the app refusing to accept the report at all.
   const confirmDuplicate = (existing: OpenRoomReport[]): Promise<boolean> =>
     new Promise((resolve) => {
+      let settled = false;
+      const settle = (value: boolean) => {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      };
+
       const top = existing[0];
       const when = new Date(top.createdAt).toLocaleDateString(undefined, {
         day: 'numeric',
         month: 'short',
       });
-
-      const who = top.isMine
-        ? 'You already reported this'
-        : `${top.reportedBy || 'Someone in your room'} already reported this`;
 
       const status =
         top.status === 'scheduled'
@@ -79,33 +118,48 @@ export default function ReviewReportScreen({ navigation, route }: any) {
           : 'It is waiting to be scheduled.';
 
       Alert.alert(
-        'Already reported',
-        `${who} on ${when} — reference ${top.referenceId}.\n\n${status}\n\n` +
-          'Sending another report for the same fault will not make it faster. ' +
-          'Report it anyway only if this is a different problem.',
+        'Someone in your room reported this',
+        `${top.reportedBy || 'Another resident'} reported the same fault on ${when} — ` +
+          `reference ${top.referenceId}.\n\n${status}\n\n` +
+          'You can still send yours if this is a separate problem.',
         [
-          { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
-          { text: 'Report anyway', style: 'destructive', onPress: () => resolve(true) },
+          { text: 'Cancel', style: 'cancel', onPress: () => settle(false) },
+          { text: 'Report anyway', onPress: () => settle(true) },
         ],
-        { cancelable: true, onDismiss: () => resolve(false) }
+        { cancelable: true, onDismiss: () => settle(false) }
       );
     });
 
   const handleSubmit = async () => {
+    if (isLoadingProfile) return;
+
     setIsSubmitting(true);
 
+    // An empty address means the profile has no registered room, so there is
+    // nothing truthful to file the report against. Send the resident to fix
+    // it rather than stamping the report with a guess.
     if (!location) {
-      Alert.alert('Missing Location', 'Please add your location');
+      Alert.alert(
+        'No room on your profile',
+        'Add your hall, floor and room number to your profile before reporting a fault, ' +
+          'so the technician knows where to go.',
+        [
+          { text: 'Not now', style: 'cancel' },
+          { text: 'Edit profile', onPress: () => navigation.navigate('EditProfile') },
+        ]
+      );
       setIsSubmitting(false);
       return;
     }
 
-    // A room is shared, so the same fault can already be on its way to a
-    // technician. Warn, but never block — the student may genuinely be
-    // reporting a second, similar fault.
+    // A room is shared, so a roommate may already have this fault on its way
+    // to a technician — worth flagging, since they cannot see each other's
+    // reports. Your own earlier report is not a reason to interrupt you:
+    // re-reporting it is a legitimate nudge, so those pass straight through.
     const existing = await findOpenReportForMyRoom(serviceType, selectedIssue);
-    if (existing.length > 0) {
-      const proceed = await confirmDuplicate(existing);
+    const fromOthers = existing.filter((r) => !r.isMine);
+    if (fromOthers.length > 0) {
+      const proceed = await confirmDuplicate(fromOthers);
       if (!proceed) {
         setIsSubmitting(false);
         return;
@@ -115,7 +169,7 @@ export default function ReviewReportScreen({ navigation, route }: any) {
     try {
       // Tag the report with the resident's hall so My Requests can reliably
       // show it (and hide other halls') regardless of location formatting.
-      const userHall = (await AsyncStorage.getItem('userHall')) || getHall(location);
+      const userHall = hallName || (await AsyncStorage.getItem('userHall')) || getHall(location);
 
       // createReport uploads the photos and video to storage first, so this
       // can take a moment on a slow connection — the button stays disabled
@@ -187,7 +241,11 @@ export default function ReviewReportScreen({ navigation, route }: any) {
           {/* Location */}
           <View style={styles.reviewItem}>
             <Text style={styles.reviewItemLabel}>Location</Text>
-            <Text style={styles.reviewItemValue}>{formatLocation(location)}</Text>
+            <Text style={styles.reviewItemValue}>
+              {isLoadingProfile
+                ? 'Loading your room…'
+                : formatLocation(location) || 'No room on your profile'}
+            </Text>
           </View>
 
           {/* Issue Category */}
@@ -252,9 +310,9 @@ export default function ReviewReportScreen({ navigation, route }: any) {
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={[styles.submitBtn, isSubmitting && styles.submitBtnDisabled]}
+          style={[styles.submitBtn, (isSubmitting || isLoadingProfile) && styles.submitBtnDisabled]}
           onPress={handleSubmit}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoadingProfile}
         >
           <LinearGradient
             colors={[theme.primary, theme.primaryContainer]}

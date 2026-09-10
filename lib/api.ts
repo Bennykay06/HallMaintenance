@@ -396,6 +396,20 @@ export const createReport = async (
 
   if (error) {
     console.log('[api] createReport failed:', error.message);
+
+    // 23505 from reports_no_open_duplicate: this resident already has exactly
+    // this fault open for this room. ReviewReportScreen checks before it gets
+    // here, but that check is a network round trip that is allowed to fail
+    // open, and two quick taps can both clear it — the index is what actually
+    // guarantees a student cannot file the same report twice. A collision on
+    // reference_id is a different problem and keeps the generic message.
+    if (error.code === '23505' && !/reference_id/i.test(error.message)) {
+      return {
+        report: null,
+        error: 'You already have this issue open. Check My Requests to follow its progress.',
+      };
+    }
+
     return { report: null, error: error.message };
   }
 
