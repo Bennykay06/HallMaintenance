@@ -642,3 +642,67 @@ export const createAppointment = async (input: {
 
   return { error: error ? error.message : null };
 };
+
+
+// ---------------------------------------------------------------------------
+// KNUST university news
+//
+// public.knust_news is a cache of the headlines on https://www.knust.edu.gh/news,
+// refilled by the `knust-news-sync` edge function. Only the headline, excerpt,
+// thumbnail and a link are stored - the article itself stays on KNUST's site,
+// and the app opens it there.
+// ---------------------------------------------------------------------------
+
+export interface KnustArticle {
+  id: string;
+  url: string;
+  title: string;
+  excerpt: string;
+  imageUrl: string | null;
+  category: string;
+  publishedAt: string | null;
+}
+
+export const getKnustNews = async (limit = 50): Promise<KnustArticle[]> => {
+  const { data, error } = await supabase
+    .from('knust_news')
+    .select('id, url, title, excerpt, image_url, category, published_at, position')
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('position', { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    console.log('[api] getKnustNews failed:', error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    url: row.url,
+    title: row.title ?? '',
+    excerpt: row.excerpt ?? '',
+    imageUrl: row.image_url ?? null,
+    category: row.category ?? 'News',
+    publishedAt: row.published_at ?? null,
+  }));
+};
+
+/**
+ * Asks the sync function to re-read knust.edu.gh. It rate-limits itself
+ * server-side, so calling this on every pull-to-refresh is safe; a call inside
+ * the cooldown returns immediately without touching the university's site.
+ * Failure is not surfaced - the cached articles are still worth showing.
+ */
+export const refreshKnustNews = async (): Promise<boolean> => {
+  try {
+    const { error } = await supabase.functions.invoke('knust-news-sync', { body: {} });
+    if (error) {
+      console.log('[api] knust-news-sync failed:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    console.log('[api] knust-news-sync threw:', err?.message ?? err);
+    return false;
+  }
+};

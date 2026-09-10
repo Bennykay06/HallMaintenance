@@ -16,10 +16,13 @@ import {
   RefreshControl,
   Dimensions,
   Image,
+  Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getKnustNews, refreshKnustNews, KnustArticle } from '../../lib/api';
 
 const { width } = Dimensions.get('window');
 
@@ -28,164 +31,108 @@ export default function NewsScreen({ navigation }: any) {
   const styles = getStyles(theme);
   const [activeFilter, setActiveFilter] = useState('All');
   const [refreshing, setRefreshing] = useState(false);
-  const [userName, setUserName] = useState('User');
+  const [userName, setUserName] = useState('');
+  const [articles, setArticles] = useState<KnustArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
-  const filters = ['All', 'Facility Updates', 'Emergency', 'Student Life', 'Events'];
-
-  // Full news data with categories
-  const allNewsItems = [
-    {
-      id: '1',
-      type: 'Facility Updates',
-      title: 'Elevator Maintenance in Hall A',
-      description: 'Routine safety inspections for the north wing elevators are scheduled for today between 2 PM and 4 PM.',
-      time: '2 hours ago',
-      icon: '🔧',
-      image: 'https://picsum.photos/seed/elevator/600/400',
-      category: 'Facility Updates',
-    },
-    {
-      id: '2',
-      type: 'Student Life',
-      title: 'Dining Hall Renovation Complete',
-      description: 'The Student Union cafeteria has officially reopened with expanded seating and new sustainable waste stations.',
-      time: '5 hours ago',
-      icon: '🍽️',
-      image: 'https://picsum.photos/seed/dininghall/600/400',
-      category: 'Student Life',
-    },
-    {
-      id: '3',
-      type: 'Emergency',
-      title: 'Water Main Repair - West Campus',
-      description: 'Water pressure may be low in the West Residence Quad while emergency crews repair a main line break.',
-      time: '8 hours ago',
-      icon: '💧',
-      image: 'https://picsum.photos/seed/watermain/600/400',
-      category: 'Emergency',
-      urgent: true,
-    },
-    {
-      id: '4',
-      type: 'Facility Updates',
-      title: 'Spring Landscaping Schedule',
-      description: 'Annual tree trimming and botanical planting will take place across the Main Quad over the next two weeks.',
-      time: 'Yesterday',
-      icon: '🌿',
-      image: 'https://picsum.photos/seed/landscaping/600/400',
-      category: 'Facility Updates',
-    },
-    {
-      id: '5',
-      type: 'Events',
-      title: 'Parking Structure 4 Cleaning',
-      description: 'Level 3 of Parking Structure 4 will be closed for power washing this coming Saturday from 6 AM to 12 PM.',
-      time: '1 day ago',
-      icon: '🚗',
-      image: 'https://picsum.photos/seed/parking/600/400',
-      category: 'Events',
-    },
-    {
-      id: '6',
-      type: 'Student Life',
-      title: 'New Common Room Furniture',
-      description: 'The renovation of the South Hall common area is complete! New ergonomic workstations and lounge seating are now open for use.',
-      time: 'Oct 19, 2023',
-      icon: '👥',
-      image: 'https://picsum.photos/seed/commonroom/600/400',
-      category: 'Student Life',
-    },
-    {
-      id: '7',
-      type: 'Emergency',
-      title: 'Fire Alarm Testing - All Blocks',
-      description: 'Mandatory fire alarm testing will occur across all residential blocks this Friday from 9 AM to 12 PM.',
-      time: 'Oct 18, 2023',
-      icon: '🔥',
-      image: 'https://picsum.photos/seed/firealarm/600/400',
-      category: 'Emergency',
-      urgent: true,
-    },
-    {
-      id: '8',
-      type: 'Events',
-      title: 'Hall Cleanliness Competition',
-      description: 'Join the hall cleanliness competition this Friday. Prizes to be won for the cleanest floor!',
-      time: 'Oct 16, 2023',
-      icon: '🏆',
-      image: 'https://picsum.photos/seed/cleaning/600/400',
-      category: 'Events',
-    },
-  ];
-
-  // Featured news
-  const featuredNews = {
-    id: 'featured',
-    title: 'New Centralized Science Wing HVAC System Implementation',
-    description: 'Starting next Monday, the Facilities Management team will begin the final phase of the energy-efficient HVAC overhaul in the Science District. This project aims to reduce campus carbon emissions by 15% while providing better climate control for laboratories.',
-    time: '1 hour ago',
-    icon: '🏗️',
-    image: 'https://picsum.photos/seed/hvac/800/400',
-    category: 'Facility Updates',
-    type: 'featured',
-  };
-
-  // Filter news items based on active filter
-  const getFilteredNews = () => {
-    if (activeFilter === 'All') {
-      return allNewsItems;
-    }
-    return allNewsItems.filter(item => item.category === activeFilter);
-  };
-
-  const filteredNews = getFilteredNews();
+  // This screen used to render a hardcoded array of invented American campus
+  // notices - "Parking Structure 4", "West Residence Quad", picsum placeholder
+  // photos, dates from 2023. It is now the real KNUST news feed, mirrored from
+  // https://www.knust.edu.gh/news into public.knust_news and opened on KNUST's
+  // own site when tapped.
 
   useEffect(() => {
     loadUserData();
+    loadNews();
   }, []);
 
   const loadUserData = async () => {
     try {
       const name = await AsyncStorage.getItem('userName');
-      if (name) setUserName(name);
+      if (name) setUserName(name.trim());
     } catch (error) {
       console.log('Error loading user data:', error);
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+  const loadNews = async () => {
+    try {
+      const items = await getKnustNews();
+      setArticles(items);
+      setLoadError(items.length === 0);
+    } catch (error) {
+      console.log('[news] load failed:', error);
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // Ask the server to re-read knust.edu.gh, then show whatever is cached.
+    // The sync rate-limits itself, so this is cheap when it has run recently.
+    await refreshKnustNews();
+    await loadNews();
+    setRefreshing(false);
+  };
+
+  // KNUST tags its own articles, so the chips come from the data rather than a
+  // hardcoded list of categories the source has never used.
+  const filters = ['All', ...Array.from(new Set(articles.map((a) => a.category).filter(Boolean)))];
+
+  const filteredNews = activeFilter === 'All'
+    ? articles
+    : articles.filter((item) => item.category === activeFilter);
+
+  // Newest article is promoted to the featured slot.
+  const featuredNews = activeFilter === 'All' ? filteredNews[0] ?? null : null;
+  const listNews = featuredNews ? filteredNews.slice(1) : filteredNews;
+
   const getInitials = () => {
+    if (!userName) return '';
     return userName
       .split(' ')
-      .map(word => word[0])
+      .map((word) => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
   };
 
-  const handleNewsPress = (item: any) => {
-    navigation.navigate('ArticleDetail', { 
-      article: {
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        date: item.time,
-        author: 'Facilities Management',
-        readTime: '3 min read',
-        content: item.description + ' More details about this update will be shared soon.',
-        image: item.image,
-      }
-    });
+  /** "3 days ago" for recent items, a plain date once that stops being useful. */
+  const formatWhen = (iso: string | null) => {
+    if (!iso) return '';
+    const then = new Date(iso);
+    if (Number.isNaN(then.getTime())) return '';
+    const days = Math.floor((Date.now() - then.getTime()) / 86400000);
+    if (days <= 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return `${days} days ago`;
+    return then.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // The article belongs to KNUST, so the app sends the reader to KNUST rather
+  // than reproducing the body inside a detail screen.
+  const handleNewsPress = async (item: KnustArticle) => {
+    try {
+      const canOpen = await Linking.canOpenURL(item.url);
+      if (!canOpen) throw new Error('no handler for URL');
+      await Linking.openURL(item.url);
+    } catch (error) {
+      console.log('[news] could not open article:', error);
+      Alert.alert(
+        'Could not open the article',
+        'Your browser could not be opened for this story. You can read it at knust.edu.gh.'
+      );
+    }
   };
 
   const renderFilterTabs = () => {
+    if (filters.length <= 2) return null; // "All" plus one category is not a choice
     return (
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filterScroll}
         contentContainerStyle={styles.filterContainer}
@@ -212,76 +159,68 @@ export default function NewsScreen({ navigation }: any) {
   };
 
   const renderFeaturedCard = () => {
+    if (!featuredNews) return null;
     return (
-      <View style={styles.featuredCard}>
-        <View style={styles.featuredImageContainer}>
-          <Image
-            source={{ uri: featuredNews.image }}
-            style={styles.featuredImage}
-            resizeMode="cover"
-          />
-        </View>
+      <TouchableOpacity
+        style={styles.featuredCard}
+        activeOpacity={0.85}
+        onPress={() => handleNewsPress(featuredNews)}
+      >
+        {featuredNews.imageUrl ? (
+          <View style={styles.featuredImageContainer}>
+            <Image
+              source={{ uri: featuredNews.imageUrl }}
+              style={styles.featuredImage}
+              resizeMode="cover"
+            />
+          </View>
+        ) : null}
         <View style={styles.featuredContent}>
           <View style={styles.featuredCategory}>
             <WrenchIcon color={theme.primary} size={24} />
-            <Text style={styles.featuredCategoryText}>Infrastructure Update</Text>
+            <Text style={styles.featuredCategoryText}>{featuredNews.category}</Text>
           </View>
           <Text style={styles.featuredTitle}>{featuredNews.title}</Text>
           <Text style={styles.featuredDescription} numberOfLines={3}>
-            {featuredNews.description}
+            {featuredNews.excerpt}
           </Text>
           <View style={styles.featuredFooter}>
-            <Text style={styles.featuredTime}>{featuredNews.time}</Text>
-            <TouchableOpacity onPress={() => handleNewsPress(featuredNews)} activeOpacity={0.7}>
-              <Text style={styles.featuredReadMore}>Read More →</Text>
-            </TouchableOpacity>
+            <Text style={styles.featuredTime}>{formatWhen(featuredNews.publishedAt)}</Text>
+            <Text style={styles.featuredReadMore}>Read on knust.edu.gh →</Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
-  const renderNewsCard = (item: any) => {
-    const isUrgent = item.urgent || item.type === 'Emergency';
-    
-    return (
-      <View
-        key={item.id}
-        style={[
-          styles.newsCard,
-          isUrgent && styles.urgentCard,
-        ]}
-      >
+  const renderNewsCard = (item: KnustArticle) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.newsCard}
+      activeOpacity={0.85}
+      onPress={() => handleNewsPress(item)}
+    >
+      {item.imageUrl ? (
         <View style={styles.newsImageContainer}>
           <Image
-            source={{ uri: item.image }}
+            source={{ uri: item.imageUrl }}
             style={styles.newsImage}
             resizeMode="cover"
           />
         </View>
-        <View style={styles.newsContent}>
-          <Text style={styles.newsTime}>{item.time}</Text>
-          <Text style={styles.newsTitle}>{item.title}</Text>
-          <Text style={styles.newsDescription} numberOfLines={2}>
-            {item.description}
-          </Text>
-          <View style={styles.newsFooter}>
-            <TouchableOpacity onPress={() => handleNewsPress(item)} activeOpacity={0.7}>
-              <Text style={styles.newsReadMore}>Details →</Text>
-            </TouchableOpacity>
-          </View>
+      ) : null}
+      <View style={styles.newsContent}>
+        <Text style={styles.newsTime}>{formatWhen(item.publishedAt)}</Text>
+        <Text style={styles.newsTitle}>{item.title}</Text>
+        <Text style={styles.newsDescription} numberOfLines={3}>
+          {item.excerpt}
+        </Text>
+        <View style={styles.newsFooter}>
+          <Text style={styles.newsReadMore}>Read on knust.edu.gh →</Text>
         </View>
       </View>
-    );
-  };
-
-  // Get count of filtered items
-  const getFilteredCount = () => {
-    if (activeFilter === 'All') {
-      return allNewsItems.length;
-    }
-    return allNewsItems.filter(item => item.category === activeFilter).length;
-  };
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -290,7 +229,7 @@ export default function NewsScreen({ navigation }: any) {
       {/* ===== HEADER ===== */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Campus News</Text>
+          <Text style={styles.headerTitle}>KNUST News</Text>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={[styles.profileButton, { backgroundColor: theme.primary }]} onPress={() => navigation.navigate('Profile')}>
@@ -313,33 +252,47 @@ export default function NewsScreen({ navigation }: any) {
           {/* ===== FILTER TABS ===== */}
           {renderFilterTabs()}
 
-          {/* ===== FILTER RESULT COUNT ===== */}
-          <View style={styles.resultCountContainer}>
-            <Text style={styles.resultCountText}>
-              Showing {getFilteredCount()} {activeFilter === 'All' ? 'all news' : activeFilter.toLowerCase()}
-            </Text>
-          </View>
-
-          {/* ===== FEATURED CARD (only show on 'All' tab) ===== */}
-          {activeFilter === 'All' && renderFeaturedCard()}
-
-          {/* ===== NEWS GRID ===== */}
-          <View style={styles.recentSection}>
-            <View style={styles.recentHeader}>
-              <Text style={styles.recentTitle}>
-                {activeFilter === 'All' ? 'Recent Updates' : activeFilter}
+          {/* ===== RESULT COUNT ===== */}
+          {!loading && filteredNews.length > 0 && (
+            <View style={styles.resultCountContainer}>
+              <Text style={styles.resultCountText}>
+                {filteredNews.length} {filteredNews.length === 1 ? 'story' : 'stories'} from knust.edu.gh
               </Text>
             </View>
+          )}
 
-            {filteredNews.length > 0 ? (
+          {/* ===== FEATURED CARD (newest, 'All' tab only) ===== */}
+          {renderFeaturedCard()}
+
+          {/* ===== NEWS LIST ===== */}
+          <View style={styles.recentSection}>
+            {!loading && listNews.length > 0 && (
+              <View style={styles.recentHeader}>
+                <Text style={styles.recentTitle}>
+                  {activeFilter === 'All' ? 'More from KNUST' : activeFilter}
+                </Text>
+              </View>
+            )}
+
+            {loading ? (
+              <View style={styles.emptyContainer}>
+                <ActivityIndicator size="large" color={theme.primary} />
+              </View>
+            ) : filteredNews.length > 0 ? (
               <View style={styles.newsGrid}>
-                {filteredNews.map((item) => renderNewsCard(item))}
+                {listNews.map((item) => renderNewsCard(item))}
               </View>
             ) : (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyIcon}>📭</Text>
-                <Text style={styles.emptyTitle}>No {activeFilter.toLowerCase()} found</Text>
-                <Text style={styles.emptySubtitle}>Try selecting a different category</Text>
+                <Text style={styles.emptyTitle}>
+                  {loadError ? 'No news available' : 'Nothing in this category'}
+                </Text>
+                <Text style={styles.emptySubtitle}>
+                  {loadError
+                    ? 'Pull down to fetch the latest stories from knust.edu.gh.'
+                    : 'Try a different category.'}
+                </Text>
               </View>
             )}
           </View>

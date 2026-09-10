@@ -28,6 +28,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ResiFix KNUST needs access to your photos so you can attach evidence of a fault in your room.",
+          "cameraPermission": "ResiFix KNUST needs your camera so you can photograph a fault in your room."
+        }
+      ],
       "expo-video",
       "@react-native-community/datetimepicker",
       "expo-notifications"
